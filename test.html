@@ -13,7 +13,7 @@
 				font-weight: bold;
 			}
 			.sunlight-operator {
-				color: #00FFFF;
+				color: #009999;
 			}
 			.sunlight-string {
 				color: #990000;
@@ -35,21 +35,41 @@
 
 	<body>
 <pre class="sunlight-csharp"><code>using System;
+using System.Linq;
+using Microsoft.Practices.Unity;
 
 namespace Portoa.Web.Rest {
+	
+	private static readonly object MyObject = new object();
+	
+	protected internal class InternalClass {
+		public const int Sux = 11;
+	}
+	
+	///&lt;summary&gt;This is a story all about how...&lt;/summary&gt;
 	public abstract class ValueHandlerFactoryBase : IValueHandlerFactory {
-		public IValueHandler Create(string resourceName, string criterionFieldName) {
+	
+		protected override sealed void DoStuff(ref Foo foo, out int i, params string[] strings) { }
+	
+		public virtual IValueHandler Create(string resourceName, string criterionFieldName) {
 			//1) check for resource-specific value handler
+			VerifyStuff((int)resourceName);
+			
 			/* multi
 			line comment
 			*/
+			
 			var s = "this is \"a\" string";
-			s = @"this is ""another"" string";
+			s = @"this is ""another"" 
+multi line
+string";
+
+			//let's test out numbers
 			int i = 0;
 			double d = 1.5;
 			float f = 1.7f;
 			decimal dec = 1.2d;
-			int hex = 0x1a;
+			int hex = 0x1a; //ooh! hex!
 			
 			switch (Foo.Bar) {
 				case "foo":
