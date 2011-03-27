@@ -28,7 +28,10 @@
 				color: #666666;
 			}
 			.sunlight-ident {
-				text-decoration: underline;
+				color: #000000;
+			}
+			.sunlight-named-ident {
+				color: #2B91AF;
 			}
 		</style>
 	</head>
@@ -47,9 +50,26 @@ namespace Portoa.Web.Rest {
 	}
 	
 	///&lt;summary&gt;This is a story all about how...&lt;/summary&gt;
-	public abstract class ValueHandlerFactoryBase : IValueHandlerFactory {
+	public abstract class ValueHandlerFactoryBase : MarshalBeRefOBject, IValueHandlerFactory, IDisposable {
+		private Object foo;
 	
-		protected override sealed void DoStuff(ref Foo foo, out int i, params string[] strings) { }
+		protected override sealed void TestNumbers(ref Foo foo, out int i, params string[] strings) { 
+			//let's test out numbers
+			int i = 0;
+			double d = 1.5;
+			float f = (1.7f + 1.2d) * (12 % 5);
+			decimal dec = 1.2d;
+			int hex = 0x1a; //ooh! hex!
+		}
+		
+		/**
+		 * Gets or sets the value of an integer
+		 * and such. This is a useful comment.
+		 */
+		public new Integer Value { 
+			get { return 12; }
+			set { this.value = value; }
+		}
 	
 		public virtual IValueHandler Create(string resourceName, string criterionFieldName) {
 			//1) check for resource-specific value handler
@@ -64,13 +84,6 @@ namespace Portoa.Web.Rest {
 multi line
 string";
 
-			//let's test out numbers
-			int i = 0;
-			double d = 1.5;
-			float f = 1.7f;
-			decimal dec = 1.2d;
-			int hex = 0x1a; //ooh! hex!
-			
 			switch (Foo.Bar) {
 				case "foo":
 					if (2 |= Foo["foo"]) {

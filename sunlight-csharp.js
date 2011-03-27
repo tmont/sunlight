@@ -63,6 +63,31 @@
 		identFirstLetter: /[A-Za-z_]/,
 		identAfterFirstLetter: /\w/,
 		
+		namedIdentRules: {
+			follows: [
+				//class names
+				[{ token: "keyword", value: "class" }],
+				
+				//extends/implements class names
+				[{ token: "namedIdent", value: null }, { token: "punctuation", value: ":" }],
+				
+				//public new int Method() { }
+				//new Foo();
+				[{ token: "keyword", value: "new" }],
+				
+				//method/property return values
+				[{ token: "keyword", value: "public" }],
+				[{ token: "keyword", value: "protected" }],
+				[{ token: "keyword", value: "internal" }],
+				[{ token: "keyword", value: "virtual" }],
+				[{ token: "keyword", value: "private" }],
+				[{ token: "keyword", value: "sealed" }],
+				
+				//field types
+				[{ token: "keyword", value: "readonly" }]
+			]
+		},
+		
 		operators: [
 			//arithmetic
 			"+", "+=", "++",

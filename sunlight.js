@@ -212,16 +212,15 @@
 				return false;
 			};
 			
-			var parseIdent = function() {
-				var current = context.reader.current();
-				if (context.language.identFirstLetter.exec(current) === null) {
+			var parseIdent = function(isNamed) {
+				if (!isIdentMatch()) {
 					return false;
 				}
 				
-				var ident = current;
+				var ident = context.reader.current();
 				var peek = context.reader.peek();
 				while (peek !== context.reader.EOF) {
-					if (context.language.identAfterFirstLetter.exec(peek) === null) {
+					if (!context.language.identAfterFirstLetter.test(peek)) {
 						break;
 					}
 					
@@ -229,11 +228,15 @@
 					peek = context.reader.peek();
 				}
 				
-				context.tokens.push(createToken("ident", ident, context.reader.getLine()));
-				context.analyzer.enterIdent(context);
+				context.tokens.push(createToken(isNamed ? "namedIdent" : "ident", ident, context.reader.getLine()));
+				context.analyzer[isNamed ? "enterNamedIdent" : "exitNamedIdent"](context);
 				context.appendAndEncode(ident);
-				context.analyzer.exitIdent(context);
+				context.analyzer[isNamed ? "exitNamedIdent" : "exitIdent"](context);
 				return true;
+			};
+			
+			var isIdentMatch = function() {
+				return context.language.identFirstLetter.test(context.reader.current());
 			};
 			
 			var parseDefault = function() {
@@ -365,11 +368,33 @@
 				return true;
 			};
 			
+			var parseNamedIdent = function() {
+				if (!isIdentMatch()) {
+					return false;
+				}
+				
+				for (var i = 0, rule; i < context.language.namedIdentRules.follows.length; i++) {
+					rule = context.language.namedIdentRules.follows[i];
+					var index = context.tokens.length - 1;
+					for (var j = 0; j < rule.length && context.tokens[index - j] !== undefined; j++) {
+						if (
+							context.tokens[index - j].name === rule[rule.length - 1 - j].token && 
+							(rule[rule.length - 1 - j].value === null || context.tokens[index - j].value === rule[rule.length - 1 - j].value)
+						) {
+							return parseIdent(true);
+						}
+					}
+				}
+				
+				return false;
+			};
+			
 			return parseKeyword() 
 				|| parseOperator()
 				|| parseString() 
 				|| parseComment()
 				// || parseOtherScopes()
+				|| parseNamedIdent()
 				|| parseIdent()
 				|| parseNumber()
 				|| parsePunctuation()
