@@ -46,7 +46,11 @@
 			"this", "sizeof", "stackalloc", "var", "default",
 			
 			//contextual keywords
-			"get", "set", "value"
+				//property stuff
+				"get", "set", "value",
+				
+				//linq
+				"from", "select", "where", "groupby", "orderby"
 		],
 		
 		//[opener, closer, closer escape token]
@@ -69,7 +73,8 @@
 				[{ token: "keyword", value: "class" }],
 				
 				//extends/implements class names
-				[{ token: "namedIdent", value: null }, { token: "punctuation", value: ":" }],
+				[{ token: "namedIdent", value: null }, { token: "operator", value: ":" }],
+				[{ token: "ident", value: null }, { token: "punctuation", value: "," }],
 				
 				//public new int Method() { }
 				//new Foo();
@@ -77,6 +82,7 @@
 				
 				//method/property return values
 				[{ token: "keyword", value: "public" }],
+				[{ token: "keyword", value: "static" }],
 				[{ token: "keyword", value: "protected" }],
 				[{ token: "keyword", value: "internal" }],
 				[{ token: "keyword", value: "virtual" }],
@@ -84,38 +90,43 @@
 				[{ token: "keyword", value: "sealed" }],
 				
 				//field types
-				[{ token: "keyword", value: "readonly" }]
+				[{ token: "keyword", value: "readonly" }],
+				[{ token: "keyword", value: "const" }],
+				
+				//special method parameters
+				[{ token: "keyword", value: "ref" }],
+				[{ token: "keyword", value: "out" }]
 			]
 		},
 		
 		operators: [
 			//arithmetic
-			"+", "+=", "++",
-			"-", "-=", "--",
-			"*", "*=", 
-			"/", "/=",
-			"%", "%=",
-			
-			//bitwise
-			"|", "|=",
-			"&", "&=",
-			"^", "^=",
-			">>", ">>=",
-			"<<", "<<=",
-			
-			//unary
-			"!", "~",
+			"++", "+=", "+",  
+			"--", "-=", "-",  
+			      "*=", "*",  
+			      "/=", "/", 
+			      "%=", "%",
 			
 			//boolean
 			"&&", "||",
 			
+			//bitwise
+			"|=",   "|", 
+			"&=",   "&", 
+			"^=",   "^", 
+			">>=", ">>",
+			"<<=", "<<",
+			
 			//inequality
-			"<", "<=",
-			">", ">=",
+			"<=", "<",
+			">=", ">", 
 			"==", "!=",
 			
+			//unary
+			"!", "~",
+			
 			//other
-			"??", "?", ":", ".", "="
+			"??", "?", ":", ".", "=>", "="
 		],
 		
 	});
