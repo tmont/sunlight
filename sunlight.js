@@ -39,8 +39,8 @@
 		enterNamedIdent: function(token) {},
 		exitNamedIdent: function(token) {},
 		
-		enterNumber: function(token) {},
-		exitNumber: function(token) {},
+		enterNumber: function(token)      { console.log("enterNumber", token); },
+		exitNumber: function(token)       { console.log("exitNumber" , token); },
 		
 		enterComment: function(token)     { console.log("enterComment", token); },
 		exitComment: function(token)      { console.log("exitComment" , token); },
@@ -295,12 +295,51 @@
 				return false;
 			};
 			
+			var parseNumber = function() {
+				var current = context.reader.current();
+				var number;
+				
+				if (!/\d/.test(current)) {
+					//is it a decimal followed by a number?
+					if (current !== "." || !/d/.test(context.reader.peek())) {
+						return false;
+					}
+					
+					//decimal without leading zero
+					number = current + context.reader.read();
+				} else {
+					number = current;
+					//is it a decimal?
+					if (context.reader.peek() === ".") {
+						number += context.reader.read();
+					}
+				}
+				
+				//easy way out: read until it's not a number or letter
+				//this will work for hex (0xef), octal (012), decimal and scientific notation (1e3)
+				//anything else on you're on your own
+				
+				var peek = context.reader.peek();
+				while (peek !== context.reader.EOF) {
+					if (!/[A-Za-z0-9]/.test(peek)) {
+						break;
+					}
+					
+					number += context.reader.read();
+					peek = context.reader.peek();
+				}
+				
+				context.analyzer.enterNumber(createToken("number", number, context.reader.getLine()));
+				context.analyzer.exitNumber(createToken("number", number, context.reader.getLine()));
+			};
+			
 			return parseKeyword() 
 				|| parseOperator()
 				|| parseString() 
-				|| parseComment() 
+				|| parseComment()
 				// || parseOtherScopes()
 				|| parseIdent()
+				|| parseNumber()
 				|| parsePunctuation()
 				|| parseDefault();
 		};
