@@ -11,6 +11,26 @@
         return new F();
     }
 	
+	var encode = function() {
+		var charMap = [
+			["'", "&#039;"],
+			["$", "&amp;"],
+			["<", "&lt;"],
+			[">", "&gt;"],
+			["\t", "&#160;&#160;&#160;&#160;"],
+			[" ", "&#160;"],
+		];
+		
+		return function(text) {
+			var encodedText = text;
+			for (var i = 0; i < charMap.length; i++) {
+				encodedText = encodedText.split(charMap[i][0]).join(charMap[i][1]);
+			}
+			
+			return encodedText;
+		};
+	}();
+	
 	var regexEscape = function(s) {
 		return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&")
 	};
@@ -48,6 +68,7 @@
 			lastToken: function() { return tokens[tokens.length - 1]; },
 			reader: reader,
 			append: function(text) { buffer += text; },
+			appendAndEncode: function(text) { buffer += encode(text); },
 			analyzer: analyzer,
 			getHtml: function() { return buffer; }
 		};
@@ -158,7 +179,7 @@
 				
 				context.tokens.push(token);
 				context.analyzer.enterKeyword(context);
-				context.append(token.value);
+				context.appendAndEncode(token.value);
 				context.analyzer.exitKeyword(context);
 				return true;
 			};
@@ -171,7 +192,7 @@
 				
 				context.tokens.push(token);
 				context.analyzer.enterOperator(context);
-				context.append(token.value);
+				context.appendAndEncode(token.value);
 				context.analyzer.exitOperator(context);
 				return true;
 			};
@@ -182,7 +203,7 @@
 					var token = createToken("punctuation", current, context.reader.getLine());
 					context.tokens.push(token);
 					context.analyzer.enterPunctuation(context);
-					context.append(token.value);
+					context.appendAndEncode(token.value);
 					context.analyzer.exitPunctuation(context);
 					return true;
 				}
@@ -209,13 +230,13 @@
 				
 				context.tokens.push(createToken("ident", ident, context.reader.getLine()));
 				context.analyzer.enterIdent(context);
-				context.append(ident);
+				context.appendAndEncode(ident);
 				context.analyzer.exitIdent(context);
 				return true;
 			};
 			
 			var parseDefault = function() {
-				context.append(context.reader.current());
+				context.appendAndEncode(context.reader.current());
 				return true;
 			};
 			
@@ -233,7 +254,7 @@
 					context.tokens.push(createToken("commentOpener", opener, context.reader.getLine()));
 					context.reader.read(opener.length - 1);
 					context.analyzer.enterComment(context);
-					context.append(opener);
+					context.appendAndEncode(opener);
 					
 					//read the comment contents until the closer is found
 					closer = context.language.commentScopes[i][1];
@@ -245,7 +266,7 @@
 						peek = context.reader.peek(closer.length);
 					}
 					
-					context.append(buffer + (zeroWidth ? "" : context.reader.read(closer.length)));
+					context.appendAndEncode(buffer + (zeroWidth ? "" : context.reader.read(closer.length)));
 					buffer = null;
 					context.tokens.push(createToken("commentCloser", closer, context.reader.getLine()));
 					context.analyzer.exitComment(context);
@@ -269,7 +290,7 @@
 					context.reader.read(opener.length - 1);
 					
 					context.analyzer.enterString(context);
-					context.append(opener);
+					context.appendAndEncode(opener);
 					
 					//read the string contents until the closer is found
 					closer = context.language.stringScopes[i][1];
@@ -292,7 +313,7 @@
 						peek = context.reader.peek(closer.length);
 					}
 					
-					context.append(buffer + context.reader.read(closer.length));
+					context.appendAndEncode(buffer + context.reader.read(closer.length));
 					buffer = null;
 					context.tokens.push(createToken("stringCloser", closer, context.reader.getLine()));
 					context.analyzer.exitString(context);
@@ -338,7 +359,7 @@
 				
 				context.tokens.push(createToken("number", number, context.reader.getLine()));
 				context.analyzer.enterNumber(context);
-				context.append(number);
+				context.appendAndEncode(number);
 				context.analyzer.exitNumber(context);
 				return true;
 			};
