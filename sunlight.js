@@ -27,8 +27,8 @@
 		enterOperator: function(token)    { console.log("enterOperator", token); },
 		exitOperator: function(token)     { console.log("exitOperator" , token); },
 		
-		enterString: function(token) {},
-		exitString: function(token) {},
+		enterString: function(token)      { console.log("enterString", token); },
+		exitString: function(token)       { console.log("exitString" , token); },
 		
 		enterIdent: function(token)       { console.log("enterIdent", token); },
 		exitIdent: function(token)        { console.log("exitIdent" , token); },
@@ -253,7 +253,46 @@
 			};
 			
 			var parseString = function() {
+				var current = context.reader.current();
+				for (var i = 0, opener, closer, peek; i < context.language.stringScopes.length; i++) {
+					opener = context.language.stringScopes[i][0];
+					
+					peek = current + context.reader.peek(opener.length - 1);
+					if (opener !== peek) {
+						continue;
+					}
+					
+					context.analyzer.enterString(createToken("stringOpener", opener, context.reader.getLine()));
+					context.reader.read(opener.length - 1);
+					
+					//read the string contents until the closer is found
+					closer = context.language.stringScopes[i][1];
+					var closerEscape = context.language.stringScopes[i][2];
+					peek = context.reader.read(closer.length);
+					var buffer = "";
+					while (peek !== context.reader.EOF) {
+						if (closer === peek) {
+							//is the closer escaped?
+							if (context.reader.peek(closerEscape.length) === closerEscape) {
+								buffer += context.reader.read(closerEscape.length);
+								peek = context.reader.peek(closer.length);
+								continue;
+							} else {
+								break;
+							}
+						}
+						
+						buffer += context.reader.read();
+						peek = context.reader.peek(closer.length);
+					}
+					
+					context.buffer += buffer + context.reader.read(closer.length);
+					buffer = null;
+					context.analyzer.exitString(createToken("stringCloser", closer, context.reader.getLine()));
+					return true;
+				}
 				
+				return false;
 			};
 			
 			return parseKeyword() 
