@@ -74,7 +74,19 @@
 				
 				//extends/implements class names
 				[{ token: "namedIdent", value: null }, { token: "operator", value: ":" }],
-				[{ token: "ident", value: null }, { token: "punctuation", value: "," }],
+				[{ token: "namedIdent", value: null }, { token: "punctuation", value: "," }],
+				
+				//generic classes
+				[{ token: "operator", value: ">" }, { token: "operator", value: ":" }],
+				
+				//where T : class, IDisposable
+				[{ token: "keyword", value: null }, { token: "punctuation", value: "," }],
+				
+				//where T : IDisposable
+				[{ token: "ident", value: null }, { token: "operator", value: ":" }],
+				
+				//generics
+				[{ token: "namedIdent", value: null }, { token: "operator", value: "<" }],
 				
 				//public new int Method() { }
 				//new Foo();
@@ -96,6 +108,12 @@
 				//special method parameters
 				[{ token: "keyword", value: "ref" }],
 				[{ token: "keyword", value: "out" }]
+			],
+			
+			precedes: [
+				//assignment: Object o = new object();
+				//method parameters: public int Foo(Foo foo, Bar b, Object o) { }
+				[{ token: "ident", value: null }]
 			]
 		},
 		

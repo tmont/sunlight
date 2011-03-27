@@ -52,7 +52,7 @@ namespace Portoa.Web.Rest {
 	}
 	
 	///&lt;summary&gt;This is a story all about how...&lt;/summary&gt;
-	public abstract class ValueHandlerFactoryBase : MarshalByRefObject, IValueHandlerFactory, IDisposable {
+	public abstract class ValueHandlerFactoryBase&lt;T&gt; : MarshalByRefObject, IValueHandlerFactory, IDisposable where T : IDisposable {
 		private Object foo;
 	
 		private static Func&lt;Object, char&gt; GetFunction(Object o, Character c) {
@@ -62,7 +62,7 @@ namespace Portoa.Web.Rest {
 			return obj => (char)obj.GetHashCode();
 		}
 	
-		protected override sealed T TestNumbers&lt;T&gt;(ref Foo foo, out int i, params string[] strings) where T : event, IDisposable { 
+		protected override sealed T TestNumbers&lt;T&gt;(ref Foo foo, out int i, params string[] strings) where T : event, IDisposable, IFoo { 
 			//let's test out numbers
 			int i = 0;
 			double d = 1.5;
@@ -103,6 +103,8 @@ string";
 					break;
 				case "bar":
 					goto default;
+				case Empty:
+					return "foo";
 				default:
 					yield return new GarbanzoBean();
 			}
@@ -112,6 +114,6 @@ string";
 	</body>	
 	
 	<script type="text/javascript">//<![CDATA[
-		Sunlight.highlight();
+		Sunlight.highlightAll();
 	//]]></script>
 </html>
