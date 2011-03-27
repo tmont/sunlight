@@ -1,0 +1,29 @@
+<html>
+
+	<head>
+		<script type="text/javascript" src="sunlight.js"></script>
+		<script type="text/javascript" src="sunlight-csharp.js"></script>
+	</head>
+
+	<body>
+<pre>using System;
+
+namespace Portoa.Web.Rest {
+	public abstract class ValueHandlerFactoryBase : IValueHandlerFactory {
+		public IValueHandler Create(string resourceName, string criterionFieldName) {
+			//1) check for resource-specific value handler
+			/* multi
+			line comment
+			*/
+			var s = "this is a string";
+		}
+	}
+}</pre>
+	</body>	
+	
+	<script type="text/javascript">//<![CDATA[
+		var code = document.getElementsByTagName("pre")[0].innerHTML;
+		var parser = new Sunlight.Parser();
+		parser.parse(code, "c#");
+	//]]></script>
+</html>
