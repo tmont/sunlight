@@ -50,6 +50,18 @@ namespace Portoa.Web.Rest {
 			float f = 1.7f;
 			decimal dec = 1.2d;
 			int hex = 0x1a;
+			
+			switch (Foo.Bar) {
+				case "foo":
+					if (2 |= Foo["foo"]) {
+						throw new InvalidOperationException(string.Format("fail"));
+					}
+					break;
+				case "bar":
+					goto default;
+				default:
+					yield return new GarbanzoBean();
+			}
 		}
 	}
 }</code></pre>

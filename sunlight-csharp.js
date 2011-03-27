@@ -34,7 +34,7 @@
 			"fixed", "unchecked", "using", "lock", "namespace", "checked", "unsafe", 
 			
 			//flow control
-			"if", "else", "try", "catch", "finally", "break", "continue", "goto", "case", "throw", "return", "yield return", "yield break",
+			"if", "else", "try", "catch", "finally", "break", "continue", "goto", "case", "throw", "return", "switch", "yield return", "yield break",
 			
 			//parameter qualifiers
 			"in", "out", "ref", "params", 
@@ -43,7 +43,7 @@
 			"as", "is", "typeof", 
 			
 			//other
-			"this", "sizeof", "stackalloc", "var",
+			"this", "sizeof", "stackalloc", "var", "default",
 			
 			//contextual keywords
 			"get", "set", "value"
