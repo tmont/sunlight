@@ -19,43 +19,37 @@
 		punctuation: /[^A-Za-z0-9\s]/
 	};
 
-
 	var defaultAnalyzer = {
-		enterKeyword: function(token)     { console.log("enterKeyword", token); },
-		exitKeyword: function(token)      { console.log("exitKeyword" , token); },
-		
-		enterOperator: function(token)    { console.log("enterOperator", token); },
-		exitOperator: function(token)     { console.log("exitOperator" , token); },
-		
-		enterString: function(token)      { console.log("enterString", token); },
-		exitString: function(token)       { console.log("exitString" , token); },
-		
-		enterIdent: function(token)       { console.log("enterIdent", token); },
-		exitIdent: function(token)        { console.log("exitIdent" , token); },
-		
-		enterPunctuation: function(token) { console.log("enterPunctuation", token); },
-		exitPunctuation: function(token)  { console.log("exitPunctuation" , token); },
-		
-		enterNamedIdent: function(token) {},
-		exitNamedIdent: function(token) {},
-		
-		enterNumber: function(token)      { console.log("enterNumber", token); },
-		exitNumber: function(token)       { console.log("exitNumber" , token); },
-		
-		enterComment: function(token)     { console.log("enterComment", token); },
-		exitComment: function(token)      { console.log("exitComment" , token); },
+		enterKeyword:     function(context) { context.append("<span class=\"sunlight-keyword\">"); },
+		exitKeyword:      function(context) { context.append("</span>"); },
+		enterOperator:    function(context) { context.append("<span class=\"\sunlight-operator\">"); },
+		exitOperator:     function(context) { context.append("</span>"); },
+		enterString:      function(context) { context.append("<span class=\"sunlight-string\">"); },
+		exitString:       function(context) { context.append("</span>"); },
+		enterIdent:       function(context) { context.append("<span class=\"sunlight-ident\">"); },
+		exitIdent:        function(context) { context.append("</span>"); },
+		enterPunctuation: function(context) { context.append("<span class=\"sunlight-punctuation\">"); },
+		exitPunctuation:  function(context) { context.append("</span>"); },
+		enterNamedIdent:  function(context) { context.append("<span class=\"sunlight-named-ident\">"); },
+		exitNamedIdent:   function(context) { context.append("</span>"); },
+		enterNumber:      function(context) { context.append("<span class=\"sunlight-number\">"); },
+		exitNumber:       function(context) { context.append("</span>"); },
+		enterComment:     function(context) { context.append("<span class=\"sunlight-comment\">"); },
+		exitComment:      function(context) { context.append("</span>"); }
 	};
 	
 	var createParserContext = function(reader, language, analyzer) {
 		var tokens = [];
+		var buffer = "";
 		return {
 			scopeStack: [ ],
 			language: language,
 			tokens: tokens,
 			lastToken: function() { return tokens[tokens.length - 1]; },
 			reader: reader,
-			buffer: "",
-			analyzer: analyzer
+			append: function(text) { buffer += text; },
+			analyzer: analyzer,
+			getHtml: function() { return buffer; }
 		};
 	};
 	
@@ -162,8 +156,10 @@
 					return false;
 				}
 				
-				context.analyzer.enterKeyword(token);
-				context.analyzer.exitKeyword(token);
+				context.tokens.push(token);
+				context.analyzer.enterKeyword(context);
+				context.append(token.value);
+				context.analyzer.exitKeyword(context);
 				return true;
 			};
 			
@@ -173,8 +169,10 @@
 					return false;
 				}
 				
-				context.analyzer.enterOperator(token);
-				context.analyzer.exitOperator(token);
+				context.tokens.push(token);
+				context.analyzer.enterOperator(context);
+				context.append(token.value);
+				context.analyzer.exitOperator(context);
 				return true;
 			};
 			
@@ -182,8 +180,10 @@
 				var current = context.reader.current();
 				if (regexHelpers.punctuation.exec(current) !== null) {
 					var token = createToken("punctuation", current, context.reader.getLine());
-					context.analyzer.enterPunctuation(token);
-					context.analyzer.exitPunctuation(token);
+					context.tokens.push(token);
+					context.analyzer.enterPunctuation(context);
+					context.append(token.value);
+					context.analyzer.exitPunctuation(context);
 					return true;
 				}
 				
@@ -207,15 +207,15 @@
 					peek = context.reader.peek();
 				}
 				
-				var token = createToken("ident", ident, context.reader.getLine());
-				context.analyzer.enterIdent(token);
-				context.analyzer.exitIdent(token);
+				context.tokens.push(createToken("ident", ident, context.reader.getLine()));
+				context.analyzer.enterIdent(context);
+				context.append(ident);
+				context.analyzer.exitIdent(context);
 				return true;
 			};
 			
 			var parseDefault = function() {
-				console.log("parsing default: [%s]", context.reader.current());
-				context.buffer += context.reader.current();
+				context.append(context.reader.current());
 				return true;
 			};
 			
@@ -230,22 +230,25 @@
 						continue;
 					}
 					
-					context.analyzer.enterComment(createToken("commentOpener", opener, context.reader.getLine()));
+					context.tokens.push(createToken("commentOpener", opener, context.reader.getLine()));
 					context.reader.read(opener.length - 1);
+					context.analyzer.enterComment(context);
+					context.append(opener);
 					
 					//read the comment contents until the closer is found
 					closer = context.language.commentScopes[i][1];
 					var zeroWidth = context.language.commentScopes[i][2];
-					peek = context.reader.read(closer.length);
+					peek = context.reader.peek(closer.length);
 					var buffer = "";
 					while (peek !== context.reader.EOF && closer !== peek) {
 						buffer += context.reader.read();
 						peek = context.reader.peek(closer.length);
 					}
 					
-					context.buffer += buffer + (zeroWidth ? "" : context.reader.read(closer.length));
+					context.append(buffer + (zeroWidth ? "" : context.reader.read(closer.length)));
 					buffer = null;
-					context.analyzer.exitComment(createToken("commentCloser", closer, context.reader.getLine()));
+					context.tokens.push(createToken("commentCloser", closer, context.reader.getLine()));
+					context.analyzer.exitComment(context);
 					return true;
 				}
 				
@@ -262,33 +265,37 @@
 						continue;
 					}
 					
-					context.analyzer.enterString(createToken("stringOpener", opener, context.reader.getLine()));
+					context.tokens.push(createToken("stringOpener", opener, context.reader.getLine()));
 					context.reader.read(opener.length - 1);
+					
+					context.analyzer.enterString(context);
+					context.append(opener);
 					
 					//read the string contents until the closer is found
 					closer = context.language.stringScopes[i][1];
 					var closerEscape = context.language.stringScopes[i][2];
-					peek = context.reader.read(closer.length);
+					peek = context.reader.peek(closer.length);
 					var buffer = "";
 					while (peek !== context.reader.EOF) {
+						if (context.reader.peek(closerEscape.length) === closerEscape) {
+							buffer += context.reader.read(closerEscape.length);
+							peek = context.reader.peek(closer.length);
+							continue;
+						}
+						
 						if (closer === peek) {
 							//is the closer escaped?
-							if (context.reader.peek(closerEscape.length) === closerEscape) {
-								buffer += context.reader.read(closerEscape.length);
-								peek = context.reader.peek(closer.length);
-								continue;
-							} else {
-								break;
-							}
+							break;
 						}
 						
 						buffer += context.reader.read();
 						peek = context.reader.peek(closer.length);
 					}
 					
-					context.buffer += buffer + context.reader.read(closer.length);
+					context.append(buffer + context.reader.read(closer.length));
 					buffer = null;
-					context.analyzer.exitString(createToken("stringCloser", closer, context.reader.getLine()));
+					context.tokens.push(createToken("stringCloser", closer, context.reader.getLine()));
+					context.analyzer.exitString(context);
 					return true;
 				}
 				
@@ -317,7 +324,7 @@
 				
 				//easy way out: read until it's not a number or letter
 				//this will work for hex (0xef), octal (012), decimal and scientific notation (1e3)
-				//anything else on you're on your own
+				//anything else and you're on your own
 				
 				var peek = context.reader.peek();
 				while (peek !== context.reader.EOF) {
@@ -329,8 +336,11 @@
 					peek = context.reader.peek();
 				}
 				
-				context.analyzer.enterNumber(createToken("number", number, context.reader.getLine()));
-				context.analyzer.exitNumber(createToken("number", number, context.reader.getLine()));
+				context.tokens.push(createToken("number", number, context.reader.getLine()));
+				context.analyzer.enterNumber(context);
+				context.append(number);
+				context.analyzer.exitNumber(context);
+				return true;
 			};
 			
 			return parseKeyword() 
@@ -357,6 +367,8 @@
 					parseNextToken(context);
 					context.reader.read();
 				}
+				
+				return context.getHtml();
 			}
 		};
 	}();
@@ -372,8 +384,19 @@
 		
 		Parser: parserConstructor,
 		
-		highlight: function() { 
-			//auto-detect code snippets and highlight them
+		highlight: function(options) { 
+			//<pre class="sunlight-{languageId}"><code>
+			
+			var parser = new parserConstructor(options);
+			var preTags = document.getElementsByTagName("pre");
+			for (var i = 0, match; i < preTags.length; i++) {
+				if ((match = preTags[i].className.match(/\s*sunlight-(\S+)\s*/)) !== null) {
+					var languageId = match[1];
+					var code = preTags[i].getElementsByTagName("code")[0];
+					
+					code.innerHTML = parser.parse(code.firstChild.nodeValue, languageId);
+				}
+			}
 		},
 		
 		isRegistered: function(languageId) {

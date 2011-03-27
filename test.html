@@ -3,10 +3,38 @@
 	<head>
 		<script type="text/javascript" src="sunlight.js"></script>
 		<script type="text/javascript" src="sunlight-csharp.js"></script>
+		<style type="text/css">
+			code {
+				font-family: Consolas;
+				font-size: 16px;
+			}
+			.sunlight-keyword {
+				color: #0000FF;
+				font-weight: bold;
+			}
+			.sunlight-operator {
+				color: #00FFFF;
+			}
+			.sunlight-string {
+				color: #990000;
+			}
+			.sunlight-comment {
+				color: #009900;
+			}
+			.sunlight-number {
+				color: #CC6600;
+			}
+			.sunlight-punctuation {
+				color: #666666;
+			}
+			.sunlight-ident {
+				text-decoration: underline;
+			}
+		</style>
 	</head>
 
 	<body>
-<pre>using System;
+<pre class="sunlight-csharp"><code>using System;
 
 namespace Portoa.Web.Rest {
 	public abstract class ValueHandlerFactoryBase : IValueHandlerFactory {
@@ -24,12 +52,10 @@ namespace Portoa.Web.Rest {
 			int hex = 0x1a;
 		}
 	}
-}</pre>
+}</code></pre>
 	</body>	
 	
 	<script type="text/javascript">//<![CDATA[
-		var code = document.getElementsByTagName("pre")[0].innerHTML;
-		var parser = new Sunlight.Parser();
-		parser.parse(code, "c#");
+		Sunlight.highlight();
 	//]]></script>
 </html>
