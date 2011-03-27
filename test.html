@@ -13,7 +13,7 @@
 				font-weight: bold;
 			}
 			.sunlight-operator {
-				color: #009999;
+				color: #B05CBC;
 			}
 			.sunlight-string {
 				color: #990000;
@@ -50,7 +50,7 @@ namespace Portoa.Web.Rest {
 	}
 	
 	///&lt;summary&gt;This is a story all about how...&lt;/summary&gt;
-	public abstract class ValueHandlerFactoryBase : MarshalBeRefOBject, IValueHandlerFactory, IDisposable {
+	public abstract class ValueHandlerFactoryBase : MarshalByRefObject, IValueHandlerFactory, IDisposable {
 		private Object foo;
 	
 		protected override sealed void TestNumbers(ref Foo foo, out int i, params string[] strings) { 

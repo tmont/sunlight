@@ -38,7 +38,8 @@
 	};
 	
 	var regexHelpers = {
-		punctuation: /[^A-Za-z0-9\s]/
+		punctuation: /[^\w\s]/,
+		wordBoundaryString: "[\\W\\s]"
 	};
 
 	var defaultAnalyzer = {
@@ -155,15 +156,15 @@
 	var parser = function() {
 		var parseNextToken = function(context) {
 			
+			//helpers
 			var matchWord = function(wordMap, name) {
 				var current = context.reader.current();
 				for (var i = 0, word; i < wordMap.length; i++) {
 					word = wordMap[i];
 					if (word[0] === current) {
 						var peek = current + context.reader.peek(word.length);
-						if (word === peek || new RegExp(regexEscape(word) + "\\b").exec(peek) !== null) {
+						if (word === peek || new RegExp(regexEscape(word) + regexHelpers.wordBoundaryString).test(peek)) {
 							var readChars = context.reader.read(word.length - 1); //read to the end of the word (we already read the first letter)
-							//console.log("matched word and then read [%s]", readChars);
 							return createToken(name, word, context.reader.getLine());
 						}
 					}
@@ -172,6 +173,11 @@
 				return null;
 			};
 		
+			var isIdentMatch = function() {
+				return context.language.identFirstLetter.test(context.reader.current());
+			};
+		
+			//token parsing functions
 			var parseKeyword = function() {
 				var token = matchWord(context.language.keywords, "keyword");
 				if (token === null) {
@@ -200,7 +206,7 @@
 			
 			var parsePunctuation = function() {
 				var current = context.reader.current();
-				if (regexHelpers.punctuation.exec(current) !== null) {
+				if (regexHelpers.punctuation.test(current)) {
 					var token = createToken("punctuation", current, context.reader.getLine());
 					context.tokens.push(token);
 					context.analyzer.enterPunctuation(context);
@@ -233,10 +239,6 @@
 				context.appendAndEncode(ident);
 				context.analyzer[isNamed ? "exitNamedIdent" : "exitIdent"](context);
 				return true;
-			};
-			
-			var isIdentMatch = function() {
-				return context.language.identFirstLetter.test(context.reader.current());
 			};
 			
 			var parseDefault = function() {
@@ -390,9 +392,9 @@
 			};
 			
 			return parseKeyword() 
-				|| parseOperator()
-				|| parseString() 
 				|| parseComment()
+				|| parseString() 
+				|| parseOperator()
 				// || parseOtherScopes()
 				|| parseNamedIdent()
 				|| parseIdent()
@@ -432,8 +434,6 @@
 		Parser: parserConstructor,
 		
 		highlight: function(options) { 
-			//<pre class="sunlight-{languageId}"><code>
-			
 			var parser = new parserConstructor(options);
 			var preTags = document.getElementsByTagName("pre");
 			for (var i = 0, match; i < preTags.length; i++) {
@@ -456,7 +456,6 @@
 			}
 			
 			for (var i = 0; i < languageIds.length; i++) {
-				console.log("registering " + languageIds[i]);
 				languages[languageIds[i]] = languageData;
 			}
 		}
