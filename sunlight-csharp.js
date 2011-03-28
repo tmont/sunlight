@@ -9,8 +9,10 @@
 	cSharpAnalyzer.enterPragma = function(context) { context.append("<span class=\"sunlight-pragma\">"); };
 	cSharpAnalyzer.exitPragma = function(context) { context.append("</span>"); };
 
+	var primitives = ["int", "bool", "double", "float", "char", "byte", "sbyte", "uint", "long", "ulong", "char", "decimal", "short", "ushort"];
+	
 	sunlight.registerLanguage(["c#", "csharp"], {
-		keywords: [
+		keywords: primitives.concat([
 			//class qualifiers
 			"public", "private", "protected", "internal", "static", "sealed", "abstract", "partial",
 
@@ -22,9 +24,6 @@
 
 			//types
 			"class", "interface", "enum", "struct", "event", "delegate",
-
-			//primitives
-			"int", "bool", "double", "float", "char", "byte", "sbyte", "uint", "long", "ulong", "char", "decimal", "short", "ushort",
 
 			//literals
 			"null", "true", "false",
@@ -56,7 +55,7 @@
 
 				//linq
 				"from", "select", "where", "groupby", "orderby"
-		],
+		]),
 
 		scopes: {
 			//token name => array[opener, closer, escape token (optional), zeroWidthCloser? (optional)]
@@ -110,17 +109,81 @@
 						return false;
 					}
 					
-					return context.append("<span class=\"sunlight-named-ident\">") || true;
+					return true;
 				},
 				
-				//generic params
+				//generic definitions/params
 				function(context) {
-					//between < and > and preceded by an ident
+					//between < and > and preceded by an ident and not preceded by "class"
 					var index = context.index, token;
 					
-					//look for "<" preceded by an ident
+					//look for "<" preceded by an ident but not "class"
+					var foundGenericOpener = false, foundIdent = false;
 					while ((token = context.tokens[--index]) !== undefined) {
+						if (token.name === "keyword" && token.value === "class") {
+							//this must be a generic class type definition, e.g. Foo<T>, and we don't want to color the "T"
+							return false;
+						}
 						
+						if (token.name === "keyword" && sunlight.helpers.contains(primitives, token.value)) {
+							//e.g. Action<int>
+							continue;
+						}
+						
+						if (token.name === "operator" && (token.value === "<" || token.value === "<<")) {
+							foundGenericOpener = true;
+							continue;
+						}
+						
+						if (token.name === "operator" && (token.value === ">" || token.value === ">>")) {
+							//nested generics are good
+							continue;
+						}
+						
+						if (token.name === "ident") {
+							foundIdent = true;
+							continue;
+						}
+						
+						if (token.name === "default" || (token.name === "punctuation" && token.value === ",")) {
+							//commas and whitespace are okay
+							continue;
+						}
+						
+						//anything else means we're not in a generic definition
+						break;
+					}
+					
+					if (!foundGenericOpener || !foundIdent) {
+						return false;
+					}
+					
+					//now look forward to make sure the generic definition is closed
+					//this avoids false positives like "foo < bar"
+					index = context.index;
+					while ((token = context.tokens[++index]) !== undefined) {
+						if (token.name === "operator" && (token.value === ">" || token.value === ">>")) {
+							return true;
+						}
+						
+						if (token.name === "keyword" && sunlight.helpers.contains(primitives, token.value)) {
+							continue;
+						}
+						
+						if (token.name === "operator" && (token.value === "<" || token.value === "<<")) {
+							continue;
+						}
+						
+						if (token.name === "ident") {
+							continue;
+						}
+						
+						if (token.name === "default" || (token.name === "punctuation" && token.value === ",")) {
+							//commas and whitespace are okay
+							continue;
+						}
+						
+						return false;
 					}
 					
 					return false;

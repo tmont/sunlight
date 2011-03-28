@@ -78,11 +78,11 @@ namespace My.Namespace {
 			return obj => (char)obj.GetHashCode();
 		}
 		
-		//generic method params
+		//generic method definitions
 		Action&lt;IDisposable&gt; DoStuff() {
-			Action&lt;IDisposable&gt; action = () => null;
+			Action&lt;Func&lt;IDisposable, Foo&gt;&gt; action = () => disposable => new Foo();
 			
-			//neither "foo" below should not be a named ident
+			//neither "foo" below should be a named ident
 			return foo &lt; 1 || foo &gt; 2;
 		}
 		

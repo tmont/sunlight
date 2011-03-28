@@ -153,19 +153,18 @@
 				for (var i = 0, ruleData; i < rules.length; i++) {
 					ruleData = rules[i];
 					if (typeof(ruleData) === "function") {
-						return ruleData(context) && (context.append("<span class=\"sunlight-named-ident\">") || true);
-					}
-					
-					if (createRule && createRule(ruleData)(context.tokens)) {
-						context.append("<span class=\"sunlight-named-ident\">")
-						return true;
+						if (ruleData(context)) {
+							return context.append("<span class=\"sunlight-named-ident\">") || true;
+						}
+					} else if (createRule && createRule(ruleData)(context.tokens)) {
+						return context.append("<span class=\"sunlight-named-ident\">") || true;
 					}
 				}
 				
 				return false;
 			};
 			
-			return iterate(context.language.namedIdentRules.custom)
+			iterate(context.language.namedIdentRules.custom)
 				|| iterate(context.language.namedIdentRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData.slice(0)); })
 				|| iterate(context.language.namedIdentRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData.slice(0)); })
 				|| iterate(context.language.namedIdentRules.between, function(ruleData) { return createBetweenRule(context.index, ruleData.opener, ruleData.closer); })
@@ -615,6 +614,10 @@
 			for (var i = 0; i < languageIds.length; i++) {
 				languages[languageIds[i]] = languageData;
 			}
+		},
+		
+		helpers: {
+			contains: contains
 		}
 	};
 
