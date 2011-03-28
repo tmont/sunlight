@@ -50,87 +50,83 @@
 	};
 
 	var createProceduralRule = function(startIndex, direction, tokenRequirements) {
-		return {
-			matches: function(tokens) {
-				var tokenIndexStart = startIndex;
-				if (direction === 1) {
-					tokenRequirements.reverse();
-				}
+		return function(tokens) {
+			var tokenIndexStart = startIndex;
+			if (direction === 1) {
+				tokenRequirements.reverse();
+			}
+			
+			for (var j = 0, expected, actual; j < tokenRequirements.length; j++) {
+				actual = tokens[tokenIndexStart + (j * direction)];
+				expected = tokenRequirements[tokenRequirements.length - 1 - j];
 				
-				for (var j = 0, expected, actual; j < tokenRequirements.length; j++) {
-					actual = tokens[tokenIndexStart + (j * direction)];
-					expected = tokenRequirements[tokenRequirements.length - 1 - j];
-					
-					if (actual === undefined) {
-						if (expected["optional"] !== undefined && expected.optional) {
-							tokenIndexStart -= direction;
-						} else {
-							return false;
-						}
-					} else if (actual.name === expected.token && (expected["values"] === undefined || contains(expected.values, actual.value))) {
-						//derp
-						continue;
-					} else if (expected["optional"] !== undefined && expected.optional) {
-						tokenIndexStart -= direction; //we need to reevaluate against this token again
+				if (actual === undefined) {
+					if (expected["optional"] !== undefined && expected.optional) {
+						tokenIndexStart -= direction;
 					} else {
 						return false;
 					}
+				} else if (actual.name === expected.token && (expected["values"] === undefined || contains(expected.values, actual.value))) {
+					//derp
+					continue;
+				} else if (expected["optional"] !== undefined && expected.optional) {
+					tokenIndexStart -= direction; //we need to reevaluate against this token again
+				} else {
+					return false;
 				}
-				
-				return true;
 			}
+			
+			return true;
 		};
 	};
 	
 	var createBetweenRule = function(startIndex, opener, closer) {
-		return {
-			matches: function(tokens) {
-				var index = startIndex, token;
-				var success = false;
-				
-				//check to the left: if we run into a closer or never run into an opener, fail
-				while ((token = tokens[--index]) !== undefined) {
-					if (token.name === closer.token && contains(closer.values, token.value)) {
-						if (token.name === opener.token && contains(opener.values, token.value)) {
-							//if the closer is the same as the opener that's okay
-							success = true;
-							break;
-						}
-						
-						return false;
-					}
-					
+		return function(tokens) {
+			var index = startIndex, token;
+			var success = false;
+			
+			//check to the left: if we run into a closer or never run into an opener, fail
+			while ((token = tokens[--index]) !== undefined) {
+				if (token.name === closer.token && contains(closer.values, token.value)) {
 					if (token.name === opener.token && contains(opener.values, token.value)) {
+						//if the closer is the same as the opener that's okay
 						success = true;
 						break;
 					}
-				}
-				
-				if (!success) {
+					
 					return false;
 				}
 				
-				//check to the right for the closer
-				index = startIndex;
-				while ((token = tokens[++index]) !== undefined) {
-					if (token.name === opener.token && contains(opener.values, token.value)) {
-						if (token.name === closer.token && contains(closer.values, token.value)) {
-							//if the closer is the same as the opener that's okay
-							success = true;
-							break;
-						}
-						
-						return false;
-					}
-					
+				if (token.name === opener.token && contains(opener.values, token.value)) {
+					success = true;
+					break;
+				}
+			}
+			
+			if (!success) {
+				return false;
+			}
+			
+			//check to the right for the closer
+			index = startIndex;
+			while ((token = tokens[++index]) !== undefined) {
+				if (token.name === opener.token && contains(opener.values, token.value)) {
 					if (token.name === closer.token && contains(closer.values, token.value)) {
+						//if the closer is the same as the opener that's okay
 						success = true;
 						break;
 					}
+					
+					return false;
 				}
-			
-				return success;
+				
+				if (token.name === closer.token && contains(closer.values, token.value)) {
+					success = true;
+					break;
+				}
 			}
+		
+			return success;
 		};
 	};
 	
@@ -149,42 +145,31 @@
 		exitComment:         function(context) { context.append("</span>"); },
 		
 		enterIdent:          function(context) {
-			var isNamedIdent = false;
+			var i, data;
 			
-			var i, rule, data;
-			
-			if (context.language.namedIdentRules.follows !== undefined) {
-				for (i = 0; i < context.language.namedIdentRules.follows.length; i++) {
-					rule = createProceduralRule(context.index - 1, -1, context.language.namedIdentRules.follows[i].slice(0));
-					if (rule.matches(context.tokens)) {
-						context.append("<span class=\"sunlight-named-ident\">");
-						return;
+			var iterate = function(rules, createRule) {
+				rules = rules || [];
+				
+				for (var i = 0, ruleData; i < rules.length; i++) {
+					ruleData = rules[i];
+					if (typeof(ruleData) === "function") {
+						return ruleData(context) && (context.append("<span class=\"sunlight-named-ident\">") || true);
+					}
+					
+					if (createRule && createRule(ruleData)(context.tokens)) {
+						context.append("<span class=\"sunlight-named-ident\">")
+						return true;
 					}
 				}
-			}
+				
+				return false;
+			};
 			
-			if (context.language.namedIdentRules.precedes !== undefined) {
-				for (i = 0; i < context.language.namedIdentRules.precedes.length; i++) {
-					rule = createProceduralRule(context.index + 1, 1, context.language.namedIdentRules.precedes[i].slice(0));
-					if (rule.matches(context.tokens)) {
-						context.append("<span class=\"sunlight-named-ident\">");
-						return;
-					}
-				}
-			}
-			
-			if (context.language.namedIdentRules.between !== undefined) {
-				for (i = 0; i < context.language.namedIdentRules.between.length; i++) {
-					data = context.language.namedIdentRules.between[i];
-					rule = createBetweenRule(context.index, data.opener, data.closer);
-					if (rule.matches(context.tokens)) {
-						context.append("<span class=\"sunlight-named-ident\">");
-						return;
-					}
-				}
-			}
-			
-			context.append("<span class=\"sunlight-ident\">"); 
+			return iterate(context.language.namedIdentRules.custom)
+				|| iterate(context.language.namedIdentRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData.slice(0)); })
+				|| iterate(context.language.namedIdentRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData.slice(0)); })
+				|| iterate(context.language.namedIdentRules.between, function(ruleData) { return createBetweenRule(context.index, ruleData.opener, ruleData.closer); })
+				|| context.append("<span class=\"sunlight-ident\">");
 		},
 		
 		exitIdent:         function(context) { context.append("</span>"); },

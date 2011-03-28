@@ -77,6 +77,17 @@ namespace My.Namespace {
 
 			return obj => (char)obj.GetHashCode();
 		}
+		
+		//generic method params
+		Action&lt;IDisposable&gt; DoStuff() {
+			Action&lt;IDisposable&gt; action = () => null;
+			
+			//neither "foo" below should not be a named ident
+			return foo &lt; 1 || foo &gt; 2;
+		}
+		
+		//method without an access modifier: "Action" should be a named ident
+		Action DoStuff() { }
 
 		protected override sealed T NumbersTest&lt;T&gt;(ref Foo foo, out int @int, params String[] strings) where T : event, IDisposable, IFoo {
 			//let's test out numbers

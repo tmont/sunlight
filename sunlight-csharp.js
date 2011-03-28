@@ -71,26 +71,71 @@
 		identAfterFirstLetter: /\w/,
 
 		namedIdentRules: {
+			custom: [
+				//extends/implements/type constraints
+				function(context) {
+					//between ":" and "{" but not case statements
+					
+					//look backward for a ":" not preceded by a "case"
+					var index = context.index, token, foundColon = false;
+					while ((token = context.tokens[--index]) !== undefined) {
+						if (token.name === "punctuation" && token.value === "{") {
+							return false;
+						}
+						
+						if (token.name === "keyword" && token.value === "case") {
+							return false;
+						}
+						
+						if (token.name === "keyword" && (token.value === "class" || token.value === "where")) {
+							//the "class" keyword for classes
+							//or the "where" keyword for generic methods/classes with type constraints
+							
+							//if "class" is used as a type constraint, then ignore it
+							var nextToken = context.tokens[index + 1].name === "default" ? context.tokens[index + 2] : context.tokens[index + 1];
+							if (nextToken.name === "punctuation" && nextToken.value === ",") {
+								continue;
+							}
+							
+							break;
+						}
+						
+						if (token.name === "operator" && token.value === ":") {
+							//make sure there isn't a case preceding it
+							foundColon = true;
+						}
+					}
+					
+					if (!foundColon) {
+						return false;
+					}
+					
+					return context.append("<span class=\"sunlight-named-ident\">") || true;
+				},
+				
+				//generic params
+				function(context) {
+					//between < and > and preceded by an ident
+					var index = context.index, token;
+					
+					//look for "<" preceded by an ident
+					while ((token = context.tokens[--index]) !== undefined) {
+						
+					}
+					
+					return false;
+				}
+			],
+			
 			follows: [
-				//extends/implements class names
-				[{ token: "ident" }, whitespace, { token: "operator", values: [":"] }, whitespace],
-				//[{ token: "ident" }, whitespace, { token: "punctuation", values: [","] }, whitespace],
-
-				//generic classes
-				[{ token: "operator", values: [">", ">>"] }, whitespace, { token: "operator", values: [":"] }, whitespace ],
-
-				// //where T : class, IDisposable
-				[{ token: "keyword", values: ["class", "event", "struct", "delegate"] }, whitespace, { token: "punctuation", values: [","] }, whitespace],
-
 				//method/property return values
 				//special method parameters
-				//field types
-				//new: public new int Method() { } and new Foo();
+				//new: public new Foo Method() { } and new Foo();
 				//class/interface/event/struct/delegate names
-				[{ token: "keyword", values: ["class", "interface", "event", "struct", "enum", "delegate", "public", "private", "protected", "internal", "static", "virtual", "sealed", "new", "readonly", "const", "ref", "out", "params"] }, whitespace],
+				[{ token: "keyword", values: ["class", "interface", "event", "struct", "enum", "delegate", "public", "private", "protected", "internal", "static", "virtual", "sealed", "new", "ref", "out", "params"] }, whitespace],
 
-				//typeof
-				[{ token: "keyword", values: ["typeof"] }, whitespace, { token: "punctuation", values: ["("] }, whitespace ]
+				//typeof/default
+				[{ token: "keyword", values: ["typeof", "default"] }, whitespace, { token: "punctuation", values: ["("] }, whitespace ]
 			],
 
 			precedes: [
@@ -101,15 +146,6 @@
 				//assignment: Object o = new object();
 				//method parameters: public int Foo(Foo foo, Bar b, Object o) { }
 				[{ token: "default" }, { token: "ident" }]
-			],
-
-			between: [
-				//classes in extends/implements
-				{ opener: { token: "operator", values: [":"] }, closer: { token: "punctuation", values: ["{"] } },
-				{ opener: { token: "keyword", values: ["class"] }, closer: { token: "punctuation", values: ["{"] } },
-
-				//generic type params
-				{ opener: { token: "operator", values: ["<", "<<"] }, closer: { token: "operator", values: [">", ">>"] } }
 			]
 		},
 
@@ -140,7 +176,7 @@
 			"!", "~",
 
 			//other
-			"??", "?", ":", ".", "=>", "="
+			"??", "?", "::", ":", ".", "=>", "="
 		],
 		
 		tokenAnalyzerMap: {
