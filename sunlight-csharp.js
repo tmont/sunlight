@@ -105,8 +105,11 @@
 			
 			between: [
 				//extends/implements
+				{ opener: { token: "operator", values: [":"] }, closer: { token: "punctuation", values: ["{"] } },
+				{ opener: { token: "keyword", values: ["class"] }, closer: { token: "punctuation", values: ["{"] } },
 				
 				//generic type params
+				{ opener: { token: "operator", values: ["<", "<<"] }, closer: { token: "operator", values: [">", ">>"] } }
 			]
 		},
 		

@@ -31,29 +31,21 @@
 		wordBoundaryString: "[\\W\\s]"
 	};
 
-	var Rule = function(startIndex, direction, tokenRequirements) {
-		this.startIndex = startIndex;
-		this.direction = direction === -1 ? -1 : 1;
-		this.tokenRequirements = tokenRequirements;
-	};
-	
-	Rule.prototype = function() {
+	var createProceduralRule = function(startIndex, direction, tokenRequirements) {
 		return {
 			matches: function(tokens) {
-				var tokenIndexStart = this.startIndex;
-				
-				var tokenReqs = this.tokenRequirements.slice(0); //clone lol
-				if (this.direction === 1) {
-					tokenReqs.reverse();
+				var tokenIndexStart = startIndex;
+				if (direction === 1) {
+					tokenRequirements.reverse();
 				}
 				
-				for (var j = 0, expected, actual; j < tokenReqs.length; j++) {
-					actual = tokens[tokenIndexStart + (j * this.direction)];
-					expected = tokenReqs[tokenReqs.length - 1 - j];
+				for (var j = 0, expected, actual; j < tokenRequirements.length; j++) {
+					actual = tokens[tokenIndexStart + (j * direction)];
+					expected = tokenRequirements[tokenRequirements.length - 1 - j];
 					
 					if (actual === undefined) {
 						if (expected["optional"] !== undefined && expected.optional) {
-							tokenIndexStart -= this.direction;
+							tokenIndexStart -= direction;
 						} else {
 							return false;
 						}
@@ -61,7 +53,7 @@
 						//derp
 						continue;
 					} else if (expected["optional"] !== undefined && expected.optional) {
-						tokenIndexStart -= this.direction; //we need to reevaluate against this token again
+						tokenIndexStart -= direction; //we need to reevaluate against this token again
 					} else {
 						return false;
 					}
@@ -70,7 +62,67 @@
 				return true;
 			}
 		};
-	}();
+	};
+	
+	var createBetweenRule = function(startIndex, opener, closer) {
+		// var verify = function(tokens, direction) {
+			// var index = startIndex + direction, token;
+			// var success = false;
+			
+			////check to the left: if we run into a closer or never run into an opener, fail
+			// while ((token = tokens[index]) !== undefined) {
+				// if (token.name === closer.token && contains(closer.values, token.value)) {
+					// return false;
+				// }
+				
+				// if (token.name === opener.token && contains(opener.values, token.value)) {
+					// return true;
+				// }
+				
+				// index += direction;
+			// }
+			
+			// return false;
+		// };
+		
+		return {
+			matches: function(tokens) {
+				var index = startIndex, token;
+				var success = false;
+				
+				//check to the left: if we run into a closer or never run into an opener, fail
+				while ((token = tokens[--index]) !== undefined) {
+					if (token.name === closer.token && contains(closer.values, token.value)) {
+						return false;
+					}
+					
+					if (token.name === opener.token && contains(opener.values, token.value)) {
+						success = true;
+						break;
+					}
+				}
+				
+				if (!success) {
+					return false;
+				}
+				
+				//check to the right for the closer
+				index = startIndex;
+				while ((token = tokens[++index]) !== undefined) {
+					if (token.name === opener.token && contains(opener.values, token.value)) {
+						return false;
+					}
+					
+					if (token.name === closer.token && contains(closer.values, token.value)) {
+						success = true;
+						break;
+					}
+				}
+			
+				return success;
+			}
+		};
+	};
 	
 	var defaultAnalyzer = {
 		enterKeyword:     function(context) { context.append("<span class=\"sunlight-keyword\">"); },
@@ -91,18 +143,27 @@
 			
 			//do the look-behind analysis to see if this is a named identifier
 			
-			var i, tokenReqs, rule;
+			var i, rule;
 			
-			for (var i = 0, tokenReqs; i < context.language.namedIdentRules.follows.length; i++) {
-				var rule = new Rule(context.index - 1, -1, context.language.namedIdentRules.follows[i]);
+			for (i = 0; i < context.language.namedIdentRules.follows.length; i++) {
+				rule = createProceduralRule(context.index - 1, -1, context.language.namedIdentRules.follows[i].slice(0));
 				if (rule.matches(context.tokens)) {
 					context.append("<span class=\"sunlight-named-ident\">");
 					return;
 				}
 			}
 			
-			for (i = 0, tokenReqs; i < context.language.namedIdentRules.precedes.length; i++) {
-				rule = new Rule(context.index + 1, 1, context.language.namedIdentRules.precedes[i]);
+			for (i = 0; i < context.language.namedIdentRules.precedes.length; i++) {
+				rule = createProceduralRule(context.index + 1, 1, context.language.namedIdentRules.precedes[i].slice(0));
+				if (rule.matches(context.tokens)) {
+					context.append("<span class=\"sunlight-named-ident\">");
+					return;
+				}
+			}
+			
+			for (i = 0; i < context.language.namedIdentRules.between.length; i++) {
+				var data = context.language.namedIdentRules.between[i];
+				rule = createBetweenRule(context.index, data.opener, data.closer);
 				if (rule.matches(context.tokens)) {
 					context.append("<span class=\"sunlight-named-ident\">");
 					return;
@@ -423,7 +484,6 @@
 				context.reader.read();
 			}
 			
-			//console.dir(tokens);
 			return tokens;
 		};
 		

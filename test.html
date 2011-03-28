@@ -42,7 +42,7 @@
 <pre class="sunlight-csharp"><code>using System;
 
 namespace My.Namespace {
-	public abstract class ValueHandlerFactoryBase&lt;T&gt; : MarshalByRefObject, IValueHandlerFactory, IDisposable where T : IDisposable
+	public abstract class ValueHandlerFactoryBase&lt;T&gt; : MarshalByRefObject, IValueHandlerFactory, IDisposable where T : IDisposable {
 		private Object foo;
 		public const String bar = "foo";
 		protected static readonly Object baz = 0xffffff;
