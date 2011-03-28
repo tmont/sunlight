@@ -11,6 +11,7 @@
         return new F();
     }
 	
+	//array.contains()
 	var contains = function(arr, value) {
 		for (var i = 0; i < arr.length; i++) {
 			if (arr[i] === value) {
@@ -19,6 +20,23 @@
 		}
 		
 		return false;
+	};
+	
+	//recursively merges one object into the other
+	var merge = function(defaultObject, objectToMerge) {
+		if (!objectToMerge) {
+			return defaultObject;
+		}
+		
+		for (var key in objectToMerge) {
+			if (defaultObject[key] !== undefined && typeof(objectToMerge[key]) === "object") {
+				defaultObject[key] = merge(defaultObject[key], objectToMerge[key]);
+			} else {
+				defaultObject[key] = objectToMerge[key];
+			}
+		}
+		
+		return defaultObject;
 	};
 	
 	//http://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript/3561711#3561711
@@ -65,26 +83,6 @@
 	};
 	
 	var createBetweenRule = function(startIndex, opener, closer) {
-		// var verify = function(tokens, direction) {
-			// var index = startIndex + direction, token;
-			// var success = false;
-			
-			////check to the left: if we run into a closer or never run into an opener, fail
-			// while ((token = tokens[index]) !== undefined) {
-				// if (token.name === closer.token && contains(closer.values, token.value)) {
-					// return false;
-				// }
-				
-				// if (token.name === opener.token && contains(opener.values, token.value)) {
-					// return true;
-				// }
-				
-				// index += direction;
-			// }
-			
-			// return false;
-		// };
-		
 		return {
 			matches: function(tokens) {
 				var index = startIndex, token;
@@ -141,9 +139,7 @@
 		enterIdent:       function(context) {
 			var isNamedIdent = false;
 			
-			//do the look-behind analysis to see if this is a named identifier
-			
-			var i, rule;
+			var i, rule, data;
 			
 			for (i = 0; i < context.language.namedIdentRules.follows.length; i++) {
 				rule = createProceduralRule(context.index - 1, -1, context.language.namedIdentRules.follows[i].slice(0));
@@ -162,7 +158,7 @@
 			}
 			
 			for (i = 0; i < context.language.namedIdentRules.between.length; i++) {
-				var data = context.language.namedIdentRules.between[i];
+				data = context.language.namedIdentRules.between[i];
 				rule = createBetweenRule(context.index, data.opener, data.closer);
 				if (rule.matches(context.tokens)) {
 					context.append("<span class=\"sunlight-named-ident\">");
@@ -328,72 +324,48 @@
 				return null;
 			};
 			
-			var parseComment = function() {
+			var parseScopes = function() {
 				var current = context.reader.current();
-				for (var i = 0, opener, closer, peek; i < context.language.commentScopes.length; i++) {
-					opener = context.language.commentScopes[i][0];
-					
-					peek = current + context.reader.peek(opener.length - 1);
-					if (opener !== peek) {
-						continue;
-					}
-					
-					context.reader.read(opener.length - 1);
-					var buffer = opener;
-					var line = context.reader.getLine();
-					
-					//read the comment contents until the closer is found
-					closer = context.language.commentScopes[i][1];
-					var zeroWidth = context.language.commentScopes[i][2];
-					peek = context.reader.peek(closer.length);
-					while (peek !== context.reader.EOF && closer !== peek) {
-						buffer += context.reader.read();
-						peek = context.reader.peek(closer.length);
-					}
-					
-					buffer += (zeroWidth ? "" : context.reader.read(closer.length));
-					return context.createToken("comment", buffer, line);
-				}
 				
-				return null;
-			};
-			
-			var parseString = function() {
-				var current = context.reader.current();
-				for (var i = 0, opener, closer, peek; i < context.language.stringScopes.length; i++) {
-					opener = context.language.stringScopes[i][0];
-					
-					peek = current + context.reader.peek(opener.length - 1);
-					if (opener !== peek) {
-						continue;
-					}
-					
-					var buffer = opener;
-					var line = context.reader.getLine();
-					context.reader.read(opener.length - 1);
-					
-					//read the string contents until the closer is found
-					closer = context.language.stringScopes[i][1];
-					var closerEscape = context.language.stringScopes[i][2];
-					peek = context.reader.peek(closer.length);
-					while (peek !== context.reader.EOF) {
-						if (context.reader.peek(closerEscape.length) === closerEscape) {
-							buffer += context.reader.read(closerEscape.length);
-							peek = context.reader.peek(closer.length);
+				for (var tokenName in context.language.scopes) {
+					var specificScopes = context.language.scopes[tokenName];
+					for (var j = 0, opener, closer, peek; j < specificScopes.length; j++) {
+						opener = specificScopes[j][0];
+						closer = specificScopes[j][1];
+						closerEscape = specificScopes[j][2] || null;
+						zeroWidth = specificScopes[j][3] || false;
+						
+						peek = current + context.reader.peek(opener.length - 1);
+						if (opener !== peek) {
 							continue;
 						}
 						
-						if (closer === peek) {
-							//is the closer escaped?
-							break;
+						var buffer = opener;
+						var line = context.reader.getLine();
+						var column = context.reader.getColumn();
+						
+						context.reader.read(opener.length - 1);
+						
+						//read the scope contents until the closer is found
+						peek = context.reader.peek(closer.length);
+						while (peek !== context.reader.EOF) {
+							if (closerEscape !== null && context.reader.peek(closerEscape.length) === closerEscape) {
+								buffer += context.reader.read(closerEscape.length);
+								peek = context.reader.peek(closer.length);
+								continue;
+							}
+							
+							if (closer === peek) {
+								break;
+							}
+							
+							buffer += context.reader.read();
+							peek = context.reader.peek(closer.length);
 						}
 						
-						buffer += context.reader.read();
-						peek = context.reader.peek(closer.length);
+						buffer += (zeroWidth ? "" : context.reader.read(closer.length));
+						return context.createToken(tokenName, buffer, line, column);
 					}
-					
-					buffer += context.reader.read(closer.length);
-					return context.createToken("string", buffer, line);
 				}
 				
 				return null;
@@ -437,8 +409,7 @@
 			};
 			
 			return parseKeyword() 
-				|| parseComment()
-				|| parseString()
+				|| parseScopes()
 				|| parseIdent()
 				|| parseNumber()
 				|| parseOperator()
@@ -529,18 +500,18 @@
 					};
 				}();
 				
-				var analyzer = self.options.analyzer;
-				var map = self.options.tokenAnalyzerMap;
+				var analyzer = language.analyzer || self.options.analyzer;
+				var map = merge(self.options.tokenAnalyzerMap, language.tokenAnalyzerMap);
 				for (var i = 0; i < analyzerContext.tokens.length; i++) {
 					analyzerContext.index = i;
 					
-					//open
+					//enter
 					analyzer[map[analyzerContext.tokens[i].name][0]](analyzerContext);
 					
 					//write token value
 					analyzer.writeCurrentToken(analyzerContext);
 					
-					//close
+					//exit
 					analyzer[map[analyzerContext.tokens[i].name][1]](analyzerContext);
 				}
 				
@@ -566,14 +537,12 @@
 		};
 		
 		return function(options) {
-			var temp = defaults;
+			var merged = defaults;
 			if (options) {
-				for (var key in options) {
-					temp[key] = options[key];
-				}
+				merged = merge(temp, options);
 			}
 			
-			this.options = temp;
+			this.options = merged;
 		};
 	}();
 	
@@ -583,6 +552,10 @@
 		version: "1.0",
 		
 		Highlighter: parserConstructor,
+		
+		createAnalyzer: function() {
+			return create(defaultAnalyzer);
+		},
 		
 		highlightAll: function(options) { 
 			var parser = new parserConstructor(options);
