@@ -100,7 +100,7 @@
 				{ opener: { token: "keyword", values: ["implements"] }, closer: { token: "punctuation", values: ["{"] } },
 				
 				//namespace name
-				{ opener: { token: "keyword", values: ["namespace"] }, closer: { token: "punctuation", values: [";"] } },
+				{ opener: { token: "keyword", values: ["namespace"] }, closer: { token: "punctuation", values: [";"] } }
 			]
 		},
 

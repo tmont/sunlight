@@ -582,14 +582,12 @@
 		
 		highlightAll: function(options) { 
 			var parser = new parserConstructor(options);
-			var preTags = document.getElementsByTagName("pre");
-			for (var i = 0, match; i < preTags.length; i++) {
-				if ((match = preTags[i].className.match(/\s*sunlight-(\S+)\s*/)) !== null) {
-					var languageId = match[1];
-					var code = preTags[i].getElementsByTagName("code")[0];
-					
-					if (code.firstChild !== null) {
-						code.innerHTML = parser.highlight(code.firstChild.nodeValue, languageId);
+			var tags = document.getElementsByTagName("*");
+			for (var i = 0, match, languageId; i < tags.length; i++) {
+				if ((match = tags[i].className.match(/\s*sunlight-highlight-(\S+)\s*/)) !== null) {
+					languageId = match[1];
+					if (tags[i].firstChild !== null) {
+						tags[i].innerHTML = parser.highlight(tags[i].firstChild.nodeValue, languageId);
 					}
 				}
 			}
