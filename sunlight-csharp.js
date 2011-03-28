@@ -58,15 +58,12 @@
 				"from", "select", "where", "groupby", "orderby"
 		],
 
-		otherScopes: {
-			//pragma
-			pragma: ["#", "\n"]
-		},
-		
 		scopes: {
 			//token name => array[opener, closer, escape token (optional), zeroWidthCloser? (optional)]
 			
-			string: [ ["\"", "\"", "\\\""], ["@\"", "\"", "\"\""], ["'", "'", "\'"] ],
+			//escape token is either a hard-coded string or an object with keys length and regex, e.g. { length: 2, regex: /\d;/ }
+			
+			string: [ ["\"", "\"", sunlight.defaultEscapeSequences.concat(["\\\""])], ["@\"", "\"", ["\"\""]], ["'", "'", ["\'", "\\\\"]] ],
 			comment: [ ["//", "\n", null, true], ["/*", "*/"] ],
 			pragma: [ ["#", "\n", null, true] ]
 		},
@@ -89,10 +86,9 @@
 				//method/property return values
 				//special method parameters
 				//field types
-				//public new int Method() { }
-				//new Foo();
-				//class names
-				[{ token: "keyword", values: ["class", "public", "private", "protected", "internal", "static", "virtual", "sealed", "new", "readonly", "const", "ref", "out", "params"] }, whitespace],
+				//new: public new int Method() { } and new Foo();
+				//class/interface/event/struct/delegate names
+				[{ token: "keyword", values: ["class", "interface", "event", "struct", "enum", "delegate", "public", "private", "protected", "internal", "static", "virtual", "sealed", "new", "readonly", "const", "ref", "out", "params"] }, whitespace],
 
 				//typeof
 				[{ token: "keyword", values: ["typeof"] }, whitespace, { token: "punctuation", values: ["("] }, whitespace ]

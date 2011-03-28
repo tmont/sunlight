@@ -123,56 +123,62 @@
 	};
 	
 	var defaultAnalyzer = {
-		enterKeyword:     function(context) { context.append("<span class=\"sunlight-keyword\">"); },
-		exitKeyword:      function(context) { context.append("</span>"); },
-		enterOperator:    function(context) { context.append("<span class=\"\sunlight-operator\">"); },
-		exitOperator:     function(context) { context.append("</span>"); },
-		enterString:      function(context) { context.append("<span class=\"sunlight-string\">"); },
-		exitString:       function(context) { context.append("</span>"); },
-		enterPunctuation: function(context) { context.append("<span class=\"sunlight-punctuation\">"); },
-		exitPunctuation:  function(context) { context.append("</span>"); },
-		enterNumber:      function(context) { context.append("<span class=\"sunlight-number\">"); },
-		exitNumber:       function(context) { context.append("</span>"); },
-		enterComment:     function(context) { context.append("<span class=\"sunlight-comment\">"); },
-		exitComment:      function(context) { context.append("</span>"); },
+		enterKeyword:        function(context) { context.append("<span class=\"sunlight-keyword\">"); },
+		exitKeyword:         function(context) { context.append("</span>"); },
+		enterOperator:       function(context) { context.append("<span class=\"\sunlight-operator\">"); },
+		exitOperator:        function(context) { context.append("</span>"); },
+		enterString:         function(context) { context.append("<span class=\"sunlight-string\">"); },
+		exitString:          function(context) { context.append("</span>"); },
+		enterPunctuation:    function(context) { context.append("<span class=\"sunlight-punctuation\">"); },
+		exitPunctuation:     function(context) { context.append("</span>"); },
+		enterNumber:         function(context) { context.append("<span class=\"sunlight-number\">"); },
+		exitNumber:          function(context) { context.append("</span>"); },
+		enterComment:        function(context) { context.append("<span class=\"sunlight-comment\">"); },
+		exitComment:         function(context) { context.append("</span>"); },
 		
-		enterIdent:       function(context) {
+		enterIdent:          function(context) {
 			var isNamedIdent = false;
 			
 			var i, rule, data;
 			
-			for (i = 0; i < context.language.namedIdentRules.follows.length; i++) {
-				rule = createProceduralRule(context.index - 1, -1, context.language.namedIdentRules.follows[i].slice(0));
-				if (rule.matches(context.tokens)) {
-					context.append("<span class=\"sunlight-named-ident\">");
-					return;
+			if (context.language.namedIdentRules.follows !== undefined) {
+				for (i = 0; i < context.language.namedIdentRules.follows.length; i++) {
+					rule = createProceduralRule(context.index - 1, -1, context.language.namedIdentRules.follows[i].slice(0));
+					if (rule.matches(context.tokens)) {
+						context.append("<span class=\"sunlight-named-ident\">");
+						return;
+					}
 				}
 			}
 			
-			for (i = 0; i < context.language.namedIdentRules.precedes.length; i++) {
-				rule = createProceduralRule(context.index + 1, 1, context.language.namedIdentRules.precedes[i].slice(0));
-				if (rule.matches(context.tokens)) {
-					context.append("<span class=\"sunlight-named-ident\">");
-					return;
+			if (context.language.namedIdentRules.precedes !== undefined) {
+				for (i = 0; i < context.language.namedIdentRules.precedes.length; i++) {
+					rule = createProceduralRule(context.index + 1, 1, context.language.namedIdentRules.precedes[i].slice(0));
+					if (rule.matches(context.tokens)) {
+						context.append("<span class=\"sunlight-named-ident\">");
+						return;
+					}
 				}
 			}
 			
-			for (i = 0; i < context.language.namedIdentRules.between.length; i++) {
-				data = context.language.namedIdentRules.between[i];
-				rule = createBetweenRule(context.index, data.opener, data.closer);
-				if (rule.matches(context.tokens)) {
-					context.append("<span class=\"sunlight-named-ident\">");
-					return;
+			if (context.language.namedIdentRules.between !== undefined) {
+				for (i = 0; i < context.language.namedIdentRules.between.length; i++) {
+					data = context.language.namedIdentRules.between[i];
+					rule = createBetweenRule(context.index, data.opener, data.closer);
+					if (rule.matches(context.tokens)) {
+						context.append("<span class=\"sunlight-named-ident\">");
+						return;
+					}
 				}
 			}
 			
 			context.append("<span class=\"sunlight-ident\">"); 
 		},
 		
-		exitIdent:        function(context) { context.append("</span>"); },
+		exitIdent:         function(context) { context.append("</span>"); },
 		
-		enterDefault:     function(context) { },
-		exitDefault:      function(context) { },
+		enterDefault:      function(context) { },
+		exitDefault:       function(context) { },
 		
 		writeCurrentToken: function(context) { context.appendAndEncode(context.tokens[context.index].value); }
 	};
@@ -329,14 +335,16 @@
 				
 				for (var tokenName in context.language.scopes) {
 					var specificScopes = context.language.scopes[tokenName];
-					for (var j = 0, opener, closer, peek; j < specificScopes.length; j++) {
+					for (var j = 0, opener, closer, match, zeroWidth, closerLength, escapeSequences; j < specificScopes.length; j++) {
 						opener = specificScopes[j][0];
 						closer = specificScopes[j][1];
-						closerEscape = specificScopes[j][2] || null;
+						escapeSequences = specificScopes[j][2] || [];
 						zeroWidth = specificScopes[j][3] || false;
 						
-						peek = current + context.reader.peek(opener.length - 1);
-						if (opener !== peek) {
+						closerLength = closer.length;
+						closer = typeof(closer) === "string" ? new RegExp(regexEscape(closer)) : closer.regex;
+						
+						if (opener !== current + context.reader.peek(opener.length - 1)) {
 							continue;
 						}
 						
@@ -347,23 +355,24 @@
 						context.reader.read(opener.length - 1);
 						
 						//read the scope contents until the closer is found
-						peek = context.reader.peek(closer.length);
-						while (peek !== context.reader.EOF) {
-							if (closerEscape !== null && context.reader.peek(closerEscape.length) === closerEscape) {
-								buffer += context.reader.read(closerEscape.length);
-								peek = context.reader.peek(closer.length);
-								continue;
+						outerLoop: while (!context.reader.isEof()) {
+							//check for escape sequences
+							for (var k = 0; k < escapeSequences.length; k++) {
+								if (context.reader.peek(escapeSequences[k].length) === escapeSequences[k]) {
+									
+									buffer += context.reader.read(escapeSequences[k].length);
+									continue outerLoop;
+								}
 							}
 							
-							if (closer === peek) {
+							if (closer.test(context.reader.peek(closerLength))) {
 								break;
 							}
 							
 							buffer += context.reader.read();
-							peek = context.reader.peek(closer.length);
 						}
 						
-						buffer += (zeroWidth ? "" : context.reader.read(closer.length));
+						buffer += (zeroWidth ? "" : context.reader.read(closerLength));
 						return context.createToken(tokenName, buffer, line, column);
 					}
 				}
@@ -472,12 +481,12 @@
 					//based on http://phpjs.org/functions/htmlentities:425
 					var encode = function() {
 						var charMap = [
+							["&", "&amp;"],
 							["'", "&#039;"],
-							["$", "&amp;"],
 							["<", "&lt;"],
 							[">", "&gt;"],
 							["\t", new Array(self.options.tabWidth).join("&#160;")],
-							[" ", "&#160;"],
+							[" ", "&#160;"]
 						];
 						
 						return function(text) {
@@ -550,12 +559,10 @@
 	
 	window.Sunlight = {
 		version: "1.0",
-		
 		Highlighter: parserConstructor,
-		
-		createAnalyzer: function() {
-			return create(defaultAnalyzer);
-		},
+		createAnalyzer: function() { return create(defaultAnalyzer); },
+		isRegistered: function(languageId) { return languages[languageId] !== undefined; },
+		defaultEscapeSequences: ["\\n", "\\t", "\\r", "\\\\", "\\v", "\\f"],
 		
 		highlightAll: function(options) { 
 			var parser = new parserConstructor(options);
@@ -565,13 +572,11 @@
 					var languageId = match[1];
 					var code = preTags[i].getElementsByTagName("code")[0];
 					
-					code.innerHTML = parser.highlight(code.firstChild.nodeValue, languageId);
+					if (code.firstChild !== null) {
+						code.innerHTML = parser.highlight(code.firstChild.nodeValue, languageId);
+					}
 				}
 			}
-		},
-		
-		isRegistered: function(languageId) {
-			return languages[languageId] !== undefined;
 		},
 		
 		registerLanguage: function(languageIds, languageData) {
