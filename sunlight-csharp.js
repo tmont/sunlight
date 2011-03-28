@@ -60,7 +60,6 @@
 
 		scopes: {
 			//token name => array[opener, closer, escape token (optional), zeroWidthCloser? (optional)]
-			
 			//escape token is either a hard-coded string or an object with keys length and regex, e.g. { length: 2, regex: /\d;/ }
 			
 			string: [ ["\"", "\"", sunlight.defaultEscapeSequences.concat(["\\\""])], ["@\"", "\"", ["\"\""]], ["'", "'", ["\'", "\\\\"]] ],

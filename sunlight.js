@@ -287,6 +287,21 @@
 				return matchWord(context.language.keywords, "keyword", "\\b");
 			};
 			
+			var parseCustomTokens = function() {
+				if (context.language.customTokens === undefined) {
+					return null;
+				}
+				
+				for (var tokenName in context.language.customTokens) {
+					var token = matchWord(context.language.customTokens[tokenName], tokenName, "\\b");
+					if (token !== null) {
+						return token;
+					}
+				}
+				
+				return null;
+			};
+			
 			var parseOperator = function() {
 				return matchWord(context.language.operators, "operator", "");
 			};
@@ -417,7 +432,8 @@
 				return context.createToken("number", number, context.reader.getLine());
 			};
 			
-			return parseKeyword() 
+			return parseKeyword()
+				|| parseCustomTokens()
 				|| parseScopes()
 				|| parseIdent()
 				|| parseNumber()
