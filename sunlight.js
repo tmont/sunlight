@@ -36,13 +36,52 @@
 		exitComment:      function(context) { context.append("</span>"); },
 		
 		enterIdent:       function(context) {
-			//do the look-ahead analysis to see if this is a named identifier
-			context.append("<span class=\"sunlight-ident\">"); 
+			var isNamedIdent = false;
+			
+			//do the look-behind analysis to see if this is a named identifier
+			for (var i = 0, tokenReqs; i < context.language.namedIdentRules.follows.length; i++) {
+				isNamedIdent = false;
+				tokenReqs = context.language.namedIdentRules.follows[i];
+				
+				var tokenIndexStart = context.index - 1;
+				for (var j = 0, expected, actual; j < tokenReqs.length; j++) {
+					actual = context.tokens[tokenIndexStart - j];
+					expected = tokenReqs[tokenReqs.length - 1 - j];
+					
+					//compare token value
+					if (actual === undefined) {
+						if (expected["optional"] !== undefined && expected.optional) {
+							isNamedIdent = true;
+							tokenIndexStart++;
+						} else {					
+							isNamedIdent = false;
+							break;
+						}
+					} else if (actual.name === expected.token && (expected["value"] === undefined || expected.value === actual.value)) {
+						isNamedIdent = true;
+					} else if (expected["optional"] !== undefined && expected.optional) {
+						isNamedIdent = true;
+						tokenIndexStart++; //we need to reevaluate against this token again
+					} else {
+						isNamedIdent = false;
+						break;
+					}
+				}
+				
+				if (isNamedIdent) {
+					//a rule matched, so we don't need to evaluate any more
+					break;
+				}
+			}
+			
+			if (isNamedIdent) {
+				context.append("<span class=\"sunlight-named-ident\">"); 
+			} else {
+				context.append("<span class=\"sunlight-ident\">"); 
+			}
 		},
 		
 		exitIdent:        function(context) { context.append("</span>"); },
-		enterNamedIdent:  function(context) { context.append("<span class=\"sunlight-named-ident\">"); },
-		exitNamedIdent:   function(context) { context.append("</span>"); },
 		
 		enterDefault:     function(context) { },
 		exitDefault:      function(context) { },
@@ -126,15 +165,6 @@
 		};
 	};
 	
-	var createToken = function(name, value, line, column) {
-		return {
-			name: name,
-			line: line,
-			value: value,
-			column: column
-		};
-	};
-	
 	var parser = function() {
 		var parseNextToken = function(context) {
 			//helpers
@@ -146,7 +176,7 @@
 						var peek = current + context.reader.peek(word.length);
 						if (word === peek || new RegExp(regexEscape(word) + boundary).test(peek)) {
 							var readChars = context.reader.read(word.length - 1); //read to the end of the word (we already read the first letter)
-							return createToken(name, word, context.reader.getLine());
+							return context.createToken(name, word, context.reader.getLine());
 						}
 					}
 				}
@@ -170,7 +200,7 @@
 			var parsePunctuation = function() {
 				var current = context.reader.current();
 				if (regexHelpers.punctuation.test(regexEscape(current))) {
-					return createToken("punctuation", current, context.reader.getLine());
+					return context.createToken("punctuation", current, context.reader.getLine());
 				}
 				
 				return null;
@@ -192,11 +222,18 @@
 					peek = context.reader.peek();
 				}
 				
-				return createToken(isNamed ? "namedIdent" : "ident", ident, context.reader.getLine());
+				return context.createToken(isNamed ? "namedIdent" : "ident", ident, context.reader.getLine());
 			};
 			
 			var parseDefault = function() {
-				return createToken("default", context.reader.current(), context.reader.getLine());
+				if (context.defaultData.text === "") {
+					//new default token
+					context.defaultData.line = context.reader.getLine();
+					context.defaultData.column = context.reader.getColumn();
+				}
+				
+				context.defaultData.text += context.reader.current();
+				return null;
 			};
 			
 			var parseComment = function() {
@@ -223,7 +260,7 @@
 					}
 					
 					buffer += (zeroWidth ? "" : context.reader.read(closer.length));
-					return createToken("comment", buffer, line);
+					return context.createToken("comment", buffer, line);
 				}
 				
 				return null;
@@ -264,7 +301,7 @@
 					}
 					
 					buffer += context.reader.read(closer.length);
-					return createToken("string", buffer, line);
+					return context.createToken("string", buffer, line);
 				}
 				
 				return null;
@@ -304,43 +341,12 @@
 					peek = context.reader.peek();
 				}
 				
-				return createToken("number", number, context.reader.getLine());
-			};
-			
-			var parseNamedIdent = function() {
-				if (!isIdentMatch()) {
-					return null;
-				}
-				
-				//do the look-behind rules now, and then after tokenizing is complete,
-				//we'll do the look-ahead rules
-				for (var i = 0, rules; i < context.language.namedIdentRules.follows.length; i++) {
-					rules = context.language.namedIdentRules.follows[i];
-					var index = context.tokens.length - 1;
-					var allRulesMatch = false;
-					for (var j = 0, rule, token; j < rules.length && context.tokens[index - j] !== undefined; j++) {
-						rule = rules[rules.length - 1 - j];
-						token = context.tokens[index - j];
-						if (token.name === rule.token && (rule.value === null || token.value === rule.value)) {
-							allRulesMatch = true;
-						} else {
-							allRulesMatch = false;
-							break;
-						}
-					}
-					
-					if (allRulesMatch) {
-						return parseIdent(true);
-					}
-				}
-				
-				return null;
+				return context.createToken("number", number, context.reader.getLine());
 			};
 			
 			return parseKeyword() 
 				|| parseComment()
 				|| parseString()
-				//|| parseNamedIdent()
 				|| parseIdent()
 				|| parseNumber()
 				|| parseOperator()
@@ -348,28 +354,55 @@
 				|| parseDefault();
 		};
 		
-		var tokenize = function(unhighlightedCode, languageId) {
-			var language = languages[languageId];
-			if (language === undefined) {
-				throw "Unregistered language: " + languageId;
-			}
-				
-			var context = {
-				reader: createCodeReader(unhighlightedCode), 
-				language: language
-			};
+		var tokenize = function(unhighlightedCode, language) {
+			var context = function() {
+				return {
+					reader: createCodeReader(unhighlightedCode), 
+					language: language,
+					defaultData: {
+						text: "",
+						line: 1,
+						column: 1
+					},
+					createToken: function(name, value, line, column) {
+						return {
+							name: name,
+							line: line,
+							value: value,
+							column: column
+						};
+					}
+				};
+			}();
 			
 			var tokens = [];
 			while (!context.reader.isEof()) {
-				tokens.push(parseNextToken(context));
+				var token = parseNextToken(context);
+				
+				//flush default data if needed (in pretty much all languages this is whitespace)
+				if (token !== null) {
+					if (context.defaultData.text !== "") {
+						tokens.push(context.createToken("default", context.defaultData.text, context.defaultData.line, context.defaultData.column)); 
+						context.defaultData.text = "";
+					}
+				
+					tokens.push(token);
+				}
+				
 				context.reader.read();
 			}
 			
+			console.dir(tokens);
 			return tokens;
 		};
 		
 		return {
 			highlight: function(unhighlightedCode, languageId) {
+				var language = languages[languageId];
+				if (language === undefined) {
+					throw "Unregistered language: " + languageId;
+				}
+			
 				var self = this;
 				var analyzerContext = function() {
 					var buffer = "";
@@ -396,8 +429,9 @@
 					}();
 		
 					return {
-						tokens: tokenize(unhighlightedCode, languageId),
+						tokens: tokenize(unhighlightedCode, language),
 						index: 0,
+						language: language,
 						append: function(text) { buffer += text; },
 						appendAndEncode: function(text) { buffer += encode(text); },
 						getHtml: function() { return buffer; }
@@ -408,7 +442,6 @@
 				var map = self.options.tokenAnalyzerMap;
 				for (var i = 0; i < analyzerContext.tokens.length; i++) {
 					analyzerContext.index = i;
-					//console.log(analyzerContext.tokens[i]);
 					
 					//open
 					analyzer[map[analyzerContext.tokens[i].name][0]](analyzerContext);
@@ -435,7 +468,6 @@
 				string: ["enterString", "exitString"],
 				comment: ["enterComment", "exitComment"],
 				ident: ["enterIdent", "exitIdent"],
-				namedIdent: ["enterNamedIdent", "exitNamedIdent"],
 				punctuation: ["enterPunctuation", "exitPunctuation"],
 				number: ["enterNumber", "exitNumber"],
 				"default": ["enterDefault", "exitDefault"],
@@ -463,7 +495,6 @@
 		
 		highlightAll: function(options) { 
 			var parser = new parserConstructor(options);
-			console.log(parser);
 			var preTags = document.getElementsByTagName("pre");
 			for (var i = 0, match; i < preTags.length; i++) {
 				if ((match = preTags[i].className.match(/\s*sunlight-(\S+)\s*/)) !== null) {

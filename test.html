@@ -30,6 +30,7 @@
 			}
 			.sunlight-ident {
 				color: #000000;
+				text-decoration: underline;
 			}
 			.sunlight-named-ident {
 				color: #2B91AF;
@@ -38,79 +39,7 @@
 	</head>
 
 	<body>
-<pre class="sunlight-csharp"><code>using System;
-using System.Linq;
-using Microsoft.Practices.Unity;
-
-namespace Portoa.Web.Rest {
-	
-	private static readonly object MyObject = new object();
-	
-	protected internal class InternalClass {
-		public const int Sux = 11;
-		public const String ConstString = "foo!";
-	}
-	
-	///&lt;summary&gt;This is a story all about how...&lt;/summary&gt;
-	public abstract class ValueHandlerFactoryBase&lt;T&gt; : MarshalByRefObject, IValueHandlerFactory, IDisposable where T : IDisposable {
-		private Object foo;
-	
-		private static Func&lt;Object, char&gt; GetFunction(Object o, Character c) {
-			if (!Object.ReferenceEquals(o, c)) {
-				throw new ArgumentException();
-			}
-			return obj => (char)obj.GetHashCode();
-		}
-	
-		protected override sealed T TestNumbers&lt;T&gt;(ref Foo foo, out int i, params string[] strings) where T : event, IDisposable, IFoo { 
-			//let's test out numbers
-			int i = 0;
-			double d = 1.5;
-			float f = (1.7f + 1.2d) * (12 % 5);
-			decimal dec = 1.2d;
-			int hex = 0x1a; //ooh! hex!
-			
-			return default(T);
-		}
-		
-		/**
-		 * Gets or sets the value of an integer
-		 * and such. This is a useful comment.
-		 */
-		public new Integer Value { 
-			get { return 12; }
-			set { this.value = value; }
-		}
-	
-		public virtual IValueHandler Create(string resourceName, string criterionFieldName) {
-			//1) check for resource-specific value handler
-			VerifyStuff((int)resourceName);
-			
-			/* multi
-			line comment
-			*/
-			
-			var s = "this is \"a\" string";
-			s = @"this is ""another"" 
-multi line
-string";
-
-			switch (Foo.Bar) {
-				case "foo":
-					if (2 |= Foo["foo"]) {
-						throw new InvalidOperationException(string.Format("fail"));
-					}
-					break;
-				case "bar":
-					goto default;
-				case Empty:
-					return "foo";
-				default:
-					yield return new GarbanzoBean();
-			}
-		}
-	}
-}</code></pre>
+<pre class="sunlight-csharp"><code>public abstract class ValueHandlerFactoryBase&lt;T&gt; : MarshalByRefObject, IValueHandlerFactory, IDisposable where T : IDisposable</code></pre>
 	</body>	
 	
 	<script type="text/javascript">//<![CDATA[

@@ -3,6 +3,8 @@
 	if (sunlight === undefined || sunlight["registerLanguage"] === undefined) {
 		throw "Include sunlight.js before including language files";
 	}
+	
+	var whitespace = { token: "default", optional: true };
 
 	sunlight.registerLanguage(["c#", "csharp"], {
 		keywords: [
@@ -70,44 +72,44 @@
 		namedIdentRules: {
 			follows: [
 				//class names
-				[{ token: "keyword", value: "class" }],
+				[{ token: "keyword", value: "class" }, whitespace],
 				
 				//extends/implements class names
-				[{ token: "namedIdent", value: null }, { token: "operator", value: ":" }],
-				[{ token: "namedIdent", value: null }, { token: "punctuation", value: "," }],
+				[{ token: "ident" }, whitespace, { token: "operator", value: ":" }, whitespace],
+				[{ token: "ident" }, whitespace, { token: "punctuation", value: "," }, whitespace],
 				
 				//generic classes
-				[{ token: "operator", value: ">" }, { token: "operator", value: ":" }],
+				[{ token: "operator", value: ">" }, whitespace, { token: "operator", value: ":" }, whitespace ],
 				
-				//where T : class, IDisposable
-				[{ token: "keyword", value: null }, { token: "punctuation", value: "," }],
+				// //where T : class, IDisposable
+				// [{ token: "keyword", value: null }, { token: "punctuation", value: "," }],
 				
-				//where T : IDisposable
-				[{ token: "ident", value: null }, { token: "operator", value: ":" }],
+				// //where T : IDisposable
+				// [{ token: "ident", value: null }, { token: "operator", value: ":" }],
 				
-				//generics
-				[{ token: "namedIdent", value: null }, { token: "operator", value: "<" }],
+				// //generics
+				// [{ token: "namedIdent", value: null }, { token: "operator", value: "<" }],
 				
 				//public new int Method() { }
 				//new Foo();
-				[{ token: "keyword", value: "new" }],
+				// [{ token: "keyword", value: "new" }],
 				
 				//method/property return values
-				[{ token: "keyword", value: "public" }],
-				[{ token: "keyword", value: "static" }],
-				[{ token: "keyword", value: "protected" }],
-				[{ token: "keyword", value: "internal" }],
-				[{ token: "keyword", value: "virtual" }],
-				[{ token: "keyword", value: "private" }],
-				[{ token: "keyword", value: "sealed" }],
+				// [{ token: "keyword", value: "public" }],
+				// [{ token: "keyword", value: "static" }],
+				// [{ token: "keyword", value: "protected" }],
+				// [{ token: "keyword", value: "internal" }],
+				// [{ token: "keyword", value: "virtual" }],
+				// [{ token: "keyword", value: "private" }],
+				// [{ token: "keyword", value: "sealed" }],
 				
 				//field types
-				[{ token: "keyword", value: "readonly" }],
-				[{ token: "keyword", value: "const" }],
+				// [{ token: "keyword", value: "readonly" }],
+				// [{ token: "keyword", value: "const" }],
 				
 				//special method parameters
-				[{ token: "keyword", value: "ref" }],
-				[{ token: "keyword", value: "out" }]
+				// [{ token: "keyword", value: "ref" }],
+				// [{ token: "keyword", value: "out" }]
 			],
 			
 			precedes: [
