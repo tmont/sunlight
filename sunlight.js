@@ -91,6 +91,12 @@
 				//check to the left: if we run into a closer or never run into an opener, fail
 				while ((token = tokens[--index]) !== undefined) {
 					if (token.name === closer.token && contains(closer.values, token.value)) {
+						if (token.name === opener.token && contains(opener.values, token.value)) {
+							//if the closer is the same as the opener that's okay
+							success = true;
+							break;
+						}
+						
 						return false;
 					}
 					
@@ -108,6 +114,12 @@
 				index = startIndex;
 				while ((token = tokens[++index]) !== undefined) {
 					if (token.name === opener.token && contains(opener.values, token.value)) {
+						if (token.name === closer.token && contains(closer.values, token.value)) {
+							//if the closer is the same as the opener that's okay
+							success = true;
+							break;
+						}
+						
 						return false;
 					}
 					
