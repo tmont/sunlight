@@ -14,7 +14,11 @@
 	phpAnalyzer.exitFunction = function(context) { context.append("</a>") };
 	phpAnalyzer.enterConstant = function(context) { context.append("<span class=\"sunlight-constant\">"); };
 	phpAnalyzer.exitConstant = function(context) { context.append("</span>"); };
-
+	phpAnalyzer.enterHeredoc = function(context) { context.append("<span class=\"sunlight-heredoc\">"); };
+	phpAnalyzer.exitHeredoc = function(context) { context.append("</span>"); };
+	phpAnalyzer.enterNowdoc = function(context) { context.append("<span class=\"sunlight-nowdoc\">"); };
+	phpAnalyzer.exitNowdoc = function(context) { context.append("</span>"); };
+	
 	sunlight.registerLanguage(["php"], {
 		keywords: [
 			//class qualifiers
@@ -76,6 +80,51 @@
 			comment: [ ["//", "\n", null, true], ["/*", "*/"], ["#", "\n", null, true] ],
 			variable: [ ["$", { length: 1, regex: /[^\$A-Za-z0-9_]/ }, null, true] ]
 		},
+		
+		customParseRules: [
+			//heredoc/nowdoc
+			function (context) {
+				if (context.reader.current() !== '<' || context.reader.peek(2) !== '<<') {
+					return null;
+				}
+				
+				var value = '<<<';
+				var line = context.reader.getLine();
+				var column = context.reader.getColumn();
+				context.reader.read(2);
+				
+				
+				var ident = '', isNowdoc = false;
+				var peek = context.reader.peek(), c;
+				while (peek !== context.reader.EOF && peek !== "\n") {
+					value += context.reader.read();
+					
+					if (value !== "'") {
+						//ignore NOWDOC apostophres
+						ident += context.reader.current();
+					} else {
+						isNowdoc = true;
+					}
+					
+					peek = context.reader.peek();
+				}
+				
+				//read the newline
+				value += context.reader.read();
+				
+				//read until "\n{ident};"
+				while (!context.reader.isEof()) {
+					if (context.reader.peek(ident.length + 2) === "\n" + ident + ";") {
+						break;
+					}
+					
+					value += context.reader.read();
+				}
+				
+				value += context.reader.read(ident.length + 1); //don't read the semicolon
+				return context.createToken(isNowdoc ? "nowdoc" : "heredoc", value, line, column);
+			}
+		],
 
 		identFirstLetter: /[A-Za-z_]/,
 		identAfterFirstLetter: /\w/,
@@ -145,6 +194,8 @@
 			languageConstruct: ["enterLanguageConstruct", "exitLanguageConstruct"],
 			constant: ["enterConstant", "exitConstant"],
 			"function": ["enterFunction", "exitFunction"],
+			heredoc: ["enterHeredoc", "exitHeredoc"],
+			nowdoc: ["enterNowdoc", "exitNowdoc"]
 		},
 		
 		analyzer: phpAnalyzer

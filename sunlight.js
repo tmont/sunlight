@@ -432,7 +432,24 @@
 				return context.createToken("number", number, context.reader.getLine());
 			};
 			
-			return parseKeyword()
+			var parseCustomRules = function() {
+				var customRules = context.language.customParseRules;
+				if (customRules === undefined) {
+					return null;
+				}
+				
+				for (var i = 0, token; i < customRules.length; i++) {
+					token = customRules[i](context);
+					if (token !== null) {
+						return token;
+					}
+				}
+				
+				return null;
+			};
+			
+			return parseCustomRules()
+				|| parseKeyword()
 				|| parseCustomTokens()
 				|| parseScopes()
 				|| parseIdent()
