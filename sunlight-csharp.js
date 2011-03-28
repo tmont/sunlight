@@ -88,10 +88,13 @@
 				//new Foo();
 				//class names
 				[{ token: "keyword", values: ["class", "public", "private", "protected", "internal", "static", "virtual", "sealed", "new", "readonly", "const", "ref", "out", "params"] }, whitespace],
+				
+				//typeof
+				[{ token: "keyword", values: ["typeof"] }, whitespace, { token: "punctuation", values: ["("] }, whitespace ]
 			],
 			
 			precedes: [
-				//cast
+				//casting
 				[whitespace, { token: "punctuation", values: [")"] }, whitespace, { token: "ident" }],
 				[whitespace, { token: "punctuation", values: [")"] }, whitespace, { token: "keyword", values: ["this"] }],
 				

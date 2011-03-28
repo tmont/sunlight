@@ -53,6 +53,7 @@ namespace My.Namespace {
 			IDisposable foo = (IDisposable)foo;
 			foo.Dispose();
 			((IDisposable)this).Dispose();
+			var lame = typeof(IDisposable);
 		}
 	
 		/**
