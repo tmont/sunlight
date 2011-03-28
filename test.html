@@ -12,8 +12,8 @@
 				color: #0000CC;
 			}
 			.sunlight-operator {
-				color: #FFFFFF;
-				background-color: #000000;
+				color: #000000;
+				/*background-color: #000000;*/
 			}
 			.sunlight-string {
 				color: #990000;
@@ -25,12 +25,12 @@
 				color: #CC6600;
 			}
 			.sunlight-punctuation {
-				color: #FFFFFF;
-				background-color: #009900;
+				color: #000000;
+				/*background-color: #009900;*/
 			}
 			.sunlight-ident {
 				color: #000000;
-				text-decoration: underline;
+				/*text-decoration: underline;*/
 			}
 			.sunlight-named-ident {
 				color: #2B91AF;
@@ -39,7 +39,79 @@
 	</head>
 
 	<body>
-<pre class="sunlight-csharp"><code>public abstract class ValueHandlerFactoryBase&lt;T&gt; : MarshalByRefObject, IValueHandlerFactory, IDisposable where T : IDisposable</code></pre>
+<pre class="sunlight-csharp"><code>using System;
+
+namespace My.Namespace {
+	public abstract class ValueHandlerFactoryBase&lt;T&gt; : MarshalByRefObject, IValueHandlerFactory, IDisposable where T : IDisposable
+		private Object foo;
+		public const String bar = "foo";
+		protected static readonly Object baz = 0xffffff;
+		
+		protected internal class InternalClass&lt;T1, T2&gt; : ICloneable where T1 : class, ICloneable, ICollection { }
+	
+		partial void Meh() { 
+			IDisposable foo = (IDisposable)this;
+			foo.Dispose();
+			((IDisposable)this).Dispose();
+		}
+	
+		/**
+		 * Gets or sets the value of an integer
+		 * and such. This is a useful comment.
+		 */
+		public new Integer Value { 
+			get { return 12; }
+			set { this.value = value; }
+		}
+	
+		private static Func&lt;Object, char&gt; GetFunction(Object o, Character c) {
+			if (!Object.ReferenceEquals(o, c)) {
+				throw new ArgumentException();
+			}
+
+			return obj => (char)obj.GetHashCode();
+		}
+		
+		protected override sealed T NumbersTest&lt;T&gt;(ref Foo foo, out int i, params String[] strings) where T : event, IDisposable, IFoo { 
+			//let's test out numbers
+			int i = 0;
+			double d = 1.5;
+			float f = (1.7f + 1.2d) * (12 % 5);
+			decimal dec = 1.2d;
+			int hex = 0x1a; //ooh! hex!
+			
+			return default(T);
+		}
+		
+		public virtual IValueHandler Create(string resourceName, string criterionFieldName) {
+			//1) check for resource-specific value handler
+			VerifyStuff((int)resourceName);
+			
+			/* multi
+			line comment
+			*/
+			
+			var s = "this is \"a\" string";
+			s = @"this is ""another"" 
+multi line
+string";
+
+			switch (Foo.Bar) {
+				case "foo":
+					if (2 |= Foo["foo"]) {
+						throw new InvalidOperationException(string.Format("fail"));
+					}
+					break;
+				case "bar":
+					goto default;
+				case Empty:
+					return "foo";
+				default:
+					yield return new GarbanzoBean();
+			}
+		}
+	}
+}</code></pre>
 	</body>	
 	
 	<script type="text/javascript">//<![CDATA[

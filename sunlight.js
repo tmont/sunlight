@@ -11,6 +11,16 @@
         return new F();
     }
 	
+	var contains = function(arr, value) {
+		for (var i = 0; i < arr.length; i++) {
+			if (arr[i] === value) {
+				return true;
+			}
+		}
+		
+		return false;
+	};
+	
 	//http://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript/3561711#3561711
 	var regexEscape = function(s) {
 		return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&")
@@ -57,7 +67,7 @@
 							isNamedIdent = false;
 							break;
 						}
-					} else if (actual.name === expected.token && (expected["value"] === undefined || expected.value === actual.value)) {
+					} else if (actual.name === expected.token && (expected["values"] === undefined || contains(expected.values, actual.value))) {
 						isNamedIdent = true;
 					} else if (expected["optional"] !== undefined && expected.optional) {
 						isNamedIdent = true;
@@ -392,7 +402,7 @@
 				context.reader.read();
 			}
 			
-			console.dir(tokens);
+			//console.dir(tokens);
 			return tokens;
 		};
 		

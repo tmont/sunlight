@@ -72,50 +72,36 @@
 		namedIdentRules: {
 			follows: [
 				//class names
-				[{ token: "keyword", value: "class" }, whitespace],
+				[{ token: "keyword", values: ["class"] }, whitespace],
 				
 				//extends/implements class names
-				[{ token: "ident" }, whitespace, { token: "operator", value: ":" }, whitespace],
-				[{ token: "ident" }, whitespace, { token: "punctuation", value: "," }, whitespace],
+				[{ token: "ident" }, whitespace, { token: "operator", values: [":"] }, whitespace],
+				//[{ token: "ident" }, whitespace, { token: "punctuation", values: [","] }, whitespace],
 				
 				//generic classes
-				[{ token: "operator", value: ">" }, whitespace, { token: "operator", value: ":" }, whitespace ],
+				[{ token: "operator", values: [">", ">>"] }, whitespace, { token: "operator", values: [":"] }, whitespace ],
 				
 				// //where T : class, IDisposable
-				// [{ token: "keyword", value: null }, { token: "punctuation", value: "," }],
-				
-				// //where T : IDisposable
-				// [{ token: "ident", value: null }, { token: "operator", value: ":" }],
-				
-				// //generics
-				// [{ token: "namedIdent", value: null }, { token: "operator", value: "<" }],
+				[{ token: "keyword", values: ["class", "event", "struct", "delegate"] }, whitespace, { token: "punctuation", values: [","] }, whitespace],
 				
 				//public new int Method() { }
 				//new Foo();
-				// [{ token: "keyword", value: "new" }],
+				[{ token: "keyword", values: ["new"] }, whitespace],
 				
 				//method/property return values
-				// [{ token: "keyword", value: "public" }],
-				// [{ token: "keyword", value: "static" }],
-				// [{ token: "keyword", value: "protected" }],
-				// [{ token: "keyword", value: "internal" }],
-				// [{ token: "keyword", value: "virtual" }],
-				// [{ token: "keyword", value: "private" }],
-				// [{ token: "keyword", value: "sealed" }],
+				[{ token: "keyword", values: ["public", "private", "protected", "internal", "static", "virtual", "sealed"] }, whitespace],
 				
 				//field types
-				// [{ token: "keyword", value: "readonly" }],
-				// [{ token: "keyword", value: "const" }],
+				[{ token: "keyword", values: ["readonly", "const"] }, whitespace],
 				
 				//special method parameters
-				// [{ token: "keyword", value: "ref" }],
-				// [{ token: "keyword", value: "out" }]
+				[{ token: "keyword", values: ["ref", "out", "params"] }, whitespace]
 			],
 			
 			precedes: [
 				//assignment: Object o = new object();
 				//method parameters: public int Foo(Foo foo, Bar b, Object o) { }
-				[{ token: "ident", value: null }]
+				[{ token: "default" }, { token: "ident" }]
 			]
 		},
 		
