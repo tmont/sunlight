@@ -125,7 +125,12 @@
 							return false;
 						}
 						
-						if (token.name === "keyword" && sunlight.helpers.contains(primitives, token.value)) {
+						if (
+							(token.name === "keyword" && sunlight.helpers.contains(primitives, token.value))
+							|| (token.name === "operator" && (token.value === ">" || token.value === ">>"))
+							|| token.name === "default"
+							|| (token.name === "punctuation" && token.value === ",")
+						) {
 							//e.g. Action<int>
 							continue;
 						}
@@ -135,18 +140,8 @@
 							continue;
 						}
 						
-						if (token.name === "operator" && (token.value === ">" || token.value === ">>")) {
-							//nested generics are good
-							continue;
-						}
-						
 						if (token.name === "ident") {
 							foundIdent = true;
-							continue;
-						}
-						
-						if (token.name === "default" || (token.name === "punctuation" && token.value === ",")) {
-							//commas and whitespace are okay
 							continue;
 						}
 						
@@ -166,20 +161,13 @@
 							return true;
 						}
 						
-						if (token.name === "keyword" && sunlight.helpers.contains(primitives, token.value)) {
-							continue;
-						}
-						
-						if (token.name === "operator" && (token.value === "<" || token.value === "<<")) {
-							continue;
-						}
-						
-						if (token.name === "ident") {
-							continue;
-						}
-						
-						if (token.name === "default" || (token.name === "punctuation" && token.value === ",")) {
-							//commas and whitespace are okay
+						if (
+							(token.name === "keyword" && sunlight.helpers.contains(primitives, token.value))
+							|| (token.name === "operator" && sunlight.helpers.contains(["<", "<<", ">", ">>"], token.value))
+							|| (token.name === "punctuation" && token.value === ",")
+							|| token.name === "ident"
+							|| token.name === "default"
+						) {
 							continue;
 						}
 						
