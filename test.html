@@ -50,7 +50,7 @@ namespace My.Namespace {
 		protected internal class InternalClass&lt;T1, T2&gt; : ICloneable where T1 : class, ICloneable, ICollection { }
 	
 		partial void Meh() { 
-			IDisposable foo = (IDisposable)this;
+			IDisposable foo = (IDisposable)foo;
 			foo.Dispose();
 			((IDisposable)this).Dispose();
 		}
@@ -72,7 +72,7 @@ namespace My.Namespace {
 			return obj => (char)obj.GetHashCode();
 		}
 		
-		protected override sealed T NumbersTest&lt;T&gt;(ref Foo foo, out int i, params String[] strings) where T : event, IDisposable, IFoo { 
+		protected override sealed T NumbersTest&lt;T&gt;(ref Foo foo, out int @int, params String[] strings) where T : event, IDisposable, IFoo { 
 			//let's test out numbers
 			int i = 0;
 			double d = 1.5;

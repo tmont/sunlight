@@ -66,14 +66,11 @@
 			pragma: ["#", "\n"]
 		},
 		
-		identFirstLetter: /[A-Za-z_]/,
+		identFirstLetter: /[A-Za-z_@]/,
 		identAfterFirstLetter: /\w/,
 		
 		namedIdentRules: {
 			follows: [
-				//class names
-				[{ token: "keyword", values: ["class"] }, whitespace],
-				
 				//extends/implements class names
 				[{ token: "ident" }, whitespace, { token: "operator", values: [":"] }, whitespace],
 				//[{ token: "ident" }, whitespace, { token: "punctuation", values: [","] }, whitespace],
@@ -84,24 +81,29 @@
 				// //where T : class, IDisposable
 				[{ token: "keyword", values: ["class", "event", "struct", "delegate"] }, whitespace, { token: "punctuation", values: [","] }, whitespace],
 				
+				//method/property return values
+				//special method parameters
+				//field types
 				//public new int Method() { }
 				//new Foo();
-				[{ token: "keyword", values: ["new"] }, whitespace],
-				
-				//method/property return values
-				[{ token: "keyword", values: ["public", "private", "protected", "internal", "static", "virtual", "sealed"] }, whitespace],
-				
-				//field types
-				[{ token: "keyword", values: ["readonly", "const"] }, whitespace],
-				
-				//special method parameters
-				[{ token: "keyword", values: ["ref", "out", "params"] }, whitespace]
+				//class names
+				[{ token: "keyword", values: ["class", "public", "private", "protected", "internal", "static", "virtual", "sealed", "new", "readonly", "const", "ref", "out", "params"] }, whitespace],
 			],
 			
 			precedes: [
+				//cast
+				[whitespace, { token: "punctuation", values: [")"] }, whitespace, { token: "ident" }],
+				[whitespace, { token: "punctuation", values: [")"] }, whitespace, { token: "keyword", values: ["this"] }],
+				
 				//assignment: Object o = new object();
 				//method parameters: public int Foo(Foo foo, Bar b, Object o) { }
 				[{ token: "default" }, { token: "ident" }]
+			],
+			
+			between: [
+				//extends/implements
+				
+				//generic type params
 			]
 		},
 		

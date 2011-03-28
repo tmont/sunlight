@@ -31,6 +31,47 @@
 		wordBoundaryString: "[\\W\\s]"
 	};
 
+	var Rule = function(startIndex, direction, tokenRequirements) {
+		this.startIndex = startIndex;
+		this.direction = direction === -1 ? -1 : 1;
+		this.tokenRequirements = tokenRequirements;
+	};
+	
+	Rule.prototype = function() {
+		return {
+			matches: function(tokens) {
+				var tokenIndexStart = this.startIndex;
+				
+				var tokenReqs = this.tokenRequirements.slice(0); //clone lol
+				if (this.direction === 1) {
+					tokenReqs.reverse();
+				}
+				
+				for (var j = 0, expected, actual; j < tokenReqs.length; j++) {
+					actual = tokens[tokenIndexStart + (j * this.direction)];
+					expected = tokenReqs[tokenReqs.length - 1 - j];
+					
+					if (actual === undefined) {
+						if (expected["optional"] !== undefined && expected.optional) {
+							tokenIndexStart -= this.direction;
+						} else {
+							return false;
+						}
+					} else if (actual.name === expected.token && (expected["values"] === undefined || contains(expected.values, actual.value))) {
+						//derp
+						continue;
+					} else if (expected["optional"] !== undefined && expected.optional) {
+						tokenIndexStart -= this.direction; //we need to reevaluate against this token again
+					} else {
+						return false;
+					}
+				}
+				
+				return true;
+			}
+		};
+	}();
+	
 	var defaultAnalyzer = {
 		enterKeyword:     function(context) { context.append("<span class=\"sunlight-keyword\">"); },
 		exitKeyword:      function(context) { context.append("</span>"); },
@@ -49,46 +90,26 @@
 			var isNamedIdent = false;
 			
 			//do the look-behind analysis to see if this is a named identifier
+			
+			var i, tokenReqs, rule;
+			
 			for (var i = 0, tokenReqs; i < context.language.namedIdentRules.follows.length; i++) {
-				isNamedIdent = false;
-				tokenReqs = context.language.namedIdentRules.follows[i];
-				
-				var tokenIndexStart = context.index - 1;
-				for (var j = 0, expected, actual; j < tokenReqs.length; j++) {
-					actual = context.tokens[tokenIndexStart - j];
-					expected = tokenReqs[tokenReqs.length - 1 - j];
-					
-					//compare token value
-					if (actual === undefined) {
-						if (expected["optional"] !== undefined && expected.optional) {
-							isNamedIdent = true;
-							tokenIndexStart++;
-						} else {					
-							isNamedIdent = false;
-							break;
-						}
-					} else if (actual.name === expected.token && (expected["values"] === undefined || contains(expected.values, actual.value))) {
-						isNamedIdent = true;
-					} else if (expected["optional"] !== undefined && expected.optional) {
-						isNamedIdent = true;
-						tokenIndexStart++; //we need to reevaluate against this token again
-					} else {
-						isNamedIdent = false;
-						break;
-					}
-				}
-				
-				if (isNamedIdent) {
-					//a rule matched, so we don't need to evaluate any more
-					break;
+				var rule = new Rule(context.index - 1, -1, context.language.namedIdentRules.follows[i]);
+				if (rule.matches(context.tokens)) {
+					context.append("<span class=\"sunlight-named-ident\">");
+					return;
 				}
 			}
 			
-			if (isNamedIdent) {
-				context.append("<span class=\"sunlight-named-ident\">"); 
-			} else {
-				context.append("<span class=\"sunlight-ident\">"); 
+			for (i = 0, tokenReqs; i < context.language.namedIdentRules.precedes.length; i++) {
+				rule = new Rule(context.index + 1, 1, context.language.namedIdentRules.precedes[i]);
+				if (rule.matches(context.tokens)) {
+					context.append("<span class=\"sunlight-named-ident\">");
+					return;
+				}
 			}
+			
+			context.append("<span class=\"sunlight-ident\">"); 
 		},
 		
 		exitIdent:        function(context) { context.append("</span>"); },
