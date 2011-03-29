@@ -60,11 +60,16 @@
 	}
 	
 	function $$(id) {
-		return document.getElementById(id);
+		var element = document.getElementById(id);
+		for (var property in element) {
+			document.write(property + ": " + element[property].toString());
+		}
 	}
 	
 	function foo(bar) {
 		window.alert("oh noes!!");
+		
+		var abstract = encodeURIComponent(parseFloat("abstract is a reserved word"));
 		
 		var elements = document.getElementsByTagName("foo");
 		for (var i = 0; i &lt; elements.length; i++) {
@@ -80,8 +85,16 @@
 			req = new XMLHttpRequest();
 		} catch (e) {
 			try {
-				req = new ActiveXObject("MSXML2.HTTP");
-			} catch (e) { }
+				req = new XDomainRequest();
+			} catch (e) { 
+				try {
+					req = new ActiveXObject("MSXML2.HTTP");
+				} catch (e) { 
+					if (e instanceof Object) {
+						throw e;
+					}
+				}
+			}
 		} finally {
 			if (req !== null) {
 				req.open("http://google.com/");
@@ -100,23 +113,48 @@
 		return JSON !== undefined ? JSON.stringify.call(null, string) : new String(string);
 	};
 	
-	switch (foo("head").length) {
+	switch (foo("he\\\"ad").length) {
 		case 1:
 			//fall through
 		case 0x2:
 			break;
 		case 1e3:
 		default:
-			/* default implementation
+			/* 
+			 * default implementation
 			 * of something
 			 */
 			if (isNaN(10) || this === NaN) {
 				doSomething(Infinity, new Boolean(true));
 			}
 			
-			doSomething(/\w[^A-Z0-9]$/g);
+			doSomething(/\w[^A-Z0-9]$/g, 5 / 3);
 			break;
 	}
+	
+	//regex literal parsing
+	
+	/foo/.test("foo"); //should be a regex
+	/\//.test("/"); //should be a regex
+	/\\/.test("foo"); //should be a regex
+	var foo = /foo/.test("foo"); //should be a regex
+	var foo = /f\/oo/.test("foo"); //should be a regex
+	if (/foo/.test("foo")) { } //should be a regex
+	var x = 4 / 5; /foo/.test("foo") { } //should be a regex
+	4 = /foo/ //should be a regex
+	
+	/foo/gim.test("foo") //should be a regex with modifiers
+	/foo/asdfasdf //should be a regex with non-existent modifiers
+	
+	
+	//.test("foo"); //should not be a regex
+	4 /foo/ //should not be a regex
+	4 + /foo/ //should not be a regex
+	if /foo/ //should not be a regex
+	var foo = 5/foo; //should not be a regex
+	var foo = 5 /foo; //should not be a regex
+	
+	
 	
 }(jQuery, window));</code></pre>
 	</body>

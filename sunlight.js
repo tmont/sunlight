@@ -366,11 +366,10 @@
 						context.reader.read(opener.length - 1);
 						
 						//read the scope contents until the closer is found
-						outerLoop: while (!context.reader.isEof()) {
+						outerLoop: while (context.reader.peek() !== context.reader.EOF) {
 							//check for escape sequences
 							for (var k = 0; k < escapeSequences.length; k++) {
 								if (context.reader.peek(escapeSequences[k].length) === escapeSequences[k]) {
-									
 									buffer += context.reader.read(escapeSequences[k].length);
 									continue outerLoop;
 								}
@@ -383,7 +382,7 @@
 							buffer += context.reader.read();
 						}
 						
-						buffer += (zeroWidth ? "" : context.reader.read(closerLength));
+						buffer += (zeroWidth || context.reader.peek() === context.reader.EOF ? "" : context.reader.read(closerLength));
 						return context.createToken(tokenName, buffer, line, column);
 					}
 				}
@@ -456,10 +455,13 @@
 		};
 		
 		var tokenize = function(unhighlightedCode, language) {
+			var tokens = [];
 			var context = function() {
 				return {
 					reader: createCodeReader(unhighlightedCode), 
 					language: language,
+					token: function(index) { return tokens[index]; },
+					count: function() { return tokens.length; },
 					defaultData: {
 						text: "",
 						line: 1,
@@ -476,11 +478,10 @@
 				};
 			}();
 			
-			var tokens = [];
 			while (!context.reader.isEof()) {
 				var token = parseNextToken(context);
 				
-				//flush default data if needed (in pretty much all languages this is whitespace)
+				//flush default data if needed (in pretty much all languages this is just whitespace)
 				if (token !== null) {
 					if (context.defaultData.text !== "") {
 						tokens.push(context.createToken("default", context.defaultData.text, context.defaultData.line, context.defaultData.column)); 
