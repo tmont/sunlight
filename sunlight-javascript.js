@@ -8,8 +8,8 @@
 	var jsAnalyzer = sunlight.createAnalyzer();
 	jsAnalyzer.enterReservedWord = function(context) { context.append("<span class=\"sunlight-reserved-word\">"); };
 	jsAnalyzer.exitReservedWord = function(context) { context.append("</span>"); };
-	jsAnalyzer.enterRegex = function(context) { context.append("<span class=\"sunlight-regex\">"); };
-	jsAnalyzer.exitRegex = function(context) { context.append("</span>"); };
+	jsAnalyzer.enterRegexLiteral = function(context) { context.append("<span class=\"sunlight-regex-literal\">"); };
+	jsAnalyzer.exitRegexLiteral = function(context) { context.append("</span>"); };
 	jsAnalyzer.enterGlobalVariable = function(context) { context.append("<span class=\"sunlight-global-variable\">"); };
 	jsAnalyzer.exitGlobalVariable = function(context) { context.append("</span>"); };
 	jsAnalyzer.enterGlobalFunction = function(context) { context.append("<span class=\"sunlight-global-function\">"); };
@@ -110,12 +110,9 @@
 				
 				while (context.reader.peek() !== context.reader.EOF) {
 					peek2 = context.reader.peek(2);
-					//console.log(peek2);
 					if (peek2 === "\\/" || peek2 === "\\\\") {
-						//console.log("escape?");
 						//escaped backslash or escaped forward slash
-						regexLiteral += peek2;
-						context.reader.read(2);
+						regexLiteral += context.reader.read(2);
 						continue;
 					}
 					
@@ -135,7 +132,7 @@
 					regexLiteral += context.reader.read();
 				}
 				
-				return context.createToken("regex", regexLiteral, line, column);
+				return context.createToken("regexLiteral", regexLiteral, line, column);
 			}
 		],
 		
@@ -180,7 +177,7 @@
 		
 		tokenAnalyzerMap: {
 			reservedWord: ["enterReservedWord", "exitReservedWord"],
-			regex: ["enterRegex", "exitRegex"],
+			regexLiteral: ["enterRegexLiteral", "exitRegexLiteral"],
 			globalObject: ["enterGlobalObject", "exitGlobalObject"],
 			globalFunction: ["enterGlobalFunction", "exitGlobalFunction"],
 			globalVariable: ["enterGlobalVariable", "exitGlobalVariable"]
