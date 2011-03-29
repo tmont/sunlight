@@ -31,7 +31,7 @@
 			"const", "var",
 
 			//types
-			"class", "interface", "enum", "struct", "event", "delegate",
+			"class", "interface",
 
 			//primitives
 			"integer", "boolean", "int", "bool", "double", "float", "real", "string",
@@ -40,10 +40,10 @@
 			"null", "true", "false",
 
 			//looping
-			"for", "foreach", "do", "while", "as", "in", "endwhile", "endfor", "endforeach",
+			"for", "foreach", "do", "while", "as", "endwhile", "endfor", "endforeach",
 
 			//scoping
-			"fixed", "unchecked", "using", "lock", "namespace", "checked", "unsafe",
+			"namespace",
 
 			//flow control
 			"if", "else", "elseif", "try", "catch", "break", "continue", "goto", "case", "throw", "switch", "endif", "endswitch", "endwhile",
@@ -184,7 +184,7 @@
 			//inequality
 			"<=", "<",
 			">=", ">",
-			"===", "==", "!=",
+			"===", "==", "!==", "!=",
 
 			//unary
 			"!", "~",

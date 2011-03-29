@@ -1,0 +1,127 @@
+<html>
+
+	<head>
+		<script type="text/javascript" src="sunlight.js"></script>
+		<script type="text/javascript" src="sunlight-javascript.js"></script>
+		<style type="text/css">
+			code {
+				font-family: Consolas;
+				font-size: 16px;
+			}
+			
+			.sunlight-keyword {
+				color: #0000CC;
+			}
+			.sunlight-operator {
+				color: #000000;
+			}
+			.sunlight-string {
+				color: #990000;
+			}
+			.sunlight-comment {
+				color: #009900;
+			}
+			.sunlight-number {
+				color: #CC6600;
+			}
+			.sunlight-punctuation {
+				color: #000000;
+			}
+			.sunlight-ident {
+				color: #000000;
+			}
+			.sunlight-named-ident, .sunlight-global-variable, .sunlight-global-object {
+				color: #2B91AF;
+			}
+			.sunlight-variable {
+				color: #663366;
+			}
+			.sunlight-regex {
+				color: #000000;
+				background-color: #FFFE47;
+			}
+			
+			.sunlight-reserved-word {
+				font-style: italic;
+			}
+			
+			.sunlight-window-function, .sunlight-global-function {
+				color: #B069AF;
+			}
+		</style>
+	</head>
+
+	<body>
+	
+<pre><code class="sunlight-highlight-javascript">(function($, window), undefined){
+	
+	if ($ === undefined) {
+		throw "missing jQuery dependency";
+	}
+	
+	function $$(id) {
+		return document.getElementById(id);
+	}
+	
+	function foo(bar) {
+		window.alert("oh noes!!");
+		
+		var elements = document.getElementsByTagName("foo");
+		for (var i = 0; i &lt; elements.length; i++) {
+			if (element[i].name !== 'foo\'s') {
+				return false;
+			} else {
+				return true;
+			}
+		}
+		
+		var req;
+		try {
+			req = new XMLHttpRequest();
+		} catch (e) {
+			try {
+				req = new ActiveXObject("MSXML2.HTTP");
+			} catch (e) { }
+		} finally {
+			if (req !== null) {
+				req.open("http://google.com/");
+				req.send();
+			}
+		}
+		
+		if (req === null) {
+			throw new Error("FAIL");
+		}
+		
+		return bar == 0.5;
+	}
+	
+	var stringify = function(string) {
+		return JSON !== undefined ? JSON.stringify.call(null, string) : new String(string);
+	};
+	
+	switch (foo("head").length) {
+		case 1:
+			//fall through
+		case 0x2:
+			break;
+		case 1e3:
+		default:
+			/* default implementation
+			 * of something
+			 */
+			if (isNaN(10) || this === NaN) {
+				doSomething(Infinity, new Boolean(true));
+			}
+			
+			doSomething(/\w[^A-Z0-9]$/g);
+			break;
+	}
+	
+}(jQuery, window));</code></pre>
+	</body>
+
+	<script type="text/javascript">//<![CDATA[
+		Sunlight.highlightAll();
+	//]]></script>
+</html>

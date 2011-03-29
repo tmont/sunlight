@@ -397,7 +397,7 @@
 				
 				if (!/\d/.test(current)) {
 					//is it a decimal followed by a number?
-					if (current !== "." || !/d/.test(context.reader.peek())) {
+					if (current !== "." || !/\d/.test(context.reader.peek())) {
 						return null;
 					}
 					
@@ -540,17 +540,21 @@
 				
 				var analyzer = language.analyzer || self.options.analyzer;
 				var map = merge(self.options.tokenAnalyzerMap, language.tokenAnalyzerMap);
-				for (var i = 0; i < analyzerContext.tokens.length; i++) {
+				for (var i = 0, funcs; i < analyzerContext.tokens.length; i++) {
 					analyzerContext.index = i;
+					funcs = map[analyzerContext.tokens[i].name];
+					if (funcs === undefined) {
+						throw "Unknown token \"" + analyzerContext.tokens[i].name + "\"";
+					}
 					
 					//enter
-					analyzer[map[analyzerContext.tokens[i].name][0]](analyzerContext);
+					analyzer[funcs[0]](analyzerContext);
 					
 					//write token value
 					analyzer.writeCurrentToken(analyzerContext);
 					
 					//exit
-					analyzer[map[analyzerContext.tokens[i].name][1]](analyzerContext);
+					analyzer[funcs[1]](analyzerContext);
 				}
 				
 				return analyzerContext.getHtml();
