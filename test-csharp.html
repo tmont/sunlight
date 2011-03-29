@@ -13,7 +13,6 @@
 			}
 			.sunlight-operator {
 				color: #000000;
-				/*background-color: #000000;*/
 			}
 			.sunlight-string {
 				color: #990000;
@@ -26,11 +25,9 @@
 			}
 			.sunlight-punctuation {
 				color: #000000;
-				/*background-color: #009900;*/
 			}
 			.sunlight-ident {
 				color: #000000;
-				/*text-decoration: underline;*/
 			}
 			.sunlight-named-ident {
 				color: #2B91AF;
@@ -71,9 +68,18 @@ namespace My.Namespace {
 		 * Gets or sets the value of an integer
 		 * and such. This is a useful comment.
 		 */
-		public new Integer Value {
-			get { return 12; }
-			set { this.value = value; }
+		public new Object Value {
+			get { 
+				var get = new object();
+				return new List&lt;object&gt; {
+					get
+				};
+			}
+			
+			set { 
+				var set = value;
+				this.value = set ?? value; 
+			}
 		}
 
 		private static Func&lt;Object, char&gt; GetFunction(Object o, Character c) {

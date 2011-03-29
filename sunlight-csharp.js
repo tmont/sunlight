@@ -51,12 +51,53 @@
 
 			//contextual keywords
 				//property stuff
-				"get", "set", "value",
+				//get, set and value are handled by customParseRules below
 
 				//linq
 				"from", "select", "where", "groupby", "orderby"
 		]),
-
+		
+		customParseRules: [
+			//get/set contextual keyword
+			function(context) {
+				var match, word;
+				if ((match = /^(get|set)\b/.exec(context.reader.current() + context.reader.peek(3))) === null) {
+					return null;
+				}
+				
+				word = match[1];
+				
+				var rule = sunlight.helpers.createProceduralRule(context.count() - 1, -1, [
+					{ token: "punctuation", values: ["}", "{"] },
+					whitespace,
+					{ token: "keyword", values: ["public", "private", "protected", "internal"], optional: true }
+				]);
+				
+				if (!rule(context.getAllTokens())) {
+					return null;
+				}
+				
+				//now we need to look ahead and verify that the next non-whitespace token is "{"
+				var count = 3, peek = context.reader.peek(count), current;
+				while (peek.length === count) {
+					if (!/\s$/.test(peek)) {
+						if (peek[peek.length - 1] !== "{") {
+							return null;
+						}
+						
+						break;
+					}
+					
+					peek = context.reader.peek(++count);
+				}
+				
+				var line = context.reader.getLine();
+				var column = context.reader.getColumn();
+				var value = context.reader.current() + context.reader.read(2); //we already read the first letter
+				return context.createToken("keyword", value, line, column);
+			}
+		],
+		
 		scopes: {
 			//token name => array[opener, closer, escape token (optional), zeroWidthCloser? (optional)]
 			//escape token is either a hard-coded string or an object with keys length and regex, e.g. { length: 2, regex: /\d;/ }

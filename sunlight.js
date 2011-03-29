@@ -462,6 +462,7 @@
 					reader: createCodeReader(unhighlightedCode), 
 					language: language,
 					token: function(index) { return tokens[index]; },
+					getAllTokens: function() { return tokens.slice(0); },
 					count: function() { return tokens.length; },
 					defaultData: {
 						text: "",
@@ -623,7 +624,9 @@
 		},
 		
 		helpers: {
-			contains: contains
+			contains: contains,
+			createBetweenRule: createBetweenRule,
+			createProceduralRule: createProceduralRule
 		}
 	};
 
