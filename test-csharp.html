@@ -48,7 +48,7 @@ namespace My.Namespace {
 		protected static readonly Object baz = 0xffffff;
 
 		protected internal class InternalClass&lt;T1, out T2&gt; : ICloneable where T1 : class, ICloneable, ICollection { 
-			void Iteratate(ICollection&lt;object&gt; foos) {
+			void Iterate(ICollection&lt;object&gt; foos) {
 				foreach (var foo in foos) {
 					this.SomeMethod(ref foo, out foo);
 				}
@@ -70,7 +70,7 @@ namespace My.Namespace {
 		 */
 		public new Object Value {
 			get { 
-				var get = new object();
+				var get = foo > 0 ? new Integer[foo] : new Integer[0];
 				return new List&lt;object&gt; {
 					get
 				};
@@ -84,7 +84,7 @@ namespace My.Namespace {
 			}
 		}
 
-		private static Func&lt;Object, char&gt; GetFunction(Object o, Character c) {
+		private static Func&lt;Object, char&gt; GetFunction(Object o, Character c, Integer[] integers) {
 			if (!Object.ReferenceEquals(o, c)) {
 				throw new ArgumentException();
 			}
@@ -93,7 +93,7 @@ namespace My.Namespace {
 		}
 		
 		//generic method definitions
-		Action&lt;IDisposable&gt; DoStuff() {
+		Action&lt;IDisposable&gt; DoStuff(IEnumerable&lt;Foo&gt; foos) {
 			Action&lt;Func&lt;IDisposable, Foo&gt;&gt; action = () => disposable => new Foo();
 			
 			//neither "foo" below should be a named ident

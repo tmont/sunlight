@@ -353,12 +353,12 @@
 						escapeSequences = specificScopes[j][2] || [];
 						zeroWidth = specificScopes[j][3] || false;
 						
-						closerLength = closer.length;
-						closer = typeof(closer) === "string" ? new RegExp(regexEscape(closer)) : closer.regex;
-						
 						if (opener !== current + context.reader.peek(opener.length - 1)) {
 							continue;
 						}
+						
+						closerLength = closer.length;
+						closer = typeof(closer) === "string" ? new RegExp(regexEscape(closer)) : closer.regex;
 						
 						var buffer = opener;
 						var line = context.reader.getLine();

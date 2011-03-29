@@ -10,6 +10,8 @@
 	cSharpAnalyzer.exitPragma = function(context) { context.append("</span>"); };
 
 	var primitives = ["int", "bool", "double", "float", "char", "byte", "sbyte", "uint", "long", "ulong", "char", "decimal", "short", "ushort"];
+	//things that are allowed inside a generic type definition
+	var acceptableKeywords = primitives.concat(["in", "out", "string", "object"]);
 	
 	sunlight.registerLanguage(["c#", "csharp"], {
 		keywords: primitives.concat([
@@ -75,7 +77,7 @@
 				}
 				
 				//now we need to look ahead and verify that the next non-whitespace token is "{"
-				var count = 3, peek = context.reader.peek(count), current, allGoodYo = false;
+				var count = "get".length, peek = context.reader.peek(count), current, allGoodYo = false;
 				while (peek.length === count) {
 					if (!/\s$/.test(peek)) {
 						if (peek[peek.length - 1] !== "{") {
@@ -109,7 +111,7 @@
 				//can't be on the left side of an assignment
 				
 				//first check equals because that's easy
-				var count = 5, peek = context.reader.peek(count), current, allGoodYo;
+				var count = "value".length, peek = context.reader.peek(count), current, allGoodYo;
 				while (peek.length === count) {
 					if (!/\s$/.test(peek)) {
 						var peekPlus1 = context.reader.peek(count + 1);
@@ -235,9 +237,6 @@
 					//between < and > and preceded by an ident and not preceded by "class"
 					var index = context.index, token;
 					
-					//things that are allowed inside a generic type definition
-					var acceptableKeywords = primitives.concat(["in", "out"]);
-					
 					//look for "<" preceded by an ident but not "class"
 					var foundGenericOpener = false, foundIdent = false;
 					while ((token = context.tokens[--index]) !== undefined) {
@@ -295,6 +294,80 @@
 					}
 					
 					return false;
+				},
+				
+				//generic declarations and return values (generic preceding an ident)
+				function(context) {
+					//this finds "Foo" in "Foo<Bar> foo"
+					
+					//just need to look ahead and verify that this ident precedes a generic definition, and then non-optional whitespace and then an ident
+					
+					var index = context.index, bracketCount = [0, 0]; //open (<), close (>)
+					while ((token = context.tokens[++index]) !== undefined) {
+						if (token.name === "operator") {
+							switch (token.value) {
+								case "<":
+									bracketCount[0]++;
+									break;
+								case "<<":
+									bracketCount[0] += 2;
+									break;
+								case ">":
+									bracketCount[1]++;
+									break;
+								case ">>":
+									bracketCount[1] += 2;
+									break;
+								default:
+									return false;
+							}
+							
+							//if bracket counts match, get out!
+							if (bracketCount[0] === bracketCount[1]) {
+								break;
+							}
+							
+							continue;
+						}
+						
+						if (
+							token.name === "default"
+							|| token.name === "ident"
+							|| (token.name === "keyword" && sunlight.helpers.contains(acceptableKeywords, token.value))
+							|| (token.name === "punctuation" && token.value === ",")
+						) {
+							continue;
+						}
+						
+						// var failingToken = context.tokens[context.index];
+						// if (failingToken.value === "IEnumerable") {
+							// console.log(failingToken);
+							// console.log(token);
+						// }
+						return false;
+					}
+					
+					//verify bracket count
+					if (bracketCount[0] !== bracketCount[1]) {
+						//mismatched generics, could be something scary
+						return false;
+					}
+					
+					//next token should be optional whitespace followed by an ident
+					token = context.tokens[++index];
+					if (token === undefined && token.name !== "default" && token.name !== "ident") {
+						console.log(token);
+						return false;
+					}
+					
+					if (token.name === "default") {
+						token = context.tokens[++index];
+						if (token === undefined || token.name !== "ident") {
+							return false;
+						}
+					}
+					
+					return true;
 				}
 			],
 			
@@ -306,13 +379,20 @@
 				[{ token: "keyword", values: ["class", "interface", "event", "struct", "enum", "delegate", "public", "private", "protected", "internal", "static", "virtual", "sealed", "new", "params"] }, whitespace],
 
 				//typeof/default
-				[{ token: "keyword", values: ["typeof", "default"] }, whitespace, { token: "punctuation", values: ["("] }, whitespace ]
+				[{ token: "keyword", values: ["typeof", "default"] }, whitespace, { token: "punctuation", values: ["("] }, whitespace ],
+				
+				
 			],
 
 			precedes: [
 				//casting
 				[whitespace, { token: "punctuation", values: [")"] }, whitespace, { token: "ident" }],
 				[whitespace, { token: "punctuation", values: [")"] }, whitespace, { token: "keyword", values: ["this"] }],
+				
+				//arrays
+				[whitespace, { token: "punctuation", values: ["["] }, whitespace, { token: "punctuation", values: ["]"] }], //in method parameters
+				[whitespace, { token: "punctuation", values: ["["] }, whitespace, { token: "number" }, whitespace, { token: "punctuation", values: ["]"] }], //declaration with integer
+				[whitespace, { token: "punctuation", values: ["["] }, whitespace, { token: "ident" }, whitespace, { token: "punctuation", values: ["]"] }], //declaration with variable
 
 				//assignment: Object o = new object();
 				//method parameters: public int Foo(Foo foo, Bar b, Object o) { }
