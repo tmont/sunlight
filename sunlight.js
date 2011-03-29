@@ -250,7 +250,7 @@
 		};
 	};
 	
-	var parser = function() {
+	var highlighter = function() {
 		var parseNextToken = function(context) {
 			//helpers
 			var matchWord = function(wordMap, name, boundary) {
@@ -501,7 +501,9 @@
 		};
 		
 		return {
-			highlight: function(unhighlightedCode, languageId) {
+			//partialContext allows us to perform a partial parse, and then pick up where we left off at a later time
+			//this functionality enables nested highlights (language withint a language, e.g. PHP within HTML)
+			highlight: function(unhighlightedCode, languageId, partialContext) {
 				var language = languages[languageId];
 				if (language === undefined) {
 					throw "Unregistered language: " + languageId;
@@ -509,7 +511,8 @@
 			
 				var self = this;
 				var analyzerContext = function() {
-					var buffer = "";
+					partialContext = partialContext || { index: -1 };
+					var buffer = partialContext.getHtml ? partialContext.getHtml() : "";
 					
 					//based on http://phpjs.org/functions/htmlentities:425
 					var encode = function() {
@@ -531,10 +534,11 @@
 							return encodedText;
 						};
 					}();
-		
+					
+					
 					return {
-						tokens: tokenize(unhighlightedCode, language),
-						index: 0,
+						tokens: (partialContext.tokens || []).concat(tokenize(unhighlightedCode, language)),
+						index: partialContext.index + 1,
 						language: language,
 						append: function(text) { buffer += text; },
 						appendAndEncode: function(text) { buffer += encode(text); },
@@ -544,29 +548,34 @@
 				
 				var analyzer = language.analyzer || self.options.analyzer;
 				var map = merge(self.options.tokenAnalyzerMap, language.tokenAnalyzerMap);
-				for (var i = 0, funcs; i < analyzerContext.tokens.length; i++) {
+				for (var i = partialContext.index + 1, funcs; i < analyzerContext.tokens.length; i++) {
 					analyzerContext.index = i;
 					funcs = map[analyzerContext.tokens[i].name];
 					if (funcs === undefined) {
 						throw "Unknown token \"" + analyzerContext.tokens[i].name + "\"";
 					}
 					
-					//enter
-					analyzer[funcs[0]](analyzerContext);
-					
-					//write token value
-					analyzer.writeCurrentToken(analyzerContext);
-					
-					//exit
-					analyzer[funcs[1]](analyzerContext);
+					try {
+						//enter
+						analyzer[funcs[0]](analyzerContext);
+						
+						//write token value
+						analyzer.writeCurrentToken(analyzerContext);
+						
+						//exit
+						analyzer[funcs[1]](analyzerContext);
+					} catch (e) {
+						console.dir(funcs);
+						throw e;
+					}
 				}
 				
-				return analyzerContext.getHtml();
+				return analyzerContext;
 			}
 		};
 	}();
 	
-	var parserConstructor = function() {
+	var highlighterConstructor = function() {
 		var defaults = {
 			analyzer: create(defaultAnalyzer),
 			tabWidth: 4,
@@ -592,7 +601,7 @@
 		};
 	}();
 	
-	parserConstructor.prototype = parser;
+	highlighterConstructor.prototype = highlighter;
 	
 	var getNextNonWsToken = function(tokens, index, direction) {
 		direction = direction || 1;
@@ -604,9 +613,33 @@
 		return token;
 	};
 	
+	function highlightRecursive(highlighter, node, partialContext) {
+		var match, languageId;
+		if ((match = node.className.match(/\s*sunlight-highlight-(\S+)\s*/)) === null || /(?:\s|^)sunlight-highlighted\s*/.test()) {
+			//not a valid sunlight node or it's already been highlighted
+			return;
+		}
+		
+		languageId = match[1];
+		var currentContext = null;
+		for (var j = 0; j < node.childNodes.length; j++) {
+			if (node.childNodes[j].nodeType === 3) {
+				//wrap in span
+				var span = document.createElement("span");
+				span.className = "sunlight-highlighted";
+				currentContext = highlighter.highlight(node.childNodes[j].nodeValue, languageId, partialContext);
+				span.innerHTML = currentContext.getHtml();
+				node.replaceChild(span, node.childNodes[j]);
+				node.className += " sunlight-highlighted";
+			} else {
+				highlightRecursive(highlighter, node.childNodes[j]);
+			}
+		}
+	}
+	
 	window.Sunlight = {
 		version: "1.0",
-		Highlighter: parserConstructor,
+		Highlighter: highlighterConstructor,
 		createAnalyzer: function() { return create(defaultAnalyzer); },
 		isRegistered: function(languageId) { return languages[languageId] !== undefined; },
 		defaultEscapeSequences: ["\\n", "\\t", "\\r", "\\\\", "\\v", "\\f"],
@@ -614,15 +647,10 @@
 		exitAnalysis: defaultExit,
 		
 		highlightAll: function(options) { 
-			var parser = new parserConstructor(options);
+			var highlighter = new highlighterConstructor(options);
 			var tags = document.getElementsByTagName("*");
-			for (var i = 0, match, languageId; i < tags.length; i++) {
-				if ((match = tags[i].className.match(/\s*sunlight-highlight-(\S+)\s*/)) !== null) {
-					languageId = match[1];
-					if (tags[i].firstChild !== null && tags[i].firstChild.nodeType === 3 /* text node */) {
-						tags[i].innerHTML = parser.highlight(tags[i].firstChild.nodeValue, languageId);
-					}
-				}
+			for (var i = 0; i < tags.length; i++) {
+				highlightRecursive(highlighter, tags[i]);
 			}
 		},
 		

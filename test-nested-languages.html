@@ -1,0 +1,48 @@
+<html>
+	<head>
+		<script type="text/javascript" src="sunlight.js"></script>
+		<script type="text/javascript" src="sunlight-html.js"></script>
+		<script type="text/javascript" src="sunlight-php.js"></script>
+		<script type="text/javascript" src="sunlight-javascript.js"></script>
+		<link rel="stylesheet" type="text/css" href="sunlight.css" />
+	</head>
+
+	<body>
+<pre class="sunlight-highlight-html">&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot;
+&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;
+
+&lt;html&gt;
+	&lt;body&gt;
+		&lt;div id=&quot;wrapper&quot;&gt;
+			&lt;p&gt;
+				This is how you write PHP:
+			&lt;/p&gt;
+			
+<code class="sunlight-highlight-php">&lt;?php
+	$array = array('foo', 'bar', 1, 2);
+	
+	foreach ($array as $i =&gt; $value) {
+		echo &quot;$i: &quot;;
+		
+		if (is_int($value)) {
+			echo &quot;integer: $value&quot;;
+		} else {
+			echo &quot;not integer: $value&quot;;
+		}
+		
+		echo &quot;\n&quot;;
+	}
+?&gt;</code>
+		&lt;/div&gt;
+	&lt;/body&gt;
+
+	&lt;script type=&quot;text/javascript&quot;&gt;<code class="sunlight-highlight-javascript">//&lt;![CDATA[
+		Sunlight.highlightAll();
+	//]]&gt;</code>&lt;/script&gt;
+&lt;/html&gt;</code></pre>
+	</body>
+
+	<script type="text/javascript">//<![CDATA[
+		Sunlight.highlightAll();
+	//]]></script>
+</html>
