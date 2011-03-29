@@ -414,7 +414,10 @@
 				[{ token: "keyword", values: ["class", "interface", "event", "struct", "enum", "delegate", "public", "private", "protected", "internal", "static", "virtual", "sealed", "new", "params"] }, whitespace],
 
 				//typeof/default
-				[{ token: "keyword", values: ["typeof", "default"] }, whitespace, { token: "punctuation", values: ["("] }, whitespace ]
+				[{ token: "keyword", values: ["typeof", "default"] }, whitespace, { token: "punctuation", values: ["("] }, whitespace ],
+				
+				//casting
+				[{ token: "keyword", values: ["as"] }, whitespace ]
 			],
 
 			precedes: [

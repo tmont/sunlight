@@ -62,7 +62,7 @@ namespace My.Namespace {
 
 		#region verify that casts are properly colored
 		partial void Meh() {
-			IDisposable foo = (IDisposable)foo;
+			IDisposable foo = (IDisposable)foo as ICloneable;
 			foo.Dispose();
 			((IDisposable)this).Dispose();
 			var lame = typeof(IDisposable);
