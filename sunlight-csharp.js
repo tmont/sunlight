@@ -112,10 +112,13 @@
 					return true;
 				},
 				
-				//generic definitions/params
+				//generic definitions/params between "<" and ">"
 				function(context) {
 					//between < and > and preceded by an ident and not preceded by "class"
 					var index = context.index, token;
+					
+					//things that are allowed inside a generic type definition
+					var acceptableKeywords = primitives.concat(["in", "out"]);
 					
 					//look for "<" preceded by an ident but not "class"
 					var foundGenericOpener = false, foundIdent = false;
@@ -126,12 +129,11 @@
 						}
 						
 						if (
-							(token.name === "keyword" && sunlight.helpers.contains(primitives, token.value))
+							(token.name === "keyword" && sunlight.helpers.contains(acceptableKeywords, token.value))
 							|| (token.name === "operator" && (token.value === ">" || token.value === ">>"))
 							|| token.name === "default"
 							|| (token.name === "punctuation" && token.value === ",")
 						) {
-							//e.g. Action<int>
 							continue;
 						}
 						
@@ -145,7 +147,7 @@
 							continue;
 						}
 						
-						//anything else means we're not in a generic definition
+						//anything else means we're no longer in a generic definition
 						break;
 					}
 					
@@ -162,7 +164,7 @@
 						}
 						
 						if (
-							(token.name === "keyword" && sunlight.helpers.contains(primitives, token.value))
+							(token.name === "keyword" && sunlight.helpers.contains(acceptableKeywords, token.value))
 							|| (token.name === "operator" && sunlight.helpers.contains(["<", "<<", ">", ">>"], token.value))
 							|| (token.name === "punctuation" && token.value === ",")
 							|| token.name === "ident"
@@ -183,7 +185,7 @@
 				//special method parameters
 				//new: public new Foo Method() { } and new Foo();
 				//class/interface/event/struct/delegate names
-				[{ token: "keyword", values: ["class", "interface", "event", "struct", "enum", "delegate", "public", "private", "protected", "internal", "static", "virtual", "sealed", "new", "ref", "out", "params"] }, whitespace],
+				[{ token: "keyword", values: ["class", "interface", "event", "struct", "enum", "delegate", "public", "private", "protected", "internal", "static", "virtual", "sealed", "new", "params"] }, whitespace],
 
 				//typeof/default
 				[{ token: "keyword", values: ["typeof", "default"] }, whitespace, { token: "punctuation", values: ["("] }, whitespace ]

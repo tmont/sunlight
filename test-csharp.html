@@ -45,12 +45,18 @@
 <pre><code class="sunlight-highlight-csharp">using System;
 
 namespace My.Namespace {
-	public abstract class ValueHandlerFactoryBase&lt;T&gt; : MarshalByRefObject, IValueHandlerFactory, IDisposable where T : IDisposable {
+	public abstract class ValueHandlerFactoryBase&lt;in T&gt; : MarshalByRefObject, IValueHandlerFactory, IDisposable where T : IDisposable {
 		private Object foo;
 		public const String bar = "foo";
 		protected static readonly Object baz = 0xffffff;
 
-		protected internal class InternalClass&lt;T1, T2&gt; : ICloneable where T1 : class, ICloneable, ICollection { }
+		protected internal class InternalClass&lt;T1, out T2&gt; : ICloneable where T1 : class, ICloneable, ICollection { 
+			void Iteratate(ICollection&lt;object&gt; foos) {
+				foreach (var foo in foos) {
+					this.SomeMethod(ref foo, out foo);
+				}
+			}
+		}
 
 		#region verify that casts are properly colored
 		partial void Meh() {
@@ -89,7 +95,7 @@ namespace My.Namespace {
 		//method without an access modifier: "Action" should be a named ident
 		Action DoStuff() { }
 
-		protected override sealed T NumbersTest&lt;T&gt;(ref Foo foo, out int @int, params String[] strings) where T : event, IDisposable, IFoo {
+		protected override sealed T NumbersTest&lt;T&gt;(ref Foo foo, out Bar @class, params String[] strings) where T : event, IDisposable, IFoo {
 			//let's test out numbers
 			int i = 0;
 			double d = 1.5;
