@@ -594,6 +594,16 @@
 	
 	parserConstructor.prototype = parser;
 	
+	var getNextNonWsToken = function(tokens, index, direction) {
+		direction = direction || 1;
+		var token = tokens[index + direction];
+		if (token !== undefined && token.name === "default") {
+			token = tokens[index + (direction * 2)];
+		}
+		
+		return token;
+	};
+	
 	window.Sunlight = {
 		version: "1.0",
 		Highlighter: parserConstructor,
@@ -609,7 +619,7 @@
 			for (var i = 0, match, languageId; i < tags.length; i++) {
 				if ((match = tags[i].className.match(/\s*sunlight-highlight-(\S+)\s*/)) !== null) {
 					languageId = match[1];
-					if (tags[i].firstChild !== null) {
+					if (tags[i].firstChild !== null && tags[i].firstChild.nodeType === 3 /* text node */) {
 						tags[i].innerHTML = parser.highlight(tags[i].firstChild.nodeValue, languageId);
 					}
 				}
@@ -629,7 +639,9 @@
 		helpers: {
 			contains: contains,
 			createBetweenRule: createBetweenRule,
-			createProceduralRule: createProceduralRule
+			createProceduralRule: createProceduralRule,
+			getNextNonWsToken: function(tokens, index) { return getNextNonWsToken(tokens, index, 1); },
+			getPreviousNonWsToken: function(tokens, index) { return getNextNonWsToken(tokens, index, -1); },
 		}
 	};
 

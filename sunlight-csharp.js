@@ -117,7 +117,6 @@
 					tokens.push(context.createToken(current.name, current.value, current.line, current.column));
 				}
 				
-				console.dir(tokens);
 				return tokens.length > 0 ? tokens : null;
 			},
 			
@@ -426,6 +425,22 @@
 					return true;
 				},
 				
+				//using aliases, e.g. using Foo = System.Linq.Enumerable;
+				function(context) {
+					//previous non-ws token must be "using" and next non-ws token must be "="
+					var prevToken = sunlight.helpers.getPreviousNonWsToken(context.tokens, context.index);
+					if (prevToken.name !== "keyword" || prevToken.value !== "using") {
+						return false;
+					}
+					
+					var nextToken = sunlight.helpers.getNextNonWsToken(context.tokens, context.index);
+					if (nextToken.name !== "operator" || nextToken.value !== "=") {
+						return false;
+					}
+					
+					return true;
+				},
+				
 				//attributes
 				function(context) {
 					//contained within [], and followed by a keyword or an ident
@@ -477,7 +492,7 @@
 				//typeof/default
 				[{ token: "keyword", values: ["typeof", "default"] }, whitespace, { token: "punctuation", values: ["("] }, whitespace ],
 				
-				//casting
+				//casting using "as"
 				[{ token: "keyword", values: ["as"] }, whitespace ]
 			],
 
