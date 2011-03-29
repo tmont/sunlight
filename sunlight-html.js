@@ -6,15 +6,18 @@
 
 	var whitespace = { token: "default", optional: true };
 	
-	var xmlAnalyzer = sunlight.createAnalyzer();
-	xmlAnalyzer.enterCdata = function(context) { context.append("<span class=\"sunlight-cdata\">"); };
-	xmlAnalyzer.exitCdata = function(context) { context.append("</span>"); };
-	xmlAnalyzer.enterContent = function(context) { context.append("<span class=\"sunlight-content\">"); };
-	xmlAnalyzer.exitContent = function(context) { context.append("</span>"); };
+	var htmlAnalyzer = sunlight.createAnalyzer();
+	htmlAnalyzer.enterCdata = sunlight.enterAnalysis("cdata");
+	htmlAnalyzer.exitCdata = sunlight.exitAnalysis;
+	htmlAnalyzer.enterContent = sunlight.enterAnalysis("content");
+	htmlAnalyzer.exitContent = sunlight.exitAnalysis;
+	htmlAnalyzer.enterDoctype = sunlight.enterAnalysis("doctype");
+	htmlAnalyzer.exitDoctype = sunlight.exitAnalysis;
 	
-	sunlight.registerLanguage(["xml"], {
+	sunlight.registerLanguage(["html"], {
 		scopes: {
 			string: [ ["\"", "\""], ["'", "'"] ],
+			doctype: [ ["<!doctype", ">"], ["<!DOCTYPE", ">"] ],
 			comment: [ ["<!--", "-->"] ],
 			cdata: [ ["<![CDATA[", "]]>"] ]
 		},
@@ -71,10 +74,11 @@
 		
 		tokenAnalyzerMap: {
 			cdata: ["enterCdata", "exitCdata"],
-			content: ["enterContent", "exitContent"]
+			content: ["enterContent", "exitContent"],
+			doctype: ["enterDoctype", "exitDoctype"]
 		},
 		
-		analyzer: xmlAnalyzer
+		analyzer: htmlAnalyzer
 
 	});
 }(window["Sunlight"]));

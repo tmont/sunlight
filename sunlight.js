@@ -641,7 +641,7 @@
 			createBetweenRule: createBetweenRule,
 			createProceduralRule: createProceduralRule,
 			getNextNonWsToken: function(tokens, index) { return getNextNonWsToken(tokens, index, 1); },
-			getPreviousNonWsToken: function(tokens, index) { return getNextNonWsToken(tokens, index, -1); },
+			getPreviousNonWsToken: function(tokens, index) { return getNextNonWsToken(tokens, index, -1); }
 		}
 	};
 
