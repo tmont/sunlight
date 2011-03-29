@@ -17,7 +17,7 @@
 			.sunlight-string {
 				color: #990000;
 			}
-			.sunlight-comment {
+			.sunlight-comment, .sunlight-xml-doc-comment-content {
 				color: #009900;
 			}
 			.sunlight-number {
@@ -35,11 +35,16 @@
 			.sunlight-pragma {
 				color: #999999;
 			}
+			.sunlight-xml-doc-comment-meta {
+				color: #808080;
+			}
+			
 		</style>
 	</head>
 
 	<body>
 <pre><code class="sunlight-highlight-csharp">using System;
+using Foo = System.Linq.Enumerable;
 
 namespace My.Namespace {
 	public abstract class ValueHandlerFactoryBase&lt;in T&gt; : MarshalByRefObject, IValueHandlerFactory, IDisposable where T : IDisposable {
@@ -97,7 +102,13 @@ namespace My.Namespace {
 			return value => (char)value.GetHashCode();
 		}
 		
-		//generic method definitions
+		/// &lt;summary&gt;
+		/// Tests the coloring of generic method definitions and
+		/// and &lt;c cref="Foo"&gt;generic parameters&lt;/c&gt;
+		/// &lt;/summary&gt;
+		///
+		/// &lt;param name="foos"&gt;Collection of &lt;see cref="Foo" /&gt;&lt;/param&gt;
+		[Pure, OutOfThisWorld]
 		Action&lt;IDisposable&gt; DoStuff(IEnumerable&lt;Foo&gt; foos) {
 			Action&lt;Func&lt;IDisposable, Foo&gt;&gt; action = () => disposable => new Foo();
 			

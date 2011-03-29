@@ -6,8 +6,12 @@
 
 	var whitespace = { token: "default", optional: true };
 	var cSharpAnalyzer = sunlight.createAnalyzer();
-	cSharpAnalyzer.enterPragma = function(context) { context.append("<span class=\"sunlight-pragma\">"); };
-	cSharpAnalyzer.exitPragma = function(context) { context.append("</span>"); };
+	cSharpAnalyzer.enterPragma = sunlight.enterAnalysis("pragma");
+	cSharpAnalyzer.exitPragma = sunlight.exitAnalysis;
+	cSharpAnalyzer.enterXmlDocCommentContent = sunlight.enterAnalysis("xml-doc-comment-content");
+	cSharpAnalyzer.exitXmlDocCommentContent = sunlight.exitAnalysis;
+	cSharpAnalyzer.enterXmlDocCommentMeta = sunlight.enterAnalysis("xml-doc-comment-meta");
+	cSharpAnalyzer.exitXmlDocCommentMeta = sunlight.exitAnalysis;
 
 	var primitives = ["int", "bool", "double", "float", "char", "byte", "sbyte", "uint", "long", "ulong", "char", "decimal", "short", "ushort"];
 	//things that are allowed inside a generic type definition
@@ -60,6 +64,63 @@
 		]),
 		
 		customParseRules: [
+			//xml doc comments
+			function(context) {
+				if (context.reader.current() !== "/" || context.reader.peek(2) !== "//") {
+					return null;
+				}
+				
+				var metaName = "xmlDocCommentMeta"; //tags and the "///" starting token
+				var contentName = "xmlDocCommentContent"; //actual comments (words and stuff)
+				var tokens = [context.createToken(metaName, "///", context.reader.getLine(), context.reader.getColumn())];
+				var peek, current = { line: 0, column: 0, value: "", name: null };
+				context.reader.read(2);
+				
+				while ((peek = context.reader.peek()) !== context.reader.EOF) {
+					if (peek === "<" && current.name !== metaName) {
+						//push the current token
+						if (current.value !== "") {
+							tokens.push(context.createToken(current.name, current.value, current.line, current.column));
+						}
+						
+						//amd create a token for the tag
+						current.line = context.reader.getLine();
+						current.column = context.reader.getColumn();
+						current.name = metaName;
+						current.value = context.reader.read();
+						continue;
+					}
+					
+					if (peek === ">" && current.name === metaName) {
+						//close the tag
+						current.value += context.reader.read();
+						tokens.push(context.createToken(current.name, current.value, current.line, current.column));
+						current.name = null;
+						current.value = "";
+						continue;
+					}
+					
+					if (peek === "\n") {
+						break;
+					}
+					
+					if (current.name === null) {
+						current.name = contentName;
+						current.line = context.reader.getLine();
+						current.column = context.reader.getColumn();
+					}
+					
+					current.value += context.reader.read();
+				}
+				
+				if (current.name === contentName) {
+					tokens.push(context.createToken(current.name, current.value, current.line, current.column));
+				}
+				
+				console.dir(tokens);
+				return tokens.length > 0 ? tokens : null;
+			},
+			
 			//get/set contextual keyword
 			function(context) {
 				if (!/^(get|set)\b/.test(context.reader.current() + context.reader.peek(3))) {
@@ -302,7 +363,7 @@
 					
 					//just need to look ahead and verify that this ident precedes a generic definition, and then non-optional whitespace and then an ident
 					
-					var index = context.index, bracketCount = [0, 0]; //open (<), close (>)
+					var index = context.index, bracketCount = [0, 0], token; //open (<), close (>)
 					while ((token = context.tokens[++index]) !== undefined) {
 						if (token.name === "operator") {
 							switch (token.value) {
@@ -467,7 +528,9 @@
 		],
 		
 		tokenAnalyzerMap: {
-			pragma: ["enterPragma", "exitPragma"]
+			pragma: ["enterPragma", "exitPragma"],
+			xmlDocCommentContent: ["enterXmlDocCommentContent", "exitXmlDocCommentContent"],
+			xmlDocCommentMeta: ["enterXmlDocCommentMeta", "exitXmlDocCommentMeta"],
 		},
 		
 		analyzer: cSharpAnalyzer

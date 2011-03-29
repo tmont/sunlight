@@ -170,7 +170,7 @@
 				|| iterate(context.language.namedIdentRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData.slice(0)); })
 				|| iterate(context.language.namedIdentRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData.slice(0)); })
 				|| iterate(context.language.namedIdentRules.between, function(ruleData) { return createBetweenRule(context.index, ruleData.opener, ruleData.closer); })
-				|| defaultEnter("ident");
+				|| defaultEnter("ident")(context);
 		}
 	};
 	
@@ -484,8 +484,14 @@
 						tokens.push(context.createToken("default", context.defaultData.text, context.defaultData.line, context.defaultData.column)); 
 						context.defaultData.text = "";
 					}
-				
-					tokens.push(token);
+					
+					if (token[0] !== undefined) {
+						//multiple tokens
+						tokens = tokens.concat(token);
+					} else {
+						//single token
+						tokens.push(token);
+					}
 				}
 				
 				context.reader.read();
@@ -594,6 +600,8 @@
 		createAnalyzer: function() { return create(defaultAnalyzer); },
 		isRegistered: function(languageId) { return languages[languageId] !== undefined; },
 		defaultEscapeSequences: ["\\n", "\\t", "\\r", "\\\\", "\\v", "\\f"],
+		enterAnalysis: defaultEnter,
+		exitAnalysis: defaultExit,
 		
 		highlightAll: function(options) { 
 			var parser = new parserConstructor(options);
