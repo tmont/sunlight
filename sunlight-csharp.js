@@ -339,11 +339,6 @@
 							continue;
 						}
 						
-						// var failingToken = context.tokens[context.index];
-						// if (failingToken.value === "IEnumerable") {
-							// console.log(failingToken);
-							// console.log(token);
-						// }
 						return false;
 					}
 					
@@ -368,6 +363,46 @@
 					}
 					
 					return true;
+				},
+				
+				//attributes
+				function(context) {
+					//contained within [], and followed by a keyword or an ident
+					//the followed by will distinguish between "new int[foo]" where foo is a variable and [Attribute]
+					
+					var rule = sunlight.helpers.createBetweenRule(context.index, { token: "punctuation", values: ["["] }, { token: "punctuation", values: ["]"] });
+					if (!rule(context.tokens)) {
+						return false;
+					}
+					
+					//verified that we're between [], so now we need to check that either an ident or a keyword follows
+					//e.g. [Attribute] public class Foo { }
+					//e.g. [Attribute] Object Method() { }
+					
+					//find the "]" token
+					var index = context.index + 1, token = context.tokens[index];
+					while (token.name !== "punctuation" && token.value !== "]") {
+						token = context.tokens[++index];
+					}
+					
+					//the following tokens are optional whitespace and then ident/keyword
+					token = context.tokens[++index];
+					if (token === undefined) {
+						return false;
+					}
+					
+					if (token.name === "default") {
+						token = context.tokens[++index];
+						if (token === undefined) {
+							return false;
+						}
+					}
+					
+					if (token.name === "keyword" || token.name === "ident") {
+						return true;
+					}
+					
+					return false;
 				}
 			],
 			
@@ -379,9 +414,7 @@
 				[{ token: "keyword", values: ["class", "interface", "event", "struct", "enum", "delegate", "public", "private", "protected", "internal", "static", "virtual", "sealed", "new", "params"] }, whitespace],
 
 				//typeof/default
-				[{ token: "keyword", values: ["typeof", "default"] }, whitespace, { token: "punctuation", values: ["("] }, whitespace ],
-				
-				
+				[{ token: "keyword", values: ["typeof", "default"] }, whitespace, { token: "punctuation", values: ["("] }, whitespace ]
 			],
 
 			precedes: [

@@ -1,9 +1,5 @@
 (function(window, undefined){
 
-	if (window["console"] === undefined) {
-		window.console = { log: function(text) { } };
-	}
-	
 	//http://javascript.crockford.com/prototypal.html
 	var create = function(o) {
         function F() {}
@@ -44,11 +40,6 @@
 		return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&")
 	};
 	
-	var regexHelpers = {
-		punctuation: /[^\w\s]/,
-		wordBoundaryString: "[\\W\\s]"
-	};
-
 	var createProceduralRule = function(startIndex, direction, tokenRequirements) {
 		return function(tokens) {
 			var tokenIndexStart = startIndex;
@@ -130,34 +121,45 @@
 		};
 	};
 	
+	var defaultEnter = function(suffix) {
+		return function(context) {
+			return context.append("<span class=\"sunlight-" + suffix + "\">") || true;
+		};
+	};
+	
+	var defaultExit = function(context) {
+		return context.append("</span>") || true;
+	};
+	
 	var defaultAnalyzer = {
-		enterKeyword:        function(context) { context.append("<span class=\"sunlight-keyword\">"); },
-		exitKeyword:         function(context) { context.append("</span>"); },
-		enterOperator:       function(context) { context.append("<span class=\"\sunlight-operator\">"); },
-		exitOperator:        function(context) { context.append("</span>"); },
-		enterString:         function(context) { context.append("<span class=\"sunlight-string\">"); },
-		exitString:          function(context) { context.append("</span>"); },
-		enterPunctuation:    function(context) { context.append("<span class=\"sunlight-punctuation\">"); },
-		exitPunctuation:     function(context) { context.append("</span>"); },
-		enterNumber:         function(context) { context.append("<span class=\"sunlight-number\">"); },
-		exitNumber:          function(context) { context.append("</span>"); },
-		enterComment:        function(context) { context.append("<span class=\"sunlight-comment\">"); },
-		exitComment:         function(context) { context.append("</span>"); },
+		enterKeyword:      defaultEnter("keyword"),
+		exitKeyword:       defaultExit,
+		enterOperator:     defaultEnter("operator"),
+		exitOperator:      defaultExit,
+		enterString:       defaultEnter("string"),
+		exitString:        defaultExit,
+		enterPunctuation:  defaultEnter("punctuation"),
+		exitPunctuation:   defaultExit,
+		enterNumber:       defaultEnter("number"),
+		exitNumber:        defaultExit,
+		enterComment:      defaultEnter("comment"),
+		exitComment:       defaultExit,
 		
-		enterIdent:          function(context) {
-			var i, data;
-			
+		exitIdent:         defaultExit,
+		enterDefault:      function(context) { },
+		exitDefault:       function(context) { },
+		writeCurrentToken: function(context) { context.appendAndEncode(context.tokens[context.index].value); },
+		
+		enterIdent: function(context) {
 			var iterate = function(rules, createRule) {
 				rules = rules || [];
-				
-				for (var i = 0, ruleData; i < rules.length; i++) {
-					ruleData = rules[i];
-					if (typeof(ruleData) === "function") {
-						if (ruleData(context)) {
-							return context.append("<span class=\"sunlight-named-ident\">") || true;
+				for (var i = 0; i < rules.length; i++) {
+					if (typeof(rules[i]) === "function") {
+						if (rules[i](context)) {
+							return defaultEnter("named-ident")(context);
 						}
-					} else if (createRule && createRule(ruleData)(context.tokens)) {
-						return context.append("<span class=\"sunlight-named-ident\">") || true;
+					} else if (createRule && createRule(rules[i])(context.tokens)) {
+						return defaultEnter("named-ident")(context);
 					}
 				}
 				
@@ -168,15 +170,8 @@
 				|| iterate(context.language.namedIdentRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData.slice(0)); })
 				|| iterate(context.language.namedIdentRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData.slice(0)); })
 				|| iterate(context.language.namedIdentRules.between, function(ruleData) { return createBetweenRule(context.index, ruleData.opener, ruleData.closer); })
-				|| context.append("<span class=\"sunlight-ident\">");
-		},
-		
-		exitIdent:         function(context) { context.append("</span>"); },
-		
-		enterDefault:      function(context) { },
-		exitDefault:       function(context) { },
-		
-		writeCurrentToken: function(context) { context.appendAndEncode(context.tokens[context.index].value); }
+				|| defaultEnter("ident");
+		}
 	};
 	
 	//registered languages
@@ -305,7 +300,7 @@
 			
 			var parsePunctuation = function() {
 				var current = context.reader.current();
-				if (regexHelpers.punctuation.test(regexEscape(current))) {
+				if (/[^\w\s]/.test(regexEscape(current))) {
 					return context.createToken("punctuation", current, context.reader.getLine());
 				}
 				

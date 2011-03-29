@@ -43,10 +43,15 @@
 
 namespace My.Namespace {
 	public abstract class ValueHandlerFactoryBase&lt;in T&gt; : MarshalByRefObject, IValueHandlerFactory, IDisposable where T : IDisposable {
-		private Object foo;
+		[Obsolete] private Object foo;
 		public const String bar = "foo";
 		protected static readonly Object baz = 0xffffff;
+		
+#if NET_20
+		private ArrayList list = new ArrayList();
+#endif
 
+		[AnAttribute(typeof(Exception), Message = "foo"]
 		protected internal class InternalClass&lt;T1, out T2&gt; : ICloneable where T1 : class, ICloneable, ICollection { 
 			void Iterate(ICollection&lt;object&gt; foos) {
 				foreach (var foo in foos) {
