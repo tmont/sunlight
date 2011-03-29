@@ -259,6 +259,7 @@
 		var parseNextToken = function(context) {
 			//helpers
 			var matchWord = function(wordMap, name, boundary) {
+				wordMap = wordMap || [];
 				var current = context.reader.current();
 				for (var i = 0, word; i < wordMap.length; i++) {
 					word = wordMap[i];
@@ -444,8 +445,8 @@
 			};
 			
 			return parseCustomRules()
-				|| parseKeyword()
 				|| parseCustomTokens()
+				|| parseKeyword()
 				|| parseScopes()
 				|| parseIdent()
 				|| parseNumber()
@@ -481,7 +482,7 @@
 			while (!context.reader.isEof()) {
 				var token = parseNextToken(context);
 				
-				//flush default data if needed (in pretty much all languages this is just whitespace)
+				//flush default data if needed (in pretty much all languages this is just whitespace (a notable exception is XML (nested parens)))
 				if (token !== null) {
 					if (context.defaultData.text !== "") {
 						tokens.push(context.createToken("default", context.defaultData.text, context.defaultData.line, context.defaultData.column)); 
