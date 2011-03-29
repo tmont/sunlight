@@ -60,12 +60,9 @@
 		customParseRules: [
 			//get/set contextual keyword
 			function(context) {
-				var match, word;
-				if ((match = /^(get|set)\b/.exec(context.reader.current() + context.reader.peek(3))) === null) {
+				if (!/^(get|set)\b/.test(context.reader.current() + context.reader.peek(3))) {
 					return null;
 				}
-				
-				word = match[1];
 				
 				var rule = sunlight.helpers.createProceduralRule(context.count() - 1, -1, [
 					{ token: "punctuation", values: ["}", "{"] },
@@ -78,23 +75,103 @@
 				}
 				
 				//now we need to look ahead and verify that the next non-whitespace token is "{"
-				var count = 3, peek = context.reader.peek(count), current;
+				var count = 3, peek = context.reader.peek(count), current, allGoodYo = false;
 				while (peek.length === count) {
 					if (!/\s$/.test(peek)) {
 						if (peek[peek.length - 1] !== "{") {
 							return null;
 						}
 						
+						allGoodYo = true;
 						break;
 					}
 					
 					peek = context.reader.peek(++count);
 				}
 				
+				if (!allGoodYo) {
+					return null;
+				}
+				
 				var line = context.reader.getLine();
 				var column = context.reader.getColumn();
 				var value = context.reader.current() + context.reader.read(2); //we already read the first letter
 				return context.createToken("keyword", value, line, column);
+			},
+			
+			//value contextual keyword
+			function(context) {
+				if (!/^value\b/.test(context.reader.current() + context.reader.peek(5))) {
+					return null;
+				}
+			
+				//comes after "set" but not after the closing "}" (we'll have to count them to make sure scoping is correct)
+				//can't be on the left side of an assignment
+				
+				//first check equals because that's easy
+				var count = 5, peek = context.reader.peek(count), current, allGoodYo;
+				while (peek.length === count) {
+					if (!/\s$/.test(peek)) {
+						var peekPlus1 = context.reader.peek(count + 1);
+						if (peek[peek.length - 1] === "=" && peekPlus1[peekPlus1.length - 1] !== "=") {
+							//"value" is on the left side of an assignment, so this is not the droid we're looking for
+							return null;
+						}
+						
+						allGoodYo = true;
+						break;
+					}
+					
+					peek = context.reader.peek(++count);
+				}
+				
+				if (!allGoodYo) {
+					//EOF FTL
+					return null;
+				}
+				
+				//now go backward until we run into a "set" keyword, keeping track of all brackets along the way
+				var token, index = context.count() -1;
+				var bracketCount = [0, 0]; //open, close
+				tokenLoop: while ((token = context.token(index--)) !== undefined) {
+					if (token.name === "punctuation") {
+						if (token.value === "{") {
+							bracketCount[0]++;
+						} else if (token.value === "}") {
+							bracketCount[1]++;
+						}
+					} else if (token.name === "keyword") {
+						switch (token.value) {
+							case "set":
+								//yay!
+								break tokenLoop;
+							case "class":
+							case "public":
+							case "private":
+							case "protected":
+							case "internal":
+								//easiest way to detect we're out of scope so we can stop looking
+								return null;
+						}
+					}
+				}
+				
+				if (token === undefined) {
+					//EOF FTL
+					return null;
+				}
+				
+				//examine the bracket count and make sure we're in the correct scope
+				if (bracketCount[1] >= bracketCount[0]) {
+					//nope
+					return null;
+				}
+				
+				var line = context.reader.getLine();
+				var column = context.reader.getColumn();
+				context.reader.read(4); //already read the "v" in "value"
+				
+				return context.createToken("keyword", "value", line, column);
 			}
 		],
 		

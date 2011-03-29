@@ -78,6 +78,8 @@ namespace My.Namespace {
 			
 			set { 
 				var set = value;
+				value = value;
+				value == value ? DoSomething() : DoSomethingElse();
 				this.value = set ?? value; 
 			}
 		}
@@ -87,7 +89,7 @@ namespace My.Namespace {
 				throw new ArgumentException();
 			}
 
-			return obj => (char)obj.GetHashCode();
+			return value => (char)value.GetHashCode();
 		}
 		
 		//generic method definitions
