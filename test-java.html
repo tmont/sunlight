@@ -1,0 +1,76 @@
+<html>
+
+	<head>
+		<script type="text/javascript" src="sunlight.js"></script>
+		<script type="text/javascript" src="sunlight-java.js"></script>
+		<style type="text/css">
+			code {
+				font-family: Consolas;
+				font-size: 16px;
+			}
+			.sunlight-keyword {
+				color: #0000CC;
+			}
+			.sunlight-operator {
+				color: #000000;
+			}
+			.sunlight-string {
+				color: #990000;
+			}
+			.sunlight-comment {
+				color: #009900;
+			}
+			.sunlight-number {
+				color: #CC6600;
+			}
+			.sunlight-punctuation {
+				color: #000000;
+			}
+			.sunlight-ident {
+				color: #000000;
+			}
+			.sunlight-named-ident {
+				color: #2B91AF;
+			}
+			.sunlight-annotation {
+				font-style: italic;
+				color: #787878;
+			}
+		</style>
+	</head>
+
+	<body>
+<pre><code class="sunlight-highlight-java">package com.sunlightjs.awesome;
+
+import java.text.*;
+import java.io.BufferedStreamReader;
+import java.lang.annotation.*;
+
+public class MyClass extends ASlightlyLamerClass implements Fooable, Cloneable, Kissable {
+	private int foo;
+
+	public MyClass(int foo) {
+		super();
+		
+		this.foo = (Integer)foo;
+	}
+	
+	protected abstract void overrideMe(Kissable lips, char c, String[] foo);
+	
+	/**
+	 * Stolen mostly from http://download.oracle.com/javase/tutorial/java/generics/bounded.html
+	 * because I haven't written Java since I was an idiot in college
+	 */
+	@Documented @Annotation(name = "lol")
+	@Override public &lt;T extends Number &amp; MyInterface&gt; T genericsAreAnnoyingToParse(Collection&lt;? extends T&gt; collection, Collection&lt;? super T&gt; wtf) {
+		//wait, so Java seriously uses the ampersand for interfaces in generics?
+		return null;
+	}
+}
+</code></pre>
+	</body>
+
+	<script type="text/javascript">//<![CDATA[
+		Sunlight.highlightAll();
+	//]]></script>
+</html>
