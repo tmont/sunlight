@@ -514,8 +514,6 @@
 			//if continuation is given, then we need to pick up where we left off from a previous parse
 			//basically it indicates that a scope was never closed, so we need to continue that scope
 			if (continuation) {
-				console.log("handling continuation");
-				console.log(context.reader.toString());
 				tokens.push(continuation(context, continuation, "", context.reader.getLine(), context.reader.getColumn(), true));
 			}
 			
@@ -582,44 +580,68 @@
 			};
 		};
 		
-		return {
-			//partialContext allows us to perform a partial parse, and then pick up where we left off at a later time
-			//this functionality enables nested highlights (language withint a language, e.g. PHP within HTML followed by more PHP)
-			highlight: function(unhighlightedCode, languageId, partialContext) {
-				partialContext = partialContext || { };
-				var language = languages[languageId];
-				if (language === undefined) {
-					throw "Unregistered language: " + languageId;
-				}
-			
-				var analyzerContext = createAnalyzerContext(unhighlightedCode, language, partialContext, this.options);
-				var analyzer = language.analyzer || this.options.analyzer;
-				var map = merge(this.options.tokenAnalyzerMap, language.tokenAnalyzerMap);
-				
-				for (var i = partialContext.index ? partialContext.index + 1 : 0, funcs; i < analyzerContext.tokens.length; i++) {
-					analyzerContext.index = i;
-					funcs = map[analyzerContext.tokens[i].name];
-					if (funcs === undefined) {
-						throw "Unknown token \"" + analyzerContext.tokens[i].name + "\"";
-					}
-					
-					try {
-						//enter
-						analyzer[funcs[0]](analyzerContext);
-						
-						//write token value
-						analyzer.writeCurrentToken(analyzerContext);
-						
-						//exit
-						analyzer[funcs[1]](analyzerContext);
-					} catch (e) {
-						console.dir(funcs);
-						throw e;
-					}
-				}
-				
-				return analyzerContext;
+		//partialContext allows us to perform a partial parse, and then pick up where we left off at a later time
+		//this functionality enables nested highlights (language withint a language, e.g. PHP within HTML followed by more PHP)
+		//this function should only be invoked from the parser context, e.g. highlightText.call(this, code, language, context);
+		var highlightText = function(unhighlightedCode, languageId, partialContext) {
+			partialContext = partialContext || { };
+			var language = languages[languageId];
+			if (language === undefined) {
+				throw "Unregistered language: " + languageId;
 			}
+		
+			var analyzerContext = createAnalyzerContext(unhighlightedCode, language, partialContext, this.options);
+			var analyzer = language.analyzer || this.options.analyzer;
+			var map = merge(this.options.tokenAnalyzerMap, language.tokenAnalyzerMap);
+			
+			for (var i = partialContext.index ? partialContext.index + 1 : 0, funcs; i < analyzerContext.tokens.length; i++) {
+				analyzerContext.index = i;
+				funcs = map[analyzerContext.tokens[i].name];
+				if (funcs === undefined) {
+					throw "Unknown token \"" + analyzerContext.tokens[i].name + "\"";
+				}
+				
+				//enter
+				analyzer[funcs[0]](analyzerContext);
+				
+				//write token value
+				analyzer.writeCurrentToken(analyzerContext);
+				
+				//exit
+				analyzer[funcs[1]](analyzerContext);
+			}
+			
+			return analyzerContext;
+		};
+		
+		return {
+			highlightNode: function highlightRecursive(node) {
+				var match, languageId;
+				if ((match = node.className.match(/\s*sunlight-highlight-(\S+)\s*/)) === null || /(?:\s|^)sunlight-highlighted\s*/.test()) {
+					//not a valid sunlight node or it's already been highlighted
+					return;
+				}
+				
+				languageId = match[1];
+				var partialContext = null;
+				for (var j = 0; j < node.childNodes.length; j++) {
+					if (node.childNodes[j].nodeType === 3) {
+						//wrap in span
+						var span = document.createElement("span");
+						span.className = "sunlight-highlighted";
+						partialContext = highlightText.call(this, node.childNodes[j].nodeValue, languageId, partialContext);
+						span.innerHTML = partialContext.getHtml();
+						node.replaceChild(span, node.childNodes[j]);
+					} else {
+						highlightRecursive.call(this, node.childNodes[j]);
+					}
+				}
+				
+				//indicate that this node has been highlighted
+				node.className += " sunlight-highlighted";
+			},
+			
+			highlight: function(code, languageId) { highlightText.call(this, code, languageId); }
 		};
 	}();
 	
@@ -661,33 +683,6 @@
 		return token;
 	};
 	
-	function highlightRecursive(highlighter, node) {
-		var match, languageId;
-		if ((match = node.className.match(/\s*sunlight-highlight-(\S+)\s*/)) === null || /(?:\s|^)sunlight-highlighted\s*/.test()) {
-			//not a valid sunlight node or it's already been highlighted
-			return;
-		}
-		
-		languageId = match[1];
-		var partialContext = null;
-		for (var j = 0; j < node.childNodes.length; j++) {
-			if (node.childNodes[j].nodeType === 3) {
-				//wrap in span
-				var span = document.createElement("span");
-				span.className = "sunlight-highlighted";
-				//console.log(node.childNodes[j].nodeValue);
-				partialContext = highlighter.highlight(node.childNodes[j].nodeValue, languageId, partialContext);
-				span.innerHTML = partialContext.getHtml();
-				node.replaceChild(span, node.childNodes[j]);
-			} else {
-				highlightRecursive(highlighter, node.childNodes[j]);
-			}
-		}
-		
-		//indicate that this node has been highlighted
-		node.className += " sunlight-highlighted";
-	}
-	
 	window.Sunlight = {
 		version: "1.0",
 		Highlighter: highlighterConstructor,
@@ -701,7 +696,7 @@
 			var highlighter = new highlighterConstructor(options);
 			var tags = document.getElementsByTagName("*");
 			for (var i = 0; i < tags.length; i++) {
-				highlightRecursive(highlighter, tags[i]);
+				highlighter.highlightNode(tags[i]);
 			}
 		},
 		
