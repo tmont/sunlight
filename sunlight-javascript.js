@@ -3,19 +3,6 @@
 	if (sunlight === undefined || sunlight["registerLanguage"] === undefined) {
 		throw "Include sunlight.js before including language files";
 	}
-
-	var whitespace = { token: "default", optional: true };
-	var jsAnalyzer = sunlight.createAnalyzer();
-	jsAnalyzer.enterReservedWord = sunlight.enterAnalysis("reserved-word");
-	jsAnalyzer.exitReservedWord = sunlight.exitAnalysis;
-	jsAnalyzer.enterRegexLiteral = sunlight.enterAnalysis("regex-literal");
-	jsAnalyzer.exitRegexLiteral = sunlight.exitAnalysis;
-	jsAnalyzer.enterGlobalVariable = sunlight.enterAnalysis("global-variable");
-	jsAnalyzer.exitGlobalVariable = sunlight.exitAnalysis;
-	jsAnalyzer.enterGlobalFunction = sunlight.enterAnalysis("global-function");
-	jsAnalyzer.exitGlobalFunction = sunlight.exitAnalysis;
-	jsAnalyzer.enterGlobalObject = sunlight.enterAnalysis("global-object");
-	jsAnalyzer.exitGlobalObject = sunlight.exitAnalysis;
 	
 	sunlight.registerLanguage(["js", "javascript"], {
 		keywords: [
@@ -141,7 +128,7 @@
 
 		namedIdentRules: {
 			follows: [
-				[{ token: "keyword", values: ["function"] }, whitespace]
+				[{ token: "keyword", values: ["function"] }, sunlight.helpers.whitespace]
 			]
 		},
 
@@ -173,17 +160,6 @@
 
 			//other
 			"?", ":", ".", "="
-		],
-		
-		tokenAnalyzerMap: {
-			reservedWord: ["enterReservedWord", "exitReservedWord"],
-			regexLiteral: ["enterRegexLiteral", "exitRegexLiteral"],
-			globalObject: ["enterGlobalObject", "exitGlobalObject"],
-			globalFunction: ["enterGlobalFunction", "exitGlobalFunction"],
-			globalVariable: ["enterGlobalVariable", "exitGlobalVariable"]
-		},
-		
-		analyzer: jsAnalyzer
-
+		]
 	});
 }(window["Sunlight"]));

@@ -125,58 +125,43 @@
 		};
 	};
 	
-	var defaultEnter = function(suffix) {
-		return function(context) {
-			return context.append("<span class=\"sunlight-" + suffix + " sunlight-" + context.language.name + "\">") || true;
+	var defaultAnalyzer = function() {
+		var defaultEnter = function(suffix) {
+			return function(context) {
+				return context.append("<span class=\"sunlight-" + suffix + " sunlight-" + context.language.name + "\">") || true;
+			};
 		};
-	};
 	
-	var defaultExit = function(context) {
-		return context.append("</span>") || true;
-	};
-	
-	var defaultAnalyzer = {
-		enterKeyword:      defaultEnter("keyword"),
-		exitKeyword:       defaultExit,
-		enterOperator:     defaultEnter("operator"),
-		exitOperator:      defaultExit,
-		enterString:       defaultEnter("string"),
-		exitString:        defaultExit,
-		enterPunctuation:  defaultEnter("punctuation"),
-		exitPunctuation:   defaultExit,
-		enterNumber:       defaultEnter("number"),
-		exitNumber:        defaultExit,
-		enterComment:      defaultEnter("comment"),
-		exitComment:       defaultExit,
-		
-		exitIdent:         defaultExit,
-		enterDefault:      function(context) { },
-		exitDefault:       function(context) { },
-		writeCurrentToken: function(context) { context.appendAndEncode(context.tokens[context.index].value); },
-		
-		enterIdent: function(context) {
-			var iterate = function(rules, createRule) {
-				rules = rules || [];
-				for (var i = 0; i < rules.length; i++) {
-					if (typeof(rules[i]) === "function") {
-						if (rules[i](context)) {
+		return  {
+			defaultEnter: function(context) { return defaultEnter(context.tokens[context.index].name)(context); },
+			defaultExit: function(context) { return context.append("</span>") || true; },
+			writeCurrentToken: function(context) { context.appendAndEncode(context.tokens[context.index].value); },
+			
+			//this handles the named ident mayhem
+			enter_ident: function(context) {
+				var evaluate = function(rules, createRule) {
+					rules = rules || [];
+					for (var i = 0; i < rules.length; i++) {
+						if (typeof(rules[i]) === "function") {
+							if (rules[i](context)) {
+								return defaultEnter("named-ident")(context);
+							}
+						} else if (createRule && createRule(rules[i])(context.tokens)) {
 							return defaultEnter("named-ident")(context);
 						}
-					} else if (createRule && createRule(rules[i])(context.tokens)) {
-						return defaultEnter("named-ident")(context);
 					}
-				}
+					
+					return false;
+				};
 				
-				return false;
-			};
-			
-			iterate(context.language.namedIdentRules.custom)
-				|| iterate(context.language.namedIdentRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData.slice(0), context.language.caseInsensitive); })
-				|| iterate(context.language.namedIdentRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData.slice(0), context.language.caseInsensitive); })
-				|| iterate(context.language.namedIdentRules.between, function(ruleData) { return createBetweenRule(context.index, ruleData.opener, ruleData.closer, context.language.caseInsensitive); })
-				|| defaultEnter("ident")(context);
-		}
-	};
+				evaluate(context.language.namedIdentRules.custom)
+					|| evaluate(context.language.namedIdentRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData.slice(0), context.language.caseInsensitive); })
+					|| evaluate(context.language.namedIdentRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData.slice(0), context.language.caseInsensitive); })
+					|| evaluate(context.language.namedIdentRules.between, function(ruleData) { return createBetweenRule(context.index, ruleData.opener, ruleData.closer, context.language.caseInsensitive); })
+					|| defaultEnter("ident")(context);
+			}
+		};
+	}();
 	
 	//registered languages
 	var languages = { };
@@ -590,30 +575,21 @@
 			}
 		
 			var analyzerContext = createAnalyzerContext(unhighlightedCode, language, partialContext, this.options);
-			var analyzer = language.analyzer || this.options.analyzer;
-			var map = merge(this.options.tokenAnalyzerMap, language.tokenAnalyzerMap);
-			
-			for (var i = partialContext.index ? partialContext.index + 1 : 0, funcs; i < analyzerContext.tokens.length; i++) {
+			var analyzer = language.analyzer;
+			for (var i = partialContext.index ? partialContext.index + 1 : 0, tokenName, enter, exit; i < analyzerContext.tokens.length; i++) {
 				analyzerContext.index = i;
-				funcs = map[analyzerContext.tokens[i].name];
-				if (funcs === undefined) {
-					throw "Unknown token \"" + analyzerContext.tokens[i].name + "\"";
-				}
+				tokenName = analyzerContext.tokens[i].name;
+				enter = "enter_" + tokenName;
+				exit = "exit_" + tokenName;
 				
-				//enter
-				analyzer[funcs[0]](analyzerContext);
-				
-				//write token value
+				analyzer[enter] ? analyzer[enter](analyzerContext) : analyzer.defaultEnter(analyzerContext);
 				analyzer.writeCurrentToken(analyzerContext);
-				
-				//exit
-				analyzer[funcs[1]](analyzerContext);
+				analyzer[exit] ? analyzer[exit](analyzerContext) : analyzer.defaultExit(analyzerContext);
 			}
 			
 			return analyzerContext;
 		};
 		
-		//these functions are named so they can be invoked by each other
 		return {
 			/**
 			 * Highlights a block of text
@@ -633,7 +609,7 @@
 				languageId = match[1];
 				for (var j = 0, span; j < node.childNodes.length; j++) {
 					if (node.childNodes[j].nodeType === 3) {
-						//wrap in span
+						//text nodex
 						span = document.createElement("span");
 						span.className = "sunlight-highlighted";
 						partialContext = highlightText.call(this, node.childNodes[j].nodeValue, languageId, partialContext);
@@ -652,18 +628,7 @@
 	
 	var highlighterConstructor = function() {
 		var defaults = {
-			analyzer: create(defaultAnalyzer),
-			tabWidth: 4,
-			tokenAnalyzerMap: {
-				keyword: ["enterKeyword", "exitKeyword"],
-				operator: ["enterOperator", "exitOperator"],
-				string: ["enterString", "exitString"],
-				comment: ["enterComment", "exitComment"],
-				ident: ["enterIdent", "exitIdent"],
-				punctuation: ["enterPunctuation", "exitPunctuation"],
-				number: ["enterNumber", "exitNumber"],
-				"default": ["enterDefault", "exitDefault"],
-			}
+			tabWidth: 4
 		};
 		
 		return function(options) {
@@ -694,8 +659,6 @@
 		createAnalyzer: function() { return create(defaultAnalyzer); },
 		isRegistered: function(languageId) { return languages[languageId] !== undefined; },
 		defaultEscapeSequences: ["\\n", "\\t", "\\r", "\\\\", "\\v", "\\f"],
-		enterAnalysis: defaultEnter,
-		exitAnalysis: defaultExit,
 		
 		highlightAll: function(options) { 
 			var highlighter = new highlighterConstructor(options);
@@ -710,9 +673,11 @@
 				throw "Languages must be registered with at least one identifier, e.g. \"php\" for PHP";
 			}
 			
+			languageData.analyzer = languageData.analyzer || create(defaultAnalyzer);
+			
 			for (var i = 0; i < languageIds.length; i++) {
-				languageData.name = languageIds[i];
 				languages[languageIds[i]] = languageData;
+				languages[languageIds[i]].name = languageIds[i];
 			}
 		},
 		
@@ -721,7 +686,8 @@
 			createBetweenRule: createBetweenRule,
 			createProceduralRule: createProceduralRule,
 			getNextNonWsToken: function(tokens, index) { return getNextNonWsToken(tokens, index, 1); },
-			getPreviousNonWsToken: function(tokens, index) { return getNextNonWsToken(tokens, index, -1); }
+			getPreviousNonWsToken: function(tokens, index) { return getNextNonWsToken(tokens, index, -1); },
+			whitespace: { token: "default", optional: true }
 		}
 	};
 

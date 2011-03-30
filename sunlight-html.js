@@ -3,16 +3,6 @@
 	if (sunlight === undefined || sunlight["registerLanguage"] === undefined) {
 		throw "Include sunlight.js before including language files";
 	}
-
-	var whitespace = { token: "default", optional: true };
-	
-	var htmlAnalyzer = sunlight.createAnalyzer();
-	htmlAnalyzer.enterCdata = sunlight.enterAnalysis("cdata");
-	htmlAnalyzer.exitCdata = sunlight.exitAnalysis;
-	htmlAnalyzer.enterContent = sunlight.enterAnalysis("content");
-	htmlAnalyzer.exitContent = sunlight.exitAnalysis;
-	htmlAnalyzer.enterDoctype = sunlight.enterAnalysis("doctype");
-	htmlAnalyzer.exitDoctype = sunlight.exitAnalysis;
 	
 	sunlight.registerLanguage(["html"], {
 		scopes: {
@@ -58,27 +48,18 @@
 		],
 		
 		identFirstLetter: /[A-Za-z_]/,
-		identAfterFirstLetter: /[\w:-]/, //colon so namespaces work and stuff, e.g. foo:attribute="foo"
+		identAfterFirstLetter: /[\w:-]/, //include the colon so namespaces work and stuff, e.g. foo:attribute="foo"
 
 		//these are considered attributes
 		namedIdentRules: {
 			precedes: [
-				[whitespace, { token: "operator", values: ["="] }]
+				[sunlight.helpers.whitespace, { token: "operator", values: ["="] }]
 			]
 		},
 
 		operators: [
 			"<?xml", "?>", "=",
 			"/>", "</", "<", ">"
-		],
-		
-		tokenAnalyzerMap: {
-			cdata: ["enterCdata", "exitCdata"],
-			content: ["enterContent", "exitContent"],
-			doctype: ["enterDoctype", "exitDoctype"]
-		},
-		
-		analyzer: htmlAnalyzer
-
+		]
 	});
 }(window["Sunlight"]));

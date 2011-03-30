@@ -27,6 +27,7 @@
 	color: #339999;
 }
 
+
 /* php */
 .sunlight-php.sunlight-keyword, .sunlight-php.sunlight-language-construct {
 	color: #0000CC;
@@ -47,7 +48,7 @@
 .sunlight-php.sunlight-punctuation, .sunlight-php.sunlight-ident {
 	color: #000000;
 }
-.sunlight-php.sunlight-named-ident, .sunlight-php .sunlight-constant {
+.sunlight-php.sunlight-named-ident, .sunlight-php.sunlight-constant {
 	color: #2B91AF;
 }
 .sunlight-php.sunlight-variable {
@@ -68,7 +69,7 @@
 .sunlight-csharp.sunlight-string {
 	color: #990000;
 }
-.sunlight-csharp.sunlight-comment, .sunlight-csharp.sunlight-xml-doc-comment-content {
+.sunlight-csharp.sunlight-comment, .sunlight-csharp.sunlight-xmlDocCommentContent {
 	color: #009900;
 }
 .sunlight-csharp.sunlight-number {
@@ -87,7 +88,7 @@
 	color: #999999;
 	font-style: italic;
 }
-.sunlight-csharp.sunlight-xml-doc-comment-meta {
+.sunlight-csharp.sunlight-xmlDocCommentMeta {
 	color: #808080;
 }
 
@@ -130,20 +131,20 @@
 .sunlight-javascript.sunlight-punctuation, .sunlight-javascript.sunlight-ident {
 	color: #000000;
 }
-.sunlight-javascript.sunlight-named-ident, .sunlight-javascript.sunlight-global-variable, .sunlight-javascript.sunlight-global-object {
+.sunlight-javascript.sunlight-named-ident, .sunlight-javascript.sunlight-globalVariable, .sunlight-javascript.sunlight-globalObject {
 	color: #2B91AF;
 }
 .sunlight-javascript.sunlight-variable {
 	color: #663366;
 }
-.sunlight-javascript.sunlight-regex-literal {
+.sunlight-javascript.sunlight-regexLiteral {
 	color: #000000;
 	background-color: #FFFE47;
 }
-.sunlight-javascript.sunlight-reserved-word {
+.sunlight-javascript.sunlight-reservedWord {
 	font-style: italic;
 }
-.sunlight-javascript.sunlight-global-function {
+.sunlight-javascript.sunlight-globalFunction {
 	color: #B069AF;
 }
 
@@ -172,6 +173,6 @@
 .sunlight-mysql.sunlight-function {
 	color: #B069AF;
 }
-.sunlight-mysql.sunlight-quoted-ident {
+.sunlight-mysql.sunlight-quotedIdent {
 	color: #999900;
 }

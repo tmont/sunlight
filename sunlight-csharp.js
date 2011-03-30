@@ -4,15 +4,6 @@
 		throw "Include sunlight.js before including language files";
 	}
 
-	var whitespace = { token: "default", optional: true };
-	var cSharpAnalyzer = sunlight.createAnalyzer();
-	cSharpAnalyzer.enterPragma = sunlight.enterAnalysis("pragma");
-	cSharpAnalyzer.exitPragma = sunlight.exitAnalysis;
-	cSharpAnalyzer.enterXmlDocCommentContent = sunlight.enterAnalysis("xml-doc-comment-content");
-	cSharpAnalyzer.exitXmlDocCommentContent = sunlight.exitAnalysis;
-	cSharpAnalyzer.enterXmlDocCommentMeta = sunlight.enterAnalysis("xml-doc-comment-meta");
-	cSharpAnalyzer.exitXmlDocCommentMeta = sunlight.exitAnalysis;
-
 	var primitives = ["int", "bool", "double", "float", "char", "byte", "sbyte", "uint", "long", "ulong", "char", "decimal", "short", "ushort"];
 	//things that are allowed inside a generic type definition
 	var acceptableKeywords = primitives.concat(["in", "out", "string", "object"]);
@@ -128,7 +119,7 @@
 				
 				var rule = sunlight.helpers.createProceduralRule(context.count() - 1, -1, [
 					{ token: "punctuation", values: ["}", "{"] },
-					whitespace,
+					sunlight.helpers.whitespace,
 					{ token: "keyword", values: ["public", "private", "protected", "internal"], optional: true }
 				]);
 				
@@ -136,7 +127,7 @@
 					return null;
 				}
 				
-				//now we need to look ahead and verify that the next non-whitespace token is "{"
+				//now we need to look ahead and verify that the next non-sunlight.helpers.whitespace token is "{"
 				var count = "get".length, peek = context.reader.peek(count), current, allGoodYo = false;
 				while (peek.length === count) {
 					if (!/\s$/.test(peek)) {
@@ -238,9 +229,6 @@
 		],
 		
 		scopes: {
-			//token name => array[opener, closer, escape token (optional), zeroWidthCloser? (optional)]
-			//escape token is either a hard-coded string or an object with keys length and regex, e.g. { length: 2, regex: /\d;/ }
-			
 			string: [ ["\"", "\"", sunlight.defaultEscapeSequences.concat(["\\\""])], ["@\"", "\"", ["\"\""]], ["'", "'", ["\'", "\\\\"]] ],
 			comment: [ ["//", "\n", null, true], ["/*", "*/"] ],
 			pragma: [ ["#", "\n", null, true] ]
@@ -360,7 +348,7 @@
 				function(context) {
 					//this finds "Foo" in "Foo<Bar> foo"
 					
-					//just need to look ahead and verify that this ident precedes a generic definition, and then non-optional whitespace and then an ident
+					//just need to look ahead and verify that this ident precedes a generic definition, and then non-optional sunlight.helpers.whitespace and then an ident
 					
 					var index = context.index, bracketCount = [0, 0], token; //open (<), close (>)
 					while ((token = context.tokens[++index]) !== undefined) {
@@ -408,7 +396,7 @@
 						return false;
 					}
 					
-					//next token should be optional whitespace followed by an ident
+					//next token should be optional sunlight.helpers.whitespace followed by an ident
 					token = context.tokens[++index];
 					if (token === undefined && token.name !== "default" && token.name !== "ident") {
 						console.log(token);
@@ -461,7 +449,7 @@
 						token = context.tokens[++index];
 					}
 					
-					//the following tokens are optional whitespace and then ident/keyword
+					//the following tokens are optional sunlight.helpers.whitespace and then ident/keyword
 					token = context.tokens[++index];
 					if (token === undefined) {
 						return false;
@@ -487,24 +475,24 @@
 				//special method parameters
 				//new: public new Foo Method() { } and new Foo();
 				//class/interface/event/struct/delegate names
-				[{ token: "keyword", values: ["class", "interface", "event", "struct", "enum", "delegate", "public", "private", "protected", "internal", "static", "virtual", "sealed", "new", "params"] }, whitespace],
+				[{ token: "keyword", values: ["class", "interface", "event", "struct", "enum", "delegate", "public", "private", "protected", "internal", "static", "virtual", "sealed", "new", "params"] }, sunlight.helpers.whitespace],
 
 				//typeof/default
-				[{ token: "keyword", values: ["typeof", "default"] }, whitespace, { token: "punctuation", values: ["("] }, whitespace ],
+				[{ token: "keyword", values: ["typeof", "default"] }, sunlight.helpers.whitespace, { token: "punctuation", values: ["("] }, sunlight.helpers.whitespace ],
 				
 				//casting using "as"
-				[{ token: "keyword", values: ["as"] }, whitespace ]
+				[{ token: "keyword", values: ["as"] }, sunlight.helpers.whitespace ]
 			],
 
 			precedes: [
 				//casting
-				[whitespace, { token: "punctuation", values: [")"] }, whitespace, { token: "ident" }],
-				[whitespace, { token: "punctuation", values: [")"] }, whitespace, { token: "keyword", values: ["this"] }],
+				[sunlight.helpers.whitespace, { token: "punctuation", values: [")"] }, sunlight.helpers.whitespace, { token: "ident" }],
+				[sunlight.helpers.whitespace, { token: "punctuation", values: [")"] }, sunlight.helpers.whitespace, { token: "keyword", values: ["this"] }],
 				
 				//arrays
-				[whitespace, { token: "punctuation", values: ["["] }, whitespace, { token: "punctuation", values: ["]"] }], //in method parameters
-				[whitespace, { token: "punctuation", values: ["["] }, whitespace, { token: "number" }, whitespace, { token: "punctuation", values: ["]"] }], //declaration with integer
-				[whitespace, { token: "punctuation", values: ["["] }, whitespace, { token: "ident" }, whitespace, { token: "punctuation", values: ["]"] }], //declaration with variable
+				[sunlight.helpers.whitespace, { token: "punctuation", values: ["["] }, sunlight.helpers.whitespace, { token: "punctuation", values: ["]"] }], //in method parameters
+				[sunlight.helpers.whitespace, { token: "punctuation", values: ["["] }, sunlight.helpers.whitespace, { token: "number" }, sunlight.helpers.whitespace, { token: "punctuation", values: ["]"] }], //declaration with integer
+				[sunlight.helpers.whitespace, { token: "punctuation", values: ["["] }, sunlight.helpers.whitespace, { token: "ident" }, sunlight.helpers.whitespace, { token: "punctuation", values: ["]"] }], //declaration with variable
 
 				//assignment: Object o = new object();
 				//method parameters: public int Foo(Foo foo, Bar b, Object o) { }
@@ -540,15 +528,6 @@
 
 			//other
 			"??", "?", "::", ":", ".", "=>", "="
-		],
-		
-		tokenAnalyzerMap: {
-			pragma: ["enterPragma", "exitPragma"],
-			xmlDocCommentContent: ["enterXmlDocCommentContent", "exitXmlDocCommentContent"],
-			xmlDocCommentMeta: ["enterXmlDocCommentMeta", "exitXmlDocCommentMeta"],
-		},
-		
-		analyzer: cSharpAnalyzer
-
+		]
 	});
 }(window["Sunlight"]));

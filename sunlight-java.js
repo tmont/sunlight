@@ -4,11 +4,6 @@
 		throw "Include sunlight.js before including language files";
 	}
 
-	var whitespace = { token: "default", optional: true };
-	var javaAnalyzer = sunlight.createAnalyzer();
-	javaAnalyzer.enterAnnotation = function(context) { context.append("<span class=\"sunlight-annotation\">"); };
-	javaAnalyzer.exitAnnotation = function(context) { context.append("</span>"); };
-
 	sunlight.registerLanguage(["java"], {
 		keywords: [
 			//http://download.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html
@@ -36,23 +31,23 @@
 
 		namedIdentRules: {
 			follows: [
-				[{ token: "ident" }, whitespace, { token: "keyword", values: ["extends", "implements"] }, whitespace],
+				[{ token: "ident" }, sunlight.helpers.whitespace, { token: "keyword", values: ["extends", "implements"] }, sunlight.helpers.whitespace],
 				
 				//method/property return values
 				//new: public new Foo Method() { } and new Foo();
 				//class/interface names
-				[{ token: "keyword", values: ["class", "interface", "enum", "public", "private", "protected", "static", "final", "new"] }, whitespace]
+				[{ token: "keyword", values: ["class", "interface", "enum", "public", "private", "protected", "static", "final", "new"] }, sunlight.helpers.whitespace]
 			],
 
 			precedes: [
 				//casting
-				[whitespace, { token: "punctuation", values: [")"] }, whitespace, { token: "ident" }],
-				[whitespace, { token: "punctuation", values: [")"] }, whitespace, { token: "keyword", values: ["this"] }],
+				[sunlight.helpers.whitespace, { token: "punctuation", values: [")"] }, sunlight.helpers.whitespace, { token: "ident" }],
+				[sunlight.helpers.whitespace, { token: "punctuation", values: [")"] }, sunlight.helpers.whitespace, { token: "keyword", values: ["this"] }],
 				
 				//arrays
-				[whitespace, { token: "punctuation", values: ["["] }, whitespace, { token: "punctuation", values: ["]"] }], //in method parameters
-				[whitespace, { token: "punctuation", values: ["["] }, whitespace, { token: "number" }, whitespace, { token: "punctuation", values: ["]"] }], //declaration with integer
-				[whitespace, { token: "punctuation", values: ["["] }, whitespace, { token: "ident" }, whitespace, { token: "punctuation", values: ["]"] }], //declaration with variable
+				[sunlight.helpers.whitespace, { token: "punctuation", values: ["["] }, sunlight.helpers.whitespace, { token: "punctuation", values: ["]"] }], //in method parameters
+				[sunlight.helpers.whitespace, { token: "punctuation", values: ["["] }, sunlight.helpers.whitespace, { token: "number" }, sunlight.helpers.whitespace, { token: "punctuation", values: ["]"] }], //declaration with integer
+				[sunlight.helpers.whitespace, { token: "punctuation", values: ["["] }, sunlight.helpers.whitespace, { token: "ident" }, sunlight.helpers.whitespace, { token: "punctuation", values: ["]"] }], //declaration with variable
 
 				//assignment: Object o = new object();
 				//method parameters: public int Foo(Foo foo, Bar b, Object o) { }
@@ -91,14 +86,7 @@
 			"!", "~",
 
 			//other
-			"?", "::", ":", ".", "="
-		],
-		
-		tokenAnalyzerMap: {
-			annotation: ["enterAnnotation", "exitAnnotation"]
-		},
-		
-		analyzer: javaAnalyzer
-
+			"?", ":", ".", "="
+		]
 	});
 }(window["Sunlight"]));

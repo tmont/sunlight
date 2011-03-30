@@ -4,14 +4,6 @@
 		throw "Include sunlight.js before including language files";
 	}
 
-	var whitespace = { token: "default", optional: true };
-	
-	var xmlAnalyzer = sunlight.createAnalyzer();
-	xmlAnalyzer.enterCdata = sunlight.enterAnalysis("cdata");
-	xmlAnalyzer.exitCdata = sunlight.exitAnalysis;
-	xmlAnalyzer.enterContent = sunlight.enterAnalysis("content");
-	xmlAnalyzer.exitContent = sunlight.exitAnalysis;
-	
 	sunlight.registerLanguage(["xml"], {
 		scopes: {
 			string: [ ["\"", "\""], ["'", "'"] ],
@@ -60,21 +52,14 @@
 		//these are considered attributes
 		namedIdentRules: {
 			precedes: [
-				[whitespace, { token: "operator", values: ["=", ":"] }]
+				[sunlight.helpers.whitespace, { token: "operator", values: ["=", ":"] }]
 			]
 		},
 
 		operators: [
 			"<?xml", "?>", "=",
 			"/>", "</", "<", ">", ":"
-		],
-		
-		tokenAnalyzerMap: {
-			cdata: ["enterCdata", "exitCdata"],
-			content: ["enterContent", "exitContent"]
-		},
-		
-		analyzer: xmlAnalyzer
+		]
 
 	});
 }(window["Sunlight"]));

@@ -3,13 +3,6 @@
 	if (sunlight === undefined || sunlight["registerLanguage"] === undefined) {
 		throw "Include sunlight.js before including language files";
 	}
-
-	var whitespace = { token: "default", optional: true };
-	var mySqlAnalyzer = sunlight.createAnalyzer();
-	mySqlAnalyzer.enterFunction = sunlight.enterAnalysis("function");
-	mySqlAnalyzer.exitFunction = sunlight.exitAnalysis;
-	mySqlAnalyzer.enterQuotedIdent = sunlight.enterAnalysis("quoted-ident");
-	mySqlAnalyzer.exitQuotedIdent = sunlight.exitAnalysis;
 	
 	sunlight.registerLanguage(["mysql"], {
 		caseInsensitive: true,
@@ -330,15 +323,12 @@
 			quotedIdent: [ ["`", "`", ["`\\`", "\\\\"]] ]
 		},
 		
-		customParseRules: [
-		],
-
 		identFirstLetter: /[A-Za-z_]/,
 		identAfterFirstLetter: /\w/,
 
 		namedIdentRules: {
 			follows: [
-				[{ token: "keyword", values: ["from", "join"]}, whitespace ]
+				[{ token: "keyword", values: ["from", "join"]}, sunlight.helpers.whitespace ]
 			]
 		},
 
@@ -364,7 +354,7 @@
 			"<>", "<=>",
 			"<=", "<",
 			">=", ">",
-			"===", "==", "!==", "!=",
+			"==", "!=",
 
 			//unary
 			"!", "~",
@@ -374,14 +364,6 @@
 			
 			//other
 			"."
-		],
-		
-		tokenAnalyzerMap: {
-			"function": ["enterFunction", "exitFunction"],
-			quotedIdent: ["enterQuotedIdent", "exitQuotedIdent"]
-		},
-		
-		analyzer: mySqlAnalyzer
-
+		]
 	});
 }(window["Sunlight"]));
