@@ -73,10 +73,10 @@ namespace My.Namespace {
 		///
 		/// &lt;param name="foos"&gt;Collection of &lt;see cref="Foo" /&gt;&lt;/param&gt;
 		[Foo]
-		[Pure, OutOfThisWorld]
-		[OutOfThisWorld]
+		[Pure(typeof(IDisposable[])), OutOfThisWorld]
+		[OutOfThisWorld(Message = "foo")]
 		[Another]
-		Action&lt;IDisposable&gt; DoStuff(IEnumerable&lt;Foo&gt; foos) {
+		Action&lt;IDisposable&gt; DoStuff(IEnumerable&lt;Foo&gt; foos, string[] strings) {
 			Action&lt;Func&lt;IDisposable, Foo&gt;&gt; action = () => disposable => new Foo();
 			
 			//neither "foo" below should be a named ident

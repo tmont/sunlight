@@ -348,7 +348,13 @@
 				function(context) {
 					//this finds "Foo" in "Foo<Bar> foo"
 					
-					//just need to look ahead and verify that this ident precedes a generic definition, and then non-optional sunlight.helpers.whitespace and then an ident
+					//if it's preceded by an ident or a primitive/alias keyword then it's no good (i.e. a generic method definition like "public void Foo<T>")
+					var token = sunlight.helpers.getPreviousNonWsToken(context.tokens, context.index);
+					if (token.name === "ident" || (token.name === "keyword" && sunlight.helpers.contains(primitives.concat(["string", "object", "void"]), token.value))) {
+						return false;
+					}
+					
+					//need to look ahead and verify that this ident precedes a generic definition, and then non-optional whitespace and then an ident
 					
 					var index = context.index, bracketCount = [0, 0], token; //open (<), close (>)
 					while ((token = context.tokens[++index]) !== undefined) {
@@ -370,7 +376,7 @@
 									return false;
 							}
 							
-							//if bracket counts match, get out!
+							//if bracket counts match, get the f out
 							if (bracketCount[0] === bracketCount[1]) {
 								break;
 							}
@@ -396,7 +402,7 @@
 						return false;
 					}
 					
-					//next token should be optional sunlight.helpers.whitespace followed by an ident
+					//next token should be optional whitespace followed by an ident
 					token = context.tokens[++index];
 					if (token === undefined && token.name !== "default" && token.name !== "ident") {
 						console.log(token);
@@ -431,38 +437,66 @@
 				
 				//attributes
 				function(context) {
-					//contained within [], and followed by a keyword or an ident
-					//the followed by will distinguish between "new int[foo]" where foo is a variable and [Attribute]
-					
-					var rule = sunlight.helpers.createBetweenRule(context.index, { token: "punctuation", values: ["["] }, { token: "punctuation", values: ["]"] });
-					if (!rule(context.tokens)) {
+					//if the next token is an equals sign, this is a named parameter (or something else not inside of an attribute)
+					var token = sunlight.helpers.getNextNonWsToken(context.tokens, context.index);
+					if (token.name === "operator" && token.value === "=") {
 						return false;
 					}
 					
-					//verified that we're between [], so now we need to check that either an ident or a keyword follows
-					//e.g. [Attribute] public class Foo { }
-					//e.g. [Attribute] Object Method() { }
-					
-					//find the "]" token
-					var index = context.index + 1, token = context.tokens[index];
-					while (token.name !== "punctuation" && token.value !== "]") {
-						token = context.tokens[++index];
-					}
-					
-					//the following tokens are optional sunlight.helpers.whitespace and then ident/keyword
-					token = context.tokens[++index];
-					if (token === undefined) {
-						return false;
-					}
-					
-					if (token.name === "default") {
-						token = context.tokens[++index];
-						if (token === undefined) {
-							return false;
+					//first, verify that we're inside an opening bracket
+					var index = context.index, bracketCount = [0, 0];
+					while ((token = context.tokens[--index]) !== undefined) {
+						if (token.name === "punctuation") {
+							if (token.value === "[") {
+								bracketCount[0]++;
+								continue;
+							}
+							
+							if (token.value === "]") {
+								bracketCount[1]++;
+								continue;
+							}
+							
+							//exit rules
+							if (token.value === "{" || token.value === "}" || token.value === ";") {
+								break;
+							}
 						}
 					}
 					
-					if (token.name === "keyword" || token.name === "ident") {
+					if (bracketCount[0] === 0) {
+						return false;
+					}
+					
+					//next, verify we're inside a closing bracket
+					index = context.index;
+					var foundCloser = false;
+					while ((token = context.tokens[++index]) !== undefined) {
+						if (token.name === "punctuation") {
+							if (token.value === "[") {
+								bracketCount[0]++;
+								continue;
+							}
+							if (token.value === "]") {
+								foundCloser = true;
+								bracketCount[1]++;
+								continue;
+							}
+							
+							//some early exit rules
+							if (token.value === "{" || token.value === "}" || token.value === ";") {
+								break;
+							}
+						}
+					}
+					
+					if (!foundCloser || bracketCount[0] !== bracketCount[1]) {
+						return false;
+					}
+					
+					//next token should be either a keyword or an ident
+					token = sunlight.helpers.getNextNonWsToken(context.tokens, index);
+					if (token !== undefined && (token.name === "keyword" || token.name === "ident")) {
 						return true;
 					}
 					
