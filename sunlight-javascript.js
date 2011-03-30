@@ -6,16 +6,16 @@
 
 	var whitespace = { token: "default", optional: true };
 	var jsAnalyzer = sunlight.createAnalyzer();
-	jsAnalyzer.enterReservedWord = function(context) { context.append("<span class=\"sunlight-reserved-word\">"); };
-	jsAnalyzer.exitReservedWord = function(context) { context.append("</span>"); };
-	jsAnalyzer.enterRegexLiteral = function(context) { context.append("<span class=\"sunlight-regex-literal\">"); };
-	jsAnalyzer.exitRegexLiteral = function(context) { context.append("</span>"); };
-	jsAnalyzer.enterGlobalVariable = function(context) { context.append("<span class=\"sunlight-global-variable\">"); };
-	jsAnalyzer.exitGlobalVariable = function(context) { context.append("</span>"); };
-	jsAnalyzer.enterGlobalFunction = function(context) { context.append("<span class=\"sunlight-global-function\">"); };
-	jsAnalyzer.exitGlobalFunction = function(context) { context.append("</span>"); };
-	jsAnalyzer.enterGlobalObject = function(context) { context.append("<span class=\"sunlight-global-object\">"); };
-	jsAnalyzer.exitGlobalObject = function(context) { context.append("</span>"); };
+	jsAnalyzer.enterReservedWord = sunlight.enterAnalysis("reserved-word");
+	jsAnalyzer.exitReservedWord = sunlight.exitAnalysis;
+	jsAnalyzer.enterRegexLiteral = sunlight.enterAnalysis("regex-literal");
+	jsAnalyzer.exitRegexLiteral = sunlight.exitAnalysis;
+	jsAnalyzer.enterGlobalVariable = sunlight.enterAnalysis("global-variable");
+	jsAnalyzer.exitGlobalVariable = sunlight.exitAnalysis;
+	jsAnalyzer.enterGlobalFunction = sunlight.enterAnalysis("global-function");
+	jsAnalyzer.exitGlobalFunction = sunlight.exitAnalysis;
+	jsAnalyzer.enterGlobalObject = sunlight.enterAnalysis("global-object");
+	jsAnalyzer.exitGlobalObject = sunlight.exitAnalysis;
 	
 	sunlight.registerLanguage(["js", "javascript"], {
 		keywords: [

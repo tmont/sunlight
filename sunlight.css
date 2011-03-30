@@ -62,13 +62,13 @@
 .sunlight-csharp.sunlight-keyword {
 	color: #0000CC;
 }
-.sunlight-csharp .sunlight-operator {
+.sunlight-csharp.sunlight-operator {
 	color: #000000;
 }
-.sunlight-csharp .sunlight-string {
+.sunlight-csharp.sunlight-string {
 	color: #990000;
 }
-.sunlight-csharp .sunlight-comment, .sunlight-csharp.sunlight-xml-doc-comment-content {
+.sunlight-csharp.sunlight-comment, .sunlight-csharp.sunlight-xml-doc-comment-content {
 	color: #009900;
 }
 .sunlight-csharp.sunlight-number {

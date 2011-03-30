@@ -7,10 +7,10 @@
 	var whitespace = { token: "default", optional: true };
 	
 	var xmlAnalyzer = sunlight.createAnalyzer();
-	xmlAnalyzer.enterCdata = function(context) { context.append("<span class=\"sunlight-cdata\">"); };
-	xmlAnalyzer.exitCdata = function(context) { context.append("</span>"); };
-	xmlAnalyzer.enterContent = function(context) { context.append("<span class=\"sunlight-content\">"); };
-	xmlAnalyzer.exitContent = function(context) { context.append("</span>"); };
+	xmlAnalyzer.enterCdata = sunlight.enterAnalysis("cdata");
+	xmlAnalyzer.exitCdata = sunlight.exitAnalysis;
+	xmlAnalyzer.enterContent = sunlight.enterAnalysis("content");
+	xmlAnalyzer.exitContent = sunlight.exitAnalysis;
 	
 	sunlight.registerLanguage(["xml"], {
 		scopes: {
@@ -55,18 +55,18 @@
 		],
 		
 		identFirstLetter: /[A-Za-z_]/,
-		identAfterFirstLetter: /[\w:-]/, //colon so namespaces work and stuff, e.g. foo:attribute="foo"
+		identAfterFirstLetter: /[\w-]/,
 
 		//these are considered attributes
 		namedIdentRules: {
 			precedes: [
-				[whitespace, { token: "operator", values: ["="] }]
+				[whitespace, { token: "operator", values: ["=", ":"] }]
 			]
 		},
 
 		operators: [
 			"<?xml", "?>", "=",
-			"/>", "</", "<", ">"
+			"/>", "</", "<", ">", ":"
 		],
 		
 		tokenAnalyzerMap: {

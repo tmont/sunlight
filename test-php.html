@@ -7,11 +7,6 @@
 	</head>
 
 	<body>
-	
-	<p>
-		If even works&hellip; <code class="sunlight-highlight-php">echo 'Hello World!'</code>&hellip; inline!
-	</p>
-	
 <pre><code class="sunlight-highlight-php">&lt;?php
 
     /**
@@ -31,7 +26,7 @@
      *
      * @package Phroxy
      */
-    class ProxyBuilder implements ObjectBuilder {
+    class ProxyBuilder implements ObjectBuilder, Countable, ArrayAccess {
        
         private $proxyCache = array();
        
