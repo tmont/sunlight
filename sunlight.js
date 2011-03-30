@@ -582,7 +582,6 @@
 		
 		//partialContext allows us to perform a partial parse, and then pick up where we left off at a later time
 		//this functionality enables nested highlights (language withint a language, e.g. PHP within HTML followed by more PHP)
-		//this function should only be invoked from the parser context, e.g. highlightText.call(this, code, language, context);
 		var highlightText = function(unhighlightedCode, languageId, partialContext) {
 			partialContext = partialContext || { };
 			var language = languages[languageId];
@@ -614,20 +613,28 @@
 			return analyzerContext;
 		};
 		
+		//these functions are named so they can be invoked by each other
 		return {
+			/**
+			 * Highlights a block of text
+			 */
+			highlight: function(code, languageId) { highlightText.call(this, code, languageId); },
+			
+			/**
+			 * Recursively highlights a DOM node
+			 */
 			highlightNode: function highlightRecursive(node) {
-				var match, languageId;
+				var match, languageId, partialContext;
 				if ((match = node.className.match(/\s*sunlight-highlight-(\S+)\s*/)) === null || /(?:\s|^)sunlight-highlighted\s*/.test()) {
 					//not a valid sunlight node or it's already been highlighted
 					return;
 				}
 				
 				languageId = match[1];
-				var partialContext = null;
-				for (var j = 0; j < node.childNodes.length; j++) {
+				for (var j = 0, span; j < node.childNodes.length; j++) {
 					if (node.childNodes[j].nodeType === 3) {
 						//wrap in span
-						var span = document.createElement("span");
+						span = document.createElement("span");
 						span.className = "sunlight-highlighted";
 						partialContext = highlightText.call(this, node.childNodes[j].nodeValue, languageId, partialContext);
 						span.innerHTML = partialContext.getHtml();
@@ -639,9 +646,7 @@
 				
 				//indicate that this node has been highlighted
 				node.className += " sunlight-highlighted";
-			},
-			
-			highlight: function(code, languageId) { highlightText.call(this, code, languageId); }
+			}
 		};
 	}();
 	
