@@ -443,6 +443,9 @@
 						return false;
 					}
 					
+					//this is annoyingly complicated
+					//we need to verify that we're between [], but not in something like "new string[foo]" for instance
+					
 					//first, verify that we're inside an opening bracket
 					var index = context.index, bracketCount = [0, 0];
 					while ((token = context.tokens[--index]) !== undefined) {
