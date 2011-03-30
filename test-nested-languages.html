@@ -6,6 +6,18 @@
 		<script type="text/javascript" src="sunlight-javascript.js"></script>
 		<script type="text/javascript" src="sunlight-mysql.js"></script>
 		<link rel="stylesheet" type="text/css" href="sunlight.css" />
+
+		<style type="text/css">
+			.sunlight-highlight-php {
+				background-color: #FFCCCC;
+			}
+			.sunlight-highlight-mysql {
+				background-color: #CCCCFF;
+			}
+			.sunlight-highlight-javascript {
+				background-color: #CCFFCC;
+			}
+		</style>
 	</head>
 
 	<body>
@@ -18,23 +30,23 @@
 			&lt;p&gt;
 				This is how you write PHP:
 			&lt;/p&gt;
-			
-<code class="sunlight-highlight-php">&lt;?php
+
+<span class="sunlight-highlight-php">&lt;?php
 	$array = array('foo', 'bar', 1, 2);
-	
+
 	foreach ($array as $i =&gt; $value) {
 		echo &quot;$i: &quot;;
-		
+
 		if (is_int($value)) {
 			echo &quot;integer: $value&quot;;
 		} else {
 			echo &quot;not integer: $value&quot;;
 		}
-		
+
 		echo &quot;\n&quot;;
-		
+
 		$sql = "<span class="sunlight-highlight-mysql">
-			SELECT 
+			SELECT
 				f.name,
 				LENGTH(f.name) as `nameLength`
 			FROM foo f
@@ -44,7 +56,7 @@
 			AND f.name != 'foo'
 		</span>";
 	}
-?&gt;</code>
+?&gt;</span>
 		&lt;/div&gt;
 	&lt;/body&gt;
 

@@ -208,6 +208,10 @@
 		};
 		
 		return {
+			toString: function() {
+				return "length: " + length + ", index: " + index + ", line: " + line + ", column: " + column + ", current: [" + currentChar + "]";
+			},
+			
 			peek: function(count) {
 				return getCharacters(count);
 			},
@@ -255,6 +259,61 @@
 	};
 	
 	var highlighter = function() {
+		var getScopeReaderFunction = function(scope, tokenName) {
+			var escapeSequences = scope[2] || [];
+			var closerLength = scope[1].length;
+			var closer = typeof(scope[1]) === "string" ? new RegExp(regexEscape(scope[1])) : scope[1].regex;
+			var zeroWidth = scope[3] || false;
+			
+			//processCurrent indicates that this is being called from a continuation
+			//which means that we need to process the current char, rather than peeking at the next
+			return function(context, continuation, buffer, line, column, processCurrent) {
+				var foundCloser = false, buffer = buffer || "";
+				processCurrent = processCurrent ? 1 : 0;
+				
+				var process = function(processCurrent) {
+					//check for escape sequences
+					var peekValue;
+					var current = context.reader.current();
+					for (var i = 0; i < escapeSequences.length; i++) {
+						peekValue = (processCurrent ? current : "") + context.reader.peek(escapeSequences[i].length - processCurrent);
+						if (peekValue === escapeSequences[i]) {
+							buffer += context.reader.read(peekValue.length - processCurrent);
+							return true;
+						}
+					}
+					
+					peekValue = (processCurrent ? current : "") + context.reader.peek(closerLength - processCurrent);
+					if (closer.test(peekValue)) {
+						foundCloser = true;
+						return false;
+					}
+					
+					buffer += processCurrent ? current : context.reader.read();
+					return true;
+				};
+				
+				if (!processCurrent || process(true)) {
+					while (context.reader.peek() !== context.reader.EOF && process(false)) { }
+				}
+				
+				if (processCurrent) {
+					buffer += context.reader.current();
+					context.reader.read();
+				} else {
+					buffer += zeroWidth || context.reader.peek() === context.reader.EOF ? "" : context.reader.read(closerLength);
+				}
+				
+				if (!foundCloser) {
+					//we need to signal to the context that this scope was never properly closed
+					//this has significance for partial parses (e.g. for nested languages)
+					context.continuation = continuation;
+				}
+				
+				return context.createToken(tokenName, buffer, line, column);
+			};
+		};
+		
 		var parseNextToken = function(context) {
 			//helpers
 			var matchWord = function(wordMap, name, boundary) {
@@ -346,44 +405,17 @@
 				
 				for (var tokenName in context.language.scopes) {
 					var specificScopes = context.language.scopes[tokenName];
-					for (var j = 0, opener, closer, match, zeroWidth, closerLength, escapeSequences; j < specificScopes.length; j++) {
+					for (var j = 0, opener, line, column, continuation; j < specificScopes.length; j++) {
 						opener = specificScopes[j][0];
-						closer = specificScopes[j][1];
-						escapeSequences = specificScopes[j][2] || [];
-						zeroWidth = specificScopes[j][3] || false;
 						
 						if (opener !== current + context.reader.peek(opener.length - 1)) {
 							continue;
 						}
 						
-						closerLength = closer.length;
-						closer = typeof(closer) === "string" ? new RegExp(regexEscape(closer)) : closer.regex;
-						
-						var buffer = opener;
-						var line = context.reader.getLine();
-						var column = context.reader.getColumn();
-						
+						line = context.reader.getLine(), column = context.reader.getColumn();
 						context.reader.read(opener.length - 1);
-						
-						//read the scope contents until the closer is found
-						outerLoop: while (context.reader.peek() !== context.reader.EOF) {
-							//check for escape sequences
-							for (var k = 0; k < escapeSequences.length; k++) {
-								if (context.reader.peek(escapeSequences[k].length) === escapeSequences[k]) {
-									buffer += context.reader.read(escapeSequences[k].length);
-									continue outerLoop;
-								}
-							}
-							
-							if (closer.test(context.reader.peek(closerLength))) {
-								break;
-							}
-							
-							buffer += context.reader.read();
-						}
-						
-						buffer += (zeroWidth || context.reader.peek() === context.reader.EOF ? "" : context.reader.read(closerLength));
-						return context.createToken(tokenName, buffer, line, column);
+						continuation = getScopeReaderFunction(specificScopes[j], tokenName);
+						return continuation(context, continuation, opener, line, column);
 					}
 				}
 				
@@ -454,7 +486,7 @@
 				|| parseDefault();
 		};
 		
-		var tokenize = function(unhighlightedCode, language) {
+		var tokenize = function(unhighlightedCode, language, continuation) {
 			var tokens = [];
 			var context = function() {
 				return {
@@ -479,6 +511,14 @@
 				};
 			}();
 			
+			//if continuation is given, then we need to pick up where we left off from a previous parse
+			//basically it indicates that a scope was never closed, so we need to continue that scope
+			if (continuation) {
+				console.log("handling continuation");
+				console.log(context.reader.toString());
+				tokens.push(continuation(context, continuation, "", context.reader.getLine(), context.reader.getColumn(), true));
+			}
+			
 			while (!context.reader.isEof()) {
 				var token = parseNextToken(context);
 				
@@ -501,58 +541,62 @@
 				context.reader.read();
 			}
 			
-			return tokens;
+			return { tokens: tokens, continuation: context.continuation };
+		};
+		
+		
+		var createAnalyzerContext = function(unhighlightedCode, language, partialContext, options) {
+			var buffer = "";
+			
+			//based on http://phpjs.org/functions/htmlentities:425
+			var encode = function() {
+				var charMap = [
+					["&", "&amp;"],
+					["'", "&#039;"],
+					["<", "&lt;"],
+					[">", "&gt;"],
+					["\t", new Array(options.tabWidth).join("&#160;")],
+					[" ", "&#160;"]
+				];
+				
+				return function(text) {
+					var encodedText = text;
+					for (var i = 0; i < charMap.length; i++) {
+						encodedText = encodedText.split(charMap[i][0]).join(charMap[i][1]);
+					}
+					
+					return encodedText;
+				};
+			}();
+			
+			var parseData = tokenize(unhighlightedCode, language, partialContext.continuation);
+			
+			return {
+				tokens: (partialContext.tokens || []).concat(parseData.tokens),
+				index: partialContext.index ? partialContext.index + 1 : 0,
+				language: language,
+				continuation: parseData.continuation,
+				append: function(text) { buffer += text; },
+				appendAndEncode: function(text) { buffer += encode(text); },
+				getHtml: function() { return buffer; }
+			};
 		};
 		
 		return {
 			//partialContext allows us to perform a partial parse, and then pick up where we left off at a later time
-			//this functionality enables nested highlights (language withint a language, e.g. PHP within HTML)
+			//this functionality enables nested highlights (language withint a language, e.g. PHP within HTML followed by more PHP)
 			highlight: function(unhighlightedCode, languageId, partialContext) {
+				partialContext = partialContext || { };
 				var language = languages[languageId];
 				if (language === undefined) {
 					throw "Unregistered language: " + languageId;
 				}
 			
-				var self = this;
-				var analyzerContext = function() {
-					partialContext = partialContext || { index: -1 };
-					var buffer = partialContext.getHtml ? partialContext.getHtml() : "";
-					
-					//based on http://phpjs.org/functions/htmlentities:425
-					var encode = function() {
-						var charMap = [
-							["&", "&amp;"],
-							["'", "&#039;"],
-							["<", "&lt;"],
-							[">", "&gt;"],
-							["\t", new Array(self.options.tabWidth).join("&#160;")],
-							[" ", "&#160;"]
-						];
-						
-						return function(text) {
-							var encodedText = text;
-							for (var i = 0; i < charMap.length; i++) {
-								encodedText = encodedText.split(charMap[i][0]).join(charMap[i][1]);
-							}
-							
-							return encodedText;
-						};
-					}();
-					
-					
-					return {
-						tokens: (partialContext.tokens || []).concat(tokenize(unhighlightedCode, language)),
-						index: partialContext.index + 1,
-						language: language,
-						append: function(text) { buffer += text; },
-						appendAndEncode: function(text) { buffer += encode(text); },
-						getHtml: function() { return buffer; }
-					};
-				}();
+				var analyzerContext = createAnalyzerContext(unhighlightedCode, language, partialContext, this.options);
+				var analyzer = language.analyzer || this.options.analyzer;
+				var map = merge(this.options.tokenAnalyzerMap, language.tokenAnalyzerMap);
 				
-				var analyzer = language.analyzer || self.options.analyzer;
-				var map = merge(self.options.tokenAnalyzerMap, language.tokenAnalyzerMap);
-				for (var i = partialContext.index + 1, funcs; i < analyzerContext.tokens.length; i++) {
+				for (var i = partialContext.index ? partialContext.index + 1 : 0, funcs; i < analyzerContext.tokens.length; i++) {
 					analyzerContext.index = i;
 					funcs = map[analyzerContext.tokens[i].name];
 					if (funcs === undefined) {
@@ -617,7 +661,7 @@
 		return token;
 	};
 	
-	function highlightRecursive(highlighter, node, partialContext) {
+	function highlightRecursive(highlighter, node) {
 		var match, languageId;
 		if ((match = node.className.match(/\s*sunlight-highlight-(\S+)\s*/)) === null || /(?:\s|^)sunlight-highlighted\s*/.test()) {
 			//not a valid sunlight node or it's already been highlighted
@@ -625,14 +669,15 @@
 		}
 		
 		languageId = match[1];
-		var currentContext = null;
+		var partialContext = null;
 		for (var j = 0; j < node.childNodes.length; j++) {
 			if (node.childNodes[j].nodeType === 3) {
 				//wrap in span
 				var span = document.createElement("span");
 				span.className = "sunlight-highlighted";
-				currentContext = highlighter.highlight(node.childNodes[j].nodeValue, languageId, partialContext);
-				span.innerHTML = currentContext.getHtml();
+				//console.log(node.childNodes[j].nodeValue);
+				partialContext = highlighter.highlight(node.childNodes[j].nodeValue, languageId, partialContext);
+				span.innerHTML = partialContext.getHtml();
 				node.replaceChild(span, node.childNodes[j]);
 			} else {
 				highlightRecursive(highlighter, node.childNodes[j]);
