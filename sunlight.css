@@ -5,167 +5,173 @@
 }
 
 /* html */
-.sunlight-highlight-html .sunlight-string {
+.sunlight-html.sunlight-string {
 	color: #990099;
 }
-.sunlight-highlight-html .sunlight-comment {
+.sunlight-html.sunlight-comment {
 	color: #009900;
 }
-.sunlight-highlight-html .sunlight-cdata {
+.sunlight-html.sunlight-cdata {
 	color: #CC6600;
 }
-.sunlight-highlight-html .sunlight-content {
+.sunlight-html.sunlight-content {
 	color: #000000;
 }
-.sunlight-highlight-html .sunlight-ident, .sunlight-highlight-html .sunlight-operator {
+.sunlight-html.sunlight-ident, .sunlight-html.sunlight-operator {
 	color: #0000FF;
 }
-.sunlight-highlight-html .sunlight-named-ident {
+.sunlight-html.sunlight-named-ident {
 	color: #FF0000;
 }
-.sunlight-highlight-html .sunlight-doctype {
+.sunlight-html.sunlight-doctype {
 	color: #339999;
 }
 
 /* php */
-.sunlight-highlight-php .sunlight-keyword, .sunlight-highlight-php .sunlight-language-construct {
+.sunlight-php.sunlight-keyword, .sunlight-php.sunlight-language-construct {
 	color: #0000CC;
 	text-decoration: none;
 }
-.sunlight-highlight-php .sunlight-operator {
+.sunlight-php.sunlight-operator {
 	color: #000000;
 }
-.sunlight-highlight-php .sunlight-string, .sunlight-highlight-php .sunlight-heredoc, .sunlight-highlight-php .sunlight-nowdoc {
+.sunlight-php.sunlight-string, .sunlight-php.sunlight-heredoc, .sunlight-php.sunlight-nowdoc {
 	color: #990000;
 }
-.sunlight-highlight-php .sunlight-comment {
+.sunlight-php.sunlight-comment {
 	color: #009900;
 }
-.sunlight-highlight-php .sunlight-number {
+.sunlight-php.sunlight-number {
 	color: #CC6600;
 }
-.sunlight-highlight-php .sunlight-punctuation, .sunlight-highlight-php .sunlight-ident {
+.sunlight-php.sunlight-punctuation, .sunlight-php.sunlight-ident {
 	color: #000000;
 }
-.sunlight-highlight-php .sunlight-named-ident, .sunlight-highlight-php .sunlight-constant {
+.sunlight-php.sunlight-named-ident, .sunlight-php .sunlight-constant {
 	color: #2B91AF;
 }
-.sunlight-highlight-php .sunlight-variable {
+.sunlight-php.sunlight-variable {
 	color: #663366;
 }
-.sunlight-highlight-php .sunlight-function {
+.sunlight-php.sunlight-function {
 	color: #56822E;
 	text-decoration: none;
 }
 
 /* c# */
-.sunlight-highlight-csharp .sunlight-keyword {
+.sunlight-csharp.sunlight-keyword {
 	color: #0000CC;
 }
-.sunlight-highlight-csharp .sunlight-operator {
+.sunlight-csharp .sunlight-operator {
 	color: #000000;
 }
-.sunlight-highlight-csharp .sunlight-string {
+.sunlight-csharp .sunlight-string {
 	color: #990000;
 }
-.sunlight-highlight-csharp .sunlight-comment, .sunlight-highlight-csharp .sunlight-xml-doc-comment-content {
+.sunlight-csharp .sunlight-comment, .sunlight-csharp.sunlight-xml-doc-comment-content {
 	color: #009900;
 }
-.sunlight-highlight-csharp .sunlight-number {
+.sunlight-csharp.sunlight-number {
 	color: #CC6600;
 }
-.sunlight-highlight-csharp .sunlight-punctuation {
+.sunlight-csharp.sunlight-punctuation {
 	color: #000000;
 }
-.sunlight-highlight-csharp .sunlight-ident {
+.sunlight-csharp.sunlight-ident {
 	color: #000000;
 }
-.sunlight-highlight-csharp .sunlight-named-ident {
+.sunlight-csharp.sunlight-named-ident {
 	color: #2B91AF;
 }
-.sunlight-highlight-csharp .sunlight-pragma {
+.sunlight-csharp.sunlight-pragma {
 	color: #999999;
 	font-style: italic;
 }
-.sunlight-highlight-csharp .sunlight-xml-doc-comment-meta {
+.sunlight-csharp.sunlight-xml-doc-comment-meta {
 	color: #808080;
 }
 
-/* html */
-.sunlight-highlight-html .sunlight-string {
-	color: #990099;
-}
-.sunlight-highlight-html .sunlight-comment {
-	color: #009900;
-}
-.sunlight-highlight-html .sunlight-cdata {
-	color: #CC6600;
-}
-.sunlight-highlight-html .sunlight-content {
-	color: #000000;
-}
-.sunlight-highlight-html .sunlight-ident, .sunlight-highlight-html .sunlight-operator {
-	color: #0000FF;
-}
-.sunlight-highlight-html .sunlight-named-ident {
-	color: #FF0000;
-}
-.sunlight-highlight-html .sunlight-doctype {
-	color: #339999;
-}
-
 /* xml */
-.sunlight-highlight-xml .sunlight-string {
+.sunlight-xml.sunlight-string {
 	color: #990099;
 }
-.sunlight-highlight-xml .sunlight-comment {
+.sunlight-xml.sunlight-comment {
 	color: #009900;
 }
-.sunlight-highlight-xml .sunlight-cdata {
+.sunlight-xml.sunlight-cdata {
 	color: #CC6600;
 }
-.sunlight-highlight-xml .sunlight-content {
+.sunlight-xml.sunlight-content {
 	color: #000000;
 }
-.sunlight-highlight-xml .sunlight-ident, .sunlight-highlight-xml .sunlight-operator {
+.sunlight-xml.sunlight-ident, .sunlight-xml.sunlight-operator {
 	color: #0000FF;
 }
-.sunlight-highlight-xml .sunlight-named-ident {
+.sunlight-xml.sunlight-named-ident {
 	color: #FF0000;
 }
 
 /* javascript */
-.sunlight-highlight-javascript .sunlight-keyword {
+.sunlight-javascript.sunlight-keyword {
 	color: #0000CC;
 }
-.sunlight-highlight-javascript .sunlight-operator {
+.sunlight-javascript.sunlight-operator {
 	color: #000000;
 }
-.sunlight-highlight-javascript .sunlight-string {
+.sunlight-javascript.sunlight-string {
 	color: #990000;
 }
-.sunlight-highlight-javascript .sunlight-comment {
+.sunlight-javascript.sunlight-comment {
 	color: #009900;
 }
-.sunlight-highlight-javascript .sunlight-number {
+.sunlight-javascript.sunlight-number {
 	color: #CC6600;
 }
-.sunlight-highlight-javascript .sunlight-punctuation, .sunlight-highlight-javascript .sunlight-ident {
+.sunlight-javascript.sunlight-punctuation, .sunlight-javascript.sunlight-ident {
 	color: #000000;
 }
-.sunlight-highlight-javascript .sunlight-named-ident, .sunlight-highlight-javascript .sunlight-global-variable, .sunlight-highlight-javascript .sunlight-global-object {
+.sunlight-javascript.sunlight-named-ident, .sunlight-javascript.sunlight-global-variable, .sunlight-javascript.sunlight-global-object {
 	color: #2B91AF;
 }
-.sunlight-highlight-javascript .sunlight-variable {
+.sunlight-javascript.sunlight-variable {
 	color: #663366;
 }
-.sunlight-highlight-javascript .sunlight-regex-literal {
+.sunlight-javascript.sunlight-regex-literal {
 	color: #000000;
 	background-color: #FFFE47;
 }
-.sunlight-highlight-javascript .sunlight-reserved-word {
+.sunlight-javascript.sunlight-reserved-word {
 	font-style: italic;
 }
-.sunlight-highlight-javascript .sunlight-global-function {
+.sunlight-javascript.sunlight-global-function {
 	color: #B069AF;
+}
+
+/* mysql */
+.sunlight-mysql.sunlight-keyword {
+	color: #0000CC;
+}
+.sunlight-mysql.sunlight-operator {
+	color: #000000;
+}
+.sunlight-mysql.sunlight-string {
+	color: #990000;
+}
+.sunlight-mysql.sunlight-comment {
+	color: #009900;
+}
+.sunlight-mysql.sunlight-number {
+	color: #CC6600;
+}
+.sunlight-mysql.sunlight-punctuation, .sunlight-mysql.sunlight-ident {
+	color: #000000;
+}
+.sunlight-mysql.sunlight-named-ident {
+	color: #2B91AF;
+}
+.sunlight-mysql.sunlight-function {
+	color: #B069AF;
+}
+.sunlight-mysql.sunlight-quoted-ident {
+	color: #999900;
 }

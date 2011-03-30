@@ -4,6 +4,7 @@
 		<script type="text/javascript" src="sunlight-html.js"></script>
 		<script type="text/javascript" src="sunlight-php.js"></script>
 		<script type="text/javascript" src="sunlight-javascript.js"></script>
+		<script type="text/javascript" src="sunlight-mysql.js"></script>
 		<link rel="stylesheet" type="text/css" href="sunlight.css" />
 	</head>
 
@@ -31,14 +32,27 @@
 		}
 		
 		echo &quot;\n&quot;;
+		
+		$sql = "<span class="sunlight-highlight-mysql">
+			SELECT 
+				f.name,
+				LENGTH(f.name) as `nameLength`
+			FROM foo f
+			INNER JOIN bar b
+				ON b.id = f.id
+			WHERE f.name IS NOT NULL
+			AND f.name != 'foo'
+		</span>";
 	}
 ?&gt;</code>
 		&lt;/div&gt;
 	&lt;/body&gt;
 
-	&lt;script type=&quot;text/javascript&quot;&gt;<code class="sunlight-highlight-javascript">//&lt;![CDATA[
-		Sunlight.highlightAll();
-	//]]&gt;</code>&lt;/script&gt;
+	&lt;script type=&quot;text/javascript&quot;&gt;<span class="sunlight-highlight-javascript">//&lt;![CDATA[
+		for (var tag in document.getElementsByTagName("*")) {
+			document.write(tag);
+		}
+	//]]&gt;</span>&lt;/script&gt;
 &lt;/html&gt;</code></pre>
 	</body>
 

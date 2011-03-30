@@ -8,9 +8,13 @@
     }
 	
 	//array.contains()
-	var contains = function(arr, value) {
+	var contains = function(arr, value, caseInsensitive) {
 		for (var i = 0; i < arr.length; i++) {
 			if (arr[i] === value) {
+				return true;
+			}
+			
+			if (caseInsensitive && typeof(arr[i]) === "string" && typeof(value) === "string" && arr[i].toUpperCase() === value.toUpperCase()) {
 				return true;
 			}
 		}
@@ -40,7 +44,7 @@
 		return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&")
 	};
 	
-	var createProceduralRule = function(startIndex, direction, tokenRequirements) {
+	var createProceduralRule = function(startIndex, direction, tokenRequirements, caseInsensitive) {
 		return function(tokens) {
 			var tokenIndexStart = startIndex;
 			if (direction === 1) {
@@ -57,7 +61,7 @@
 					} else {
 						return false;
 					}
-				} else if (actual.name === expected.token && (expected["values"] === undefined || contains(expected.values, actual.value))) {
+				} else if (actual.name === expected.token && (expected["values"] === undefined || contains(expected.values, actual.value, caseInsensitive))) {
 					//derp
 					continue;
 				} else if (expected["optional"] !== undefined && expected.optional) {
@@ -71,7 +75,7 @@
 		};
 	};
 	
-	var createBetweenRule = function(startIndex, opener, closer) {
+	var createBetweenRule = function(startIndex, opener, closer, caseInsensitive) {
 		return function(tokens) {
 			var index = startIndex, token;
 			var success = false;
@@ -79,7 +83,7 @@
 			//check to the left: if we run into a closer or never run into an opener, fail
 			while ((token = tokens[--index]) !== undefined) {
 				if (token.name === closer.token && contains(closer.values, token.value)) {
-					if (token.name === opener.token && contains(opener.values, token.value)) {
+					if (token.name === opener.token && contains(opener.values, token.value, caseInsensitive)) {
 						//if the closer is the same as the opener that's okay
 						success = true;
 						break;
@@ -88,7 +92,7 @@
 					return false;
 				}
 				
-				if (token.name === opener.token && contains(opener.values, token.value)) {
+				if (token.name === opener.token && contains(opener.values, token.value, caseInsensitive)) {
 					success = true;
 					break;
 				}
@@ -101,8 +105,8 @@
 			//check to the right for the closer
 			index = startIndex;
 			while ((token = tokens[++index]) !== undefined) {
-				if (token.name === opener.token && contains(opener.values, token.value)) {
-					if (token.name === closer.token && contains(closer.values, token.value)) {
+				if (token.name === opener.token && contains(opener.values, token.value, caseInsensitive)) {
+					if (token.name === closer.token && contains(closer.values, token.value, caseInsensitive)) {
 						//if the closer is the same as the opener that's okay
 						success = true;
 						break;
@@ -111,7 +115,7 @@
 					return false;
 				}
 				
-				if (token.name === closer.token && contains(closer.values, token.value)) {
+				if (token.name === closer.token && contains(closer.values, token.value, caseInsensitive)) {
 					success = true;
 					break;
 				}
@@ -123,7 +127,7 @@
 	
 	var defaultEnter = function(suffix) {
 		return function(context) {
-			return context.append("<span class=\"sunlight-" + suffix + "\">") || true;
+			return context.append("<span class=\"sunlight-" + suffix + " sunlight-" + context.language.name + "\">") || true;
 		};
 	};
 	
@@ -167,9 +171,9 @@
 			};
 			
 			iterate(context.language.namedIdentRules.custom)
-				|| iterate(context.language.namedIdentRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData.slice(0)); })
-				|| iterate(context.language.namedIdentRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData.slice(0)); })
-				|| iterate(context.language.namedIdentRules.between, function(ruleData) { return createBetweenRule(context.index, ruleData.opener, ruleData.closer); })
+				|| iterate(context.language.namedIdentRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData.slice(0), context.language.caseInsensitive); })
+				|| iterate(context.language.namedIdentRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData.slice(0), context.language.caseInsensitive); })
+				|| iterate(context.language.namedIdentRules.between, function(ruleData) { return createBetweenRule(context.index, ruleData.opener, ruleData.closer, context.language.caseInsensitive); })
 				|| defaultEnter("ident")(context);
 		}
 	};
@@ -258,11 +262,11 @@
 				var current = context.reader.current();
 				for (var i = 0, word; i < wordMap.length; i++) {
 					word = wordMap[i];
-					if (word[0] === current) {
+					if (word[0] === current || (context.language.caseInsensitive && word[0].toUpperCase() === current.toUpperCase())) {
 						var peek = current + context.reader.peek(word.length);
-						if (word === peek || new RegExp(regexEscape(word) + boundary).test(peek)) {
-							var readChars = context.reader.read(word.length - 1); //read to the end of the word (we already read the first letter)
-							return context.createToken(name, word, context.reader.getLine());
+						if (word === peek || new RegExp(regexEscape(word) + boundary, context.language.caseInsensitive ? "i" : "").test(peek)) {
+							var readChars = current + context.reader.read(word.length - 1); //read to the end of the word (we already read the first letter)
+							return context.createToken(name, readChars, context.reader.getLine());
 						}
 					}
 				}
@@ -271,7 +275,7 @@
 			};
 		
 			var isIdentMatch = function() {
-				return context.language.identFirstLetter.test(context.reader.current());
+				return context.language.identFirstLetter && context.language.identFirstLetter.test(context.reader.current());
 			};
 		
 			//token parsing functions
@@ -630,11 +634,13 @@
 				currentContext = highlighter.highlight(node.childNodes[j].nodeValue, languageId, partialContext);
 				span.innerHTML = currentContext.getHtml();
 				node.replaceChild(span, node.childNodes[j]);
-				node.className += " sunlight-highlighted";
 			} else {
 				highlightRecursive(highlighter, node.childNodes[j]);
 			}
 		}
+		
+		//indicate that this node has been highlighted
+		node.className += " sunlight-highlighted";
 	}
 	
 	window.Sunlight = {
@@ -660,6 +666,7 @@
 			}
 			
 			for (var i = 0; i < languageIds.length; i++) {
+				languageData.name = languageIds[i];
 				languages[languageIds[i]] = languageData;
 			}
 		},

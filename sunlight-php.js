@@ -6,18 +6,18 @@
 
 	var whitespace = { token: "default", optional: true };
 	var phpAnalyzer = sunlight.createAnalyzer();
-	phpAnalyzer.enterVariable = function(context) { context.append("<span class=\"sunlight-variable\">"); }
-	phpAnalyzer.exitVariable = function(context) { context.append("</span>"); }
-	phpAnalyzer.enterLanguageConstruct = function(context) { context.append("<a class=\"sunlight-language-construct\" href=\"http://php.net/" + context.tokens[context.index].value + "\">") };
+	phpAnalyzer.enterVariable = sunlight.enterAnalysis("variable");
+	phpAnalyzer.exitVariable = sunlight.exitAnalysis;
+	phpAnalyzer.enterLanguageConstruct = function(context) { context.append("<a class=\"sunlight-language-construct sunlight-php\" href=\"http://php.net/" + context.tokens[context.index].value + "\">") };
 	phpAnalyzer.exitLanguageConstruct = function(context) { context.append("</a>") };
-	phpAnalyzer.enterFunction = function(context) { context.append("<a class=\"sunlight-function\" href=\"http://php.net/" + context.tokens[context.index].value + "\">") };
+	phpAnalyzer.enterFunction = function(context) { context.append("<a class=\"sunlight-function sunlight-php\" href=\"http://php.net/" + context.tokens[context.index].value + "\">") };
 	phpAnalyzer.exitFunction = function(context) { context.append("</a>") };
-	phpAnalyzer.enterConstant = function(context) { context.append("<span class=\"sunlight-constant\">"); };
-	phpAnalyzer.exitConstant = function(context) { context.append("</span>"); };
-	phpAnalyzer.enterHeredoc = function(context) { context.append("<span class=\"sunlight-heredoc\">"); };
-	phpAnalyzer.exitHeredoc = function(context) { context.append("</span>"); };
-	phpAnalyzer.enterNowdoc = function(context) { context.append("<span class=\"sunlight-nowdoc\">"); };
-	phpAnalyzer.exitNowdoc = function(context) { context.append("</span>"); };
+	phpAnalyzer.enterConstant = sunlight.enterAnalysis("constant");
+	phpAnalyzer.exitConstant = sunlight.exitAnalysis;
+	phpAnalyzer.enterHeredoc = sunlight.enterAnalysis("heredoc");
+	phpAnalyzer.exitHeredoc = sunlight.exitAnalysis;
+	phpAnalyzer.enterNowdoc = sunlight.enterAnalysis("nowdoc");
+	phpAnalyzer.exitNowdoc = sunlight.exitAnalysis;
 	
 	sunlight.registerLanguage(["php"], {
 		keywords: [
