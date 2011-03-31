@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+	<head>
+		<title>Sunlight: Intelligent syntax highlighting for the web</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+		<meta name="description" content="A syntax highlighter written in JavaScript for use on the web" />
+		<link rel="stylesheet" type="text/css" href="media/site.css" />
+		<link rel="shortcut icon" type="image/png" href="media/favicon.png" />
+	</head>
+	
+	<body>
+		<a id="skip-to-content" href="#content">skip to content</a>
+		
+		<div id="wrapper">
+			<div id="header">
+				<div class="content-container">
+					<h1 id="logo" class="mir"><a href="/" title="Sunlight">Sunlight</a></h1>
+				</div>
+			</div>
+			<div id="main">
+				<div class="content-container">
+					<div id="nav" class="centered-list">
+						<h2>Navigation</h2>
+						<ul class="menu">
+							<li><a href="#download" title="jump to downloads">Download</a></li>
+							<li><a href="#demo" title="jump to demos">Demo</a></li>
+							<li><a href="#about" title="jump to about">About</a></li>
+						</ul>
+					</div>
+					
+					<a name="content"></a>
+					<div class="box clearfix">
+						<a name="download"></a>
+						<h2>Download</h2>
+						<div class="box-icon download-icon"></div>
+						<div class="box-content">
+							<ul>
+								<li><a href="releases/sulight-all.js" id="download-all">All files compressed</a></li>
+								<li><a href="releases/sulight-src.tar.gz" id="download-src">Source code tarball</a></li>
+								<li><a href="releases/sulight-min.js" id="download-min"><tt>sunlight.js</tt> only</a></li>
+								<li>
+									<a href="#" id="download-languages-link">Individual language files&hellip;</a>
+									<ul>
+										<li><a href="releases/sulight.csharp-min.js" id="download-csharp">C&#x266f; language file</a></li>
+										<li><a href="releases/sulight.php-min.js" id="download-php">PHP language file</a></li>
+										<li><a href="releases/sulight.javascript-min.js" id="download-javascript">JavaScript language file</a></li>
+										<li><a href="releases/sulight.mysql-min.js" id="download-mysql">MySql language file</a></li>
+										<li><a href="releases/sulight.xml-min.js" id="download-xml">XML language file</a></li>
+										<li><a href="releases/sulight.html-min.js" id="download-html">HTML language file</a></li>
+										<li><a href="releases/sulight.css-min.js" id="download-css">CSS language file</a></li>
+									</ul>
+								</li>
+							</ul>
+						</div>
+					</div>
+					
+					<div class="box clearfix">
+						<a name="demo"></a>
+						<h2>Demo</h2>
+						<div class="box-icon demo-icon"></div>
+						<div class="box-content">
+							<ul>
+								<li><a href="demo/csharp.html">C&#x266f; demo</a></li>
+								<li><a href="demo/php.html">PHP demo</a></li>
+								<li><a href="demo/javascript.html">JavaScript demo</a> (highlighted <span class="sunlight">Sunlight</span> source code)</li>
+								<li><a href="demo/html.html">HTML demo</a></li>
+								<li><a href="demo/xml.html">XML demo</a></li>
+								<li><a href="demo/mysql.html">MySql demo</a></li>
+								<li><a href="demo/nested.html">Multiple languages demo</a></li>
+							</ul>
+						</div>
+					</div>
+					
+					<div class="box clearfix">
+						<a name="about"></a>
+						<h2>About</h2>
+						<div class="box-icon about-icon"></div>
+						<div class="box-content">
+							<p>
+								<span class="sunlight">Sunlight</span> was developed by <a href="http://tommymontgomery.com/">Tommy
+								Montgomery</a>. It&rsquo;s written in JavaScript and provides automatic syntax highlighting to blocks 
+								of code contained within an HTML document. It can also serve as plain text to HTML converter. It&rsquo;s 
+								a lot smarter than other syntax highlighters that perform the same task.
+							</p>
+							
+							<p>
+								To install, simple include the core JavaScript file (<tt>sunlight.js</tt>) and the desired language files,
+								and then invoke the highlighter with <code class="sunlight-highlight-javascript">Sunlight.highlightAll();</code>.
+								This will highlight all nodes that have the class <tt>sunlight-highlight-{language}</tt> where <tt>language</tt>
+								is the language of the code contained within that node. For example, to highlight PHP code, your raw PHP code
+								would be inside an element with the class <tt>sunlight-highlight-php</tt>.
+							</p>
+							
+							<p>
+								See the <a href="#demo">demos</a> for concrete examples.
+							</p>
+							
+							<p>
+								For more information on how <span class="sunlight">Sunlight</span> works in addition to the API, consult the
+								<a href="api.html">documentation</a>.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div id="footer">
+				<div class="content-container">
+					<p>
+						<span class="copyright" title="lol like this means anything">&copy; 2011</span>
+						<a title="mysterioso" href="http://tommymontgomery.com">Tommy Montgomery</a>
+					</p>
+					
+					<p>
+						Released under the <a title="do what the fuck you want to" href="http://sam.zoy.org/wtfpl/">WTFPL</a>
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<script type="text/javascript" src="media/site.js"></script>
+	</body>
+</html>
