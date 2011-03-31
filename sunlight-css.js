@@ -160,7 +160,79 @@
 					
 					return sunlight.helpers.matchWord(context, pseudoElements, "pseudoElement", "\\b");
 				};
-			}()
+			}(),
+			
+			//classes
+			function(context) {
+				//we can't just make this a scope because we'll get false positives for things like: url(image.png) (image.png doesn't need to be in quotes)
+				//so we detect them the hard way
+				
+				if (context.reader.current() !== ".") {
+					return null;
+				}
+				
+				//make sure it's not a value to a function, e.g. not between "(" and ")"
+				//basically if we run into "(" before a "{" it's bad
+				var token, index = context.count(), tokens = context.getAllTokens();
+				while ((token = sunlight.helpers.getPreviousNonWsToken(tokens, index--)) !== undefined) {
+					if (token.name === "punctuation") {
+						if (token.value === "{" || token.value === ")") {
+							break;
+						}
+						
+						if (token.value === "(") {
+							return null;
+						}
+					}
+				}
+				
+				//if we made it this far, we're looking at a class name
+				var className = ".";
+				var peek = context.reader.peek();
+				var line = context.reader.getLine(), column = context.reader.getColumn();
+				while (peek !== context.reader.EOF) {
+					if (/[^\w-]/.test(peek)) {
+						break;
+					}
+					
+					className += context.reader.read();
+					peek = context.reader.peek();
+				}
+				
+				return context.createToken("class", className, line, column);
+			},
+			
+			//hex color value
+			function(context) {
+				if (context.reader.current() !== "#") {
+					return null;
+				}
+				
+				//must be between ":" and ";"
+				//basically if we run into a "{" before a "} it's bad
+				
+				var peek = context.reader.peek(), count = 1, value = "#", letter, validHex = true;
+				var line = context.reader.getLine(), column = context.reader.getColumn();
+				while (peek.length === count) {
+					letter = peek[peek.length - 1];
+					if (letter === "}" || letter === ";") {
+						break;
+					}
+					if (letter === "{") {
+						return null;
+					}
+					if (validHex && /[A-Fa-f0-9]/.test(letter)) {
+						value += letter;
+					} else {
+						validHex = false;
+					}
+					
+					peek = context.reader.peek(++count);
+				}
+				
+				context.reader.read(value.length - 1); //-1 because we already read the "#"
+				return context.createToken("hexColor", value, line, column);
+			}
 		],
 		
 		customTokens: {
@@ -173,9 +245,8 @@
 		},
 		
 		scopes: {
-			string: [ ["\"", "\""], ["'", "'"] ],
+			string: [ ["\"", "\"", ["\\\"", "\\\\"]], ["'", "'", ["\\\'"]] ],
 			comment: [ ["/*", "*/"] ],
-			"class": [ [".", { length: 1, regex: /[^-A-Za-z0-9_]/ }, null, true ] ],
 			id: [ ["#", { length: 1, regex: /[^-\w]/ }, null, true ] ]
 		},
 		
