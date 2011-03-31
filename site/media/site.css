@@ -121,16 +121,6 @@ ul.menu li {
 }
 /***************** end reset ***************/
 
-@font-face {
-	font-family: Aller;
-	src: url(Aller_Rg.ttf);
-}
-@font-face {
-	font-family: Aller;
-	src: url(Aller_Bd.ttf);
-	font-weight: bold;
-}
-
 body {
 	background-color: #FCFCE4;
 	color: #635C1F;
@@ -202,11 +192,17 @@ code, tt, pre {
 #footer p:first-child {
 	margin-top: 80px;
 }
+#footer p {
+	line-height: .6em;
+}
 #footer .copyright {
 	cursor: help;
 }
 
 #skip-to-content {
+	display: none;
+}
+#download-languages-toggle + ul {
 	display: none;
 }
 
@@ -230,9 +226,10 @@ code, tt, pre {
 	padding: 5px;
 	clear: left;
 	background-color: #FFEDC9;
-	border-left: 2px solid #DDD0C0;
-	border-bottom: 2px solid #DDD0C0;
-	/*opacity: 0.5;*/
+	border-left: 2px solid #675834;
+	border-bottom: 2px solid #675834;
+	opacity: 0.75;
+	overflow: hidden;
 }
 .box h2, #nav h2 {
 	display: none;
@@ -240,11 +237,17 @@ code, tt, pre {
 .box:hover {
 	opacity: 1;
 }
-.box .box-content {
+.box-content {
 	float: left;
+	width: 638px;
 }
-.box .box-icon {
+.box-left {
 	float: left;
+	width: 150px;
+	padding-bottom: 600px;
+	margin-bottom: -600px;
+}
+.box-icon {
 	width: 150px;
 	height: 150px;
 }

@@ -34,22 +34,26 @@
 					<div class="box clearfix">
 						<a name="download"></a>
 						<h2>Download</h2>
-						<div class="box-icon download-icon"></div>
+						
+						<div class="box-left">
+							<div class="box-icon download-icon"></div>
+						</div>
+						
 						<div class="box-content">
 							<ul>
 								<li><a href="releases/sulight-all.js" id="download-all">All files compressed</a></li>
 								<li><a href="releases/sulight-src.tar.gz" id="download-src">Source code tarball</a></li>
 								<li><a href="releases/sulight-min.js" id="download-min"><tt>sunlight.js</tt> only</a></li>
 								<li>
-									<a href="#" id="download-languages-link">Individual language files&hellip;</a>
+									<a href="#download" id="download-languages-toggle">Individual language files&hellip;</a>
 									<ul>
-										<li><a href="releases/sulight.csharp-min.js" id="download-csharp">C&#x266f; language file</a></li>
-										<li><a href="releases/sulight.php-min.js" id="download-php">PHP language file</a></li>
-										<li><a href="releases/sulight.javascript-min.js" id="download-javascript">JavaScript language file</a></li>
-										<li><a href="releases/sulight.mysql-min.js" id="download-mysql">MySql language file</a></li>
-										<li><a href="releases/sulight.xml-min.js" id="download-xml">XML language file</a></li>
-										<li><a href="releases/sulight.html-min.js" id="download-html">HTML language file</a></li>
-										<li><a href="releases/sulight.css-min.js" id="download-css">CSS language file</a></li>
+										<li><a href="releases/sulight.csharp-min.js" id="download-csharp">C&#x266f; </a></li>
+										<li><a href="releases/sulight.php-min.js" id="download-php">PHP </a></li>
+										<li><a href="releases/sulight.javascript-min.js" id="download-javascript">JavaScript </a></li>
+										<li><a href="releases/sulight.mysql-min.js" id="download-mysql">MySql </a></li>
+										<li><a href="releases/sulight.xml-min.js" id="download-xml">XML </a></li>
+										<li><a href="releases/sulight.html-min.js" id="download-html">HTML </a></li>
+										<li><a href="releases/sulight.css-min.js" id="download-css">CSS </a></li>
 									</ul>
 								</li>
 							</ul>
@@ -59,7 +63,11 @@
 					<div class="box clearfix">
 						<a name="demo"></a>
 						<h2>Demo</h2>
-						<div class="box-icon demo-icon"></div>
+						
+						<div class="box-left">
+							<div class="box-icon demo-icon"></div>
+						</div>
+						
 						<div class="box-content">
 							<ul>
 								<li><a href="demo/csharp.html">C&#x266f; demo</a></li>
@@ -76,7 +84,11 @@
 					<div class="box clearfix">
 						<a name="about"></a>
 						<h2>About</h2>
-						<div class="box-icon about-icon"></div>
+						
+						<div class="box-left">
+							<div class="box-icon about-icon"></div>
+						</div>
+						
 						<div class="box-content">
 							<p>
 								<span class="sunlight">Sunlight</span> was developed by <a href="http://tommymontgomery.com/">Tommy
@@ -109,7 +121,7 @@
 			<div id="footer">
 				<div class="content-container">
 					<p>
-						<span class="copyright" title="lol like this means anything">&copy; 2011</span>
+						<span class="copyright" title="lol">&copy; 2011</span>
 						<a title="mysterioso" href="http://tommymontgomery.com">Tommy Montgomery</a>
 					</p>
 					
@@ -120,6 +132,35 @@
 			</div>
 		</div>
 		
-		<script type="text/javascript" src="media/site.js"></script>
+		<script type="text/javascript">//<![CDATA[
+			(function(){
+				var languageToggle = document.getElementById("download-languages-toggle");
+				var ul = languageToggle.nextSibling.nextSibling;
+				
+				languageToggle.onclick = function() {
+					ul.style.display = ul.style.display === "block" ? "none" : "block";
+					return false;
+				};
+				
+				//load fonts
+				var style = document.createElement("style");
+				style.setAttribute("type", "text/css");
+				
+				var fontFaceRules = 
+					"@font-face {\n" +
+					"	font-family: Aller;\n" +
+					"	src: url(media/Aller_Rg.ttf);\n" +
+					"}\n" +
+					"@font-face {\n" +
+					"	font-family: Aller;\n" +
+					"	src: url(media/Aller_Bd.ttf);\n" +
+					"	font-weight: bold;\n" +
+					"}";
+				
+				style.appendChild(document.createTextNode(fontFaceRules));
+				document.getElementsByTagName("head")[0].appendChild(style);
+				
+			}(document));
+		//]]></script>
 	</body>
 </html>
