@@ -1,0 +1,45 @@
+<html>
+
+	<head>
+		<script type="text/javascript" src="sunlight.js"></script>
+		<script type="text/javascript" src="sunlight-css.js"></script>
+		<link rel="stylesheet" type="text/css" href="sunlight.css" />
+	</head>
+
+	<body>
+<pre><code class="sunlight-highlight-css">@import "/my/style/sheet.css"
+@import url("/my/style/sheet.css") screen "Print style"
+
+html {
+	width: 100%;
+	min-height: 100%;
+	opacity: 0.0;
+	background-color: #000000;
+	color: white;
+	font-family: "Courier New", Arial, sans-serif;
+}
+
+body > .warning {
+	color: #FF0000;
+	background-image: url(warning.png); /* ".png" should not be colored as a class */
+	border: 2px solid none;
+}
+
+#wrapper div[lang~="en"]:first-child::before {
+	text-decoration: underline overline;
+	padding-left: 12px;
+	width: 50%;
+	position: fixed;
+	display: inline-block;
+}
+
+a:fake-pseudo-class {
+	rotate: 5deg;
+}
+</code></pre>
+	</body>
+
+	<script type="text/javascript">//<![CDATA[
+		Sunlight.highlightAll();
+	//]]></script>
+</html>

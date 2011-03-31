@@ -154,7 +154,7 @@
 					return false;
 				};
 				
-				evaluate(context.language.namedIdentRules.custom)
+				return evaluate(context.language.namedIdentRules.custom)
 					|| evaluate(context.language.namedIdentRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData.slice(0), context.language.caseInsensitive); })
 					|| evaluate(context.language.namedIdentRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData.slice(0), context.language.caseInsensitive); })
 					|| evaluate(context.language.namedIdentRules.between, function(ruleData) { return createBetweenRule(context.index, ruleData.opener, ruleData.closer, context.language.caseInsensitive); })
@@ -243,6 +243,22 @@
 		};
 	};
 	
+	var matchWord = function(context, wordMap, tokenName, boundary, doNotRead) {
+		wordMap = wordMap || [];
+		var current = context.reader.current();
+		for (var i = 0, word; i < wordMap.length; i++) {
+			word = wordMap[i];
+			if (word[0] === current || (context.language.caseInsensitive && word[0].toUpperCase() === current.toUpperCase())) {
+				var peek = current + context.reader.peek(word.length);
+				if (word === peek || new RegExp(regexEscape(word) + boundary, context.language.caseInsensitive ? "i" : "").test(peek)) {
+					return context.createToken(tokenName, current + context.reader[doNotRead ? "peek" : "read"](word.length - 1), context.reader.getLine());
+				}
+			}
+		}
+		
+		return null;
+	};
+	
 	var highlighter = function() {
 		var getScopeReaderFunction = function(scope, tokenName) {
 			var escapeSequences = scope[2] || [];
@@ -301,30 +317,14 @@
 		
 		var parseNextToken = function(context) {
 			//helpers
-			var matchWord = function(wordMap, name, boundary) {
-				wordMap = wordMap || [];
-				var current = context.reader.current();
-				for (var i = 0, word; i < wordMap.length; i++) {
-					word = wordMap[i];
-					if (word[0] === current || (context.language.caseInsensitive && word[0].toUpperCase() === current.toUpperCase())) {
-						var peek = current + context.reader.peek(word.length);
-						if (word === peek || new RegExp(regexEscape(word) + boundary, context.language.caseInsensitive ? "i" : "").test(peek)) {
-							var readChars = current + context.reader.read(word.length - 1); //read to the end of the word (we already read the first letter)
-							return context.createToken(name, readChars, context.reader.getLine());
-						}
-					}
-				}
-				
-				return null;
-			};
-		
+			
 			var isIdentMatch = function() {
 				return context.language.identFirstLetter && context.language.identFirstLetter.test(context.reader.current());
 			};
 		
 			//token parsing functions
 			var parseKeyword = function() {
-				return matchWord(context.language.keywords, "keyword", "\\b");
+				return matchWord(context, context.language.keywords, "keyword", "\\b");
 			};
 			
 			var parseCustomTokens = function() {
@@ -333,7 +333,7 @@
 				}
 				
 				for (var tokenName in context.language.customTokens) {
-					var token = matchWord(context.language.customTokens[tokenName], tokenName, "\\b");
+					var token = matchWord(context, context.language.customTokens[tokenName], tokenName, "\\b");
 					if (token !== null) {
 						return token;
 					}
@@ -343,7 +343,7 @@
 			};
 			
 			var parseOperator = function() {
-				return matchWord(context.language.operators, "operator", "");
+				return matchWord(context, context.language.operators, "operator", "");
 			};
 			
 			var parsePunctuation = function() {
@@ -674,6 +674,7 @@
 			}
 			
 			languageData.analyzer = languageData.analyzer || create(defaultAnalyzer);
+			languageData.namedIdentRules = languageData.namedIdentRules || { };
 			
 			for (var i = 0; i < languageIds.length; i++) {
 				languages[languageIds[i]] = languageData;
@@ -683,6 +684,7 @@
 		
 		helpers: {
 			contains: contains,
+			matchWord: matchWord,
 			createBetweenRule: createBetweenRule,
 			createProceduralRule: createProceduralRule,
 			getNextNonWsToken: function(tokens, index) { return getNextNonWsToken(tokens, index, 1); },

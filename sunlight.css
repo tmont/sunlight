@@ -176,3 +176,41 @@
 .sunlight-mysql.sunlight-quotedIdent {
 	color: #999900;
 }
+
+/* css */
+.sunlight-css.sunlight-string {
+	color: #990000;
+}
+.sunlight-css.sunlight-comment {
+	color: #009900;
+}
+.sunlight-css.sunlight-ident {
+	color: #000000;
+}
+.sunlight-css.sunlight-operator {
+	color: #000000;
+}
+.sunlight-css.sunlight-named-ident {
+	color: #000099;
+}
+.sunlight-css.sunlight-rule {
+	color: #0099FF;
+}
+.sunlight-css.sunlight-function {
+	color: #B024AA;
+}
+.sunlight-css.sunlight-keyword {
+	color: #4E65B8;
+}
+.sunlight-css.sunlight-class {
+	color: #FF0000;
+}
+.sunlight-css.sunlight-id {
+	color: #669966;
+}
+.sunlight-css.sunlight-number {
+	color: #CC6600;
+}
+.sunlight-css.sunlight-pseudoClass, .sunlight-css.sunlight-pseudoElement {
+	color: #CC99CC;
+}
