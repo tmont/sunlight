@@ -177,6 +177,7 @@
 		var EOF = undefined;
 		var currentChar = length > 0 ? text[0] : EOF;
 		var nextReadBeginsLine = false;
+		var peekCache = []; //enable faster lookups for languages with many keywords/custom tokens (doesn't make a big difference, but whatever, it's done and it doesn't hurt)
 		
 		var getCharacters = function(count) {
 			if (count === 0) {
@@ -200,11 +201,16 @@
 			},
 			
 			peek: function(count) {
-				return getCharacters(count);
+				if (peekCache[count] !== undefined) {
+					return peekCache[count];
+				}
+				
+				return peekCache[count] = getCharacters(count);
 			},
 			
 			read: function(count) {
 				var value = getCharacters(count);
+				peekCache = [];
 				
 				if (value !== EOF) {
 					//advance index
@@ -245,16 +251,21 @@
 		};
 	};
 	
-	var matchWord = function(context, wordMap, tokenName, boundary, doNotRead) {
+	var matchWord = function(context, wordMap, tokenName, doNotRead) {
 		wordMap = wordMap || [];
 		var current = context.reader.current();
-		for (var i = 0, word; i < wordMap.length; i++) {
-			word = wordMap[i];
-			if (word[0] === current || (context.language.caseInsensitive && word[0].toUpperCase() === current.toUpperCase())) {
-				var peek = current + context.reader.peek(word.length);
-				if (word === peek || new RegExp(regexEscape(word) + boundary, context.language.caseInsensitive ? "i" : "").test(peek)) {
-					return context.createToken(tokenName, current + context.reader[doNotRead ? "peek" : "read"](word.length - 1), context.reader.getLine());
-				}
+		if (!wordMap[current] && (!context.languageCaseInsensitive || !wordMap[current.toUpperCase()])) {
+			return null;
+		}
+		
+		wordMap = wordMap[current];
+		for (var i = 0, word, regex; i < wordMap.length; i++) {
+			word = wordMap[i].value;
+			regex = wordMap[i].regex;
+			
+			var peek = current + context.reader.peek(word.length);
+			if (word === peek || regex.test(peek)) {
+				return context.createToken(tokenName, current + context.reader[doNotRead ? "peek" : "read"](word.length - 1), context.reader.getLine());
 			}
 		}
 		
@@ -326,7 +337,7 @@
 		
 			//token parsing functions
 			var parseKeyword = function() {
-				return matchWord(context, context.language.keywords, "keyword", "\\b");
+				return matchWord(context, context.language.keywords, "keyword");
 			};
 			
 			var parseCustomTokens = function() {
@@ -335,7 +346,7 @@
 				}
 				
 				for (var tokenName in context.language.customTokens) {
-					var token = matchWord(context, context.language.customTokens[tokenName], tokenName, "\\b");
+					var token = matchWord(context, context.language.customTokens[tokenName], tokenName);
 					if (token !== null) {
 						return token;
 					}
@@ -345,7 +356,7 @@
 			};
 			
 			var parseOperator = function() {
-				return matchWord(context, context.language.operators, "operator", "");
+				return matchWord(context, context.language.operators, "operator");
 			};
 			
 			var parsePunctuation = function() {
@@ -655,6 +666,20 @@
 		return token;
 	};
 	
+	var transformWordMap = function(wordMap, boundary, caseInsensitive) {
+		//creates a hash table where the hash is the first character of the word
+		var newMap = { };
+		for (var i = 0; i < wordMap.length; i++) {
+			if (!newMap[wordMap[i][0]]) {
+				newMap[wordMap[i][0]] = [];
+			}
+			
+			newMap[wordMap[i][0]].push({ value: wordMap[i], regex: new RegExp(regexEscape(wordMap[i]) + boundary, caseInsensitive ? "i" : "") });
+		}
+		
+		return newMap;
+	};
+	
 	window.Sunlight = {
 		version: "1.0",
 		Highlighter: highlighterConstructor,
@@ -676,7 +701,15 @@
 			}
 			
 			languageData.analyzer = languageData.analyzer || create(defaultAnalyzer);
+			languageData.customTokens = languageData.customTokens || { };
 			languageData.namedIdentRules = languageData.namedIdentRules || { };
+			
+			//transform keywords, operators and custom tokens into a regex map
+			languageData.keywords = transformWordMap(languageData.keywords || [], "\\b", languageData.caseInsensitive);
+			languageData.operators = transformWordMap(languageData.operators || [], "", languageData.caseInsensitive);
+			for (var tokenName in languageData.customTokens) {
+				languageData.customTokens[tokenName] = transformWordMap(languageData.customTokens[tokenName], "\\b", languageData.caseInsensitive);
+			}
 			
 			for (var i = 0; i < languageIds.length; i++) {
 				languages[languageIds[i]] = languageData;
@@ -687,6 +720,7 @@
 		helpers: {
 			contains: contains,
 			matchWord: matchWord,
+			createHashMap: transformWordMap,
 			createBetweenRule: createBetweenRule,
 			createProceduralRule: createProceduralRule,
 			getNextNonWsToken: function(tokens, index) { return getNextNonWsToken(tokens, index, 1); },

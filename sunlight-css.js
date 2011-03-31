@@ -94,13 +94,13 @@
 		customParseRules: [
 			//functions
 			function() {
-				var functions = [
+				var functions = sunlight.helpers.createHashMap([
 					"matrix", "translate", "translateX", "translateY", "scaleX", "scaleY", "rotate", "skewX", "skewY", "skew",
 					"translate3d", "scaleZ", "translateZ", "rotate3d", "perspective", "url"
-				];
+				], "\\b");
 				
 				return function(context) {
-					var token = sunlight.helpers.matchWord(context, functions, "function", "\\b", true);
+					var token = sunlight.helpers.matchWord(context, functions, "function", true);
 					if (token === null) {
 						return null;
 					}
@@ -127,7 +127,7 @@
 			
 			//pseudo classes
 			function() {
-				var pseudoClasses = [
+				var pseudoClasses = sunlight.helpers.createHashMap([
 					//http://www.w3.org/TR/css3-selectors/#selectors
 					"root", "nth-child", "nth-last-child", "nth-of-type", "nth-last-of-type", "first-child", "last-child", 
 					"first-of-type", "last-of-type", "only-child", "only-of-type", "empty", "link", "visited", "active",
@@ -136,7 +136,7 @@
 					
 					//http//www.w3.org/TR/css3-ui/#pseudo-classes
 					"read-only", "read-write", "default", "valid", "invalid", "in-range", "out-of-range", "required", "optional"
-				];
+				], "\\b", false);
 				
 				return function(context) {
 					var previousToken = sunlight.helpers.getPreviousNonWsToken(context.getAllTokens(), context.count());
@@ -144,7 +144,7 @@
 						return null;
 					}
 					
-					return sunlight.helpers.matchWord(context, pseudoClasses, "pseudoClass", "\\b");
+					return sunlight.helpers.matchWord(context, pseudoClasses, "pseudoClass");
 				};
 			}(),
 			
