@@ -7,7 +7,7 @@
 	</head>
 
 	<body>
-<pre><code class="sunlight-highlight-css">@import "/my/style/sheet.css"
+<pre><code id="code" class="sunlight-highlight-css">@import "/my/style/sheet.css"
 @import url(/my/style/sheet.css) screen "Print style\"s"
 
 html div.myClass {
@@ -39,7 +39,16 @@ a:fake-pseudo-class {
 </code></pre>
 	</body>
 
+	<script type="text/javascript"  src="test.js"></script>
 	<script type="text/javascript">//<![CDATA[
-		Sunlight.highlightAll();
+		assertExists("rule", "@import", "css rule declaration");
+		assertExists("string", "\"Courier New\"", "font-family string");
+		assertExists("ident", "html", "html element selector");
+		assertExists("number", "0.0", "decimal number");
+		assertExists("keyword", "background-color", "background-color property");
+		assertExists("hexColor", "#FF0000", "hex color");
+		assertExists("id", "#wrapper", "id selector");
+		assertExists("class", ".warning", "class selector");
+		assertExists("operator", "~=", "attribute operator");
 	//]]></script>
 </html>

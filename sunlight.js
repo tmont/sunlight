@@ -135,6 +135,8 @@
 		return  {
 			defaultEnter: function(context) { return defaultEnter(context.tokens[context.index].name)(context); },
 			defaultExit: function(context) { return context.append("</span>") || true; },
+			enter_default: function() {},
+			exit_default: function() {},
 			writeCurrentToken: function(context) { context.appendAndEncode(context.tokens[context.index].value); },
 			
 			//this handles the named ident mayhem
@@ -538,7 +540,7 @@
 					["'", "&#039;"],
 					["<", "&lt;"],
 					[">", "&gt;"],
-					["\t", new Array(options.tabWidth).join("&#160;")],
+					["\t", new Array(options.tabWidth + 1).join("&#160;")],
 					[" ", "&#160;"]
 				];
 				

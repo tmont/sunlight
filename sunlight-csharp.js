@@ -467,7 +467,10 @@
 						}
 					}
 					
-					if (bracketCount[0] === 0) {
+					if (bracketCount[0] === 0 || bracketCount[0] === bracketCount[1]) {
+						//if no brackets were found OR...
+						//all the found brackets are closed, so this ident is actually outside of the brackets
+						//duh.
 						return false;
 					}
 					
