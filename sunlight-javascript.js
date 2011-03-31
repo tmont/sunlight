@@ -4,7 +4,7 @@
 		throw "Include sunlight.js before including language files";
 	}
 	
-	sunlight.registerLanguage(["js", "javascript"], {
+	sunlight.registerLanguage("javascript", {
 		keywords: [
 			//keywords
 			"break", "case", "catch", "continue", "default", "delete", "do", 

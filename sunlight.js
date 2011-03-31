@@ -177,7 +177,6 @@
 		var EOF = undefined;
 		var currentChar = length > 0 ? text[0] : EOF;
 		var nextReadBeginsLine = false;
-		var peekCache = []; //enable faster lookups for languages with many keywords/custom tokens (doesn't make a big difference, but whatever, it's done and it doesn't hurt)
 		
 		var getCharacters = function(count) {
 			if (count === 0) {
@@ -201,16 +200,11 @@
 			},
 			
 			peek: function(count) {
-				if (peekCache[count] !== undefined) {
-					return peekCache[count];
-				}
-				
-				return peekCache[count] = getCharacters(count);
+				return getCharacters(count);
 			},
 			
 			read: function(count) {
 				var value = getCharacters(count);
-				peekCache = [];
 				
 				if (value !== EOF) {
 					//advance index
@@ -540,7 +534,6 @@
 			return { tokens: tokens, continuation: context.continuation };
 		};
 		
-		
 		var createAnalyzerContext = function(unhighlightedCode, language, partialContext, options) {
 			var buffer = "";
 			
@@ -666,7 +659,8 @@
 		return token;
 	};
 	
-	var transformWordMap = function(wordMap, boundary, caseInsensitive) {
+	//this is crucial for efficiency and speed
+	var createHashMap = function(wordMap, boundary, caseInsensitive) {
 		//creates a hash table where the hash is the first character of the word
 		var newMap = { };
 		for (var i = 0; i < wordMap.length; i++) {
@@ -684,7 +678,6 @@
 		version: "1.0",
 		Highlighter: highlighterConstructor,
 		createAnalyzer: function() { return create(defaultAnalyzer); },
-		isRegistered: function(languageId) { return languages[languageId] !== undefined; },
 		defaultEscapeSequences: ["\\n", "\\t", "\\r", "\\\\", "\\v", "\\f"],
 		
 		highlightAll: function(options) { 
@@ -695,32 +688,30 @@
 			}
 		},
 		
-		registerLanguage: function(languageIds, languageData) {
-			if (languageIds.length === 0) {
-				throw "Languages must be registered with at least one identifier, e.g. \"php\" for PHP";
+		registerLanguage: function(languageId, languageData) {
+			if (!languageId) {
+				throw "Languages must be registered with an identifier, e.g. \"php\" for PHP";
 			}
 			
 			languageData.analyzer = languageData.analyzer || create(defaultAnalyzer);
 			languageData.customTokens = languageData.customTokens || { };
 			languageData.namedIdentRules = languageData.namedIdentRules || { };
+			languageData.name = languageId;
 			
 			//transform keywords, operators and custom tokens into a regex map
-			languageData.keywords = transformWordMap(languageData.keywords || [], "\\b", languageData.caseInsensitive);
-			languageData.operators = transformWordMap(languageData.operators || [], "", languageData.caseInsensitive);
+			languageData.keywords = createHashMap(languageData.keywords || [], "\\b", languageData.caseInsensitive);
+			languageData.operators = createHashMap(languageData.operators || [], "", languageData.caseInsensitive);
 			for (var tokenName in languageData.customTokens) {
-				languageData.customTokens[tokenName] = transformWordMap(languageData.customTokens[tokenName], "\\b", languageData.caseInsensitive);
+				languageData.customTokens[tokenName] = createHashMap(languageData.customTokens[tokenName], "\\b", languageData.caseInsensitive);
 			}
 			
-			for (var i = 0; i < languageIds.length; i++) {
-				languages[languageIds[i]] = languageData;
-				languages[languageIds[i]].name = languageIds[i];
-			}
+			languages[languageData.name] = languageData;
 		},
 		
 		helpers: {
 			contains: contains,
 			matchWord: matchWord,
-			createHashMap: transformWordMap,
+			createHashMap: createHashMap,
 			createBetweenRule: createBetweenRule,
 			createProceduralRule: createProceduralRule,
 			getNextNonWsToken: function(tokens, index) { return getNextNonWsToken(tokens, index, 1); },

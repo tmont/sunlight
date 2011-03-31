@@ -8,7 +8,7 @@
 	//things that are allowed inside a generic type definition
 	var acceptableKeywords = primitives.concat(["in", "out", "string", "object"]);
 	
-	sunlight.registerLanguage(["c#", "csharp"], {
+	sunlight.registerLanguage("csharp", {
 		keywords: primitives.concat([
 			//class qualifiers
 			"public", "private", "protected", "internal", "static", "sealed", "abstract", "partial",

@@ -4,7 +4,7 @@
 		throw "Include sunlight.js before including language files";
 	}
 
-	sunlight.registerLanguage(["xml"], {
+	sunlight.registerLanguage("xml", {
 		scopes: {
 			string: [ ["\"", "\""], ["'", "'"] ],
 			comment: [ ["<!--", "-->"] ],

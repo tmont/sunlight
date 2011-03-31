@@ -4,7 +4,7 @@
 		throw "Include sunlight.js before including language files";
 	}
 
-	sunlight.registerLanguage(["css"], {
+	sunlight.registerLanguage("css", {
 		keywords: [
 			//background (http://www.w3.org/TR/css3-background/)
 			"background-color", "background-image", "background-repeat", "background-attachment", "background-position", 

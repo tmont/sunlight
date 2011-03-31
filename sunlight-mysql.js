@@ -4,7 +4,7 @@
 		throw "Include sunlight.js before including language files";
 	}
 	
-	sunlight.registerLanguage(["mysql"], {
+	sunlight.registerLanguage("mysql", {
 		caseInsensitive: true,
 		
 		keywords: [

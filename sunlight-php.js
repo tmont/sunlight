@@ -10,7 +10,7 @@
 	phpAnalyzer.enter_function = function(context) { context.append("<a class=\"sunlight-function sunlight-php\" href=\"http://php.net/" + context.tokens[context.index].value + "\">") };
 	phpAnalyzer.exit_function = function(context) { context.append("</a>") };
 	
-	sunlight.registerLanguage(["php"], {
+	sunlight.registerLanguage("php", {
 		keywords: [
 			//class qualifiers
 			"public", "private", "protected", "static", "final", "abstract",

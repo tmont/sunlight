@@ -4,7 +4,7 @@
 		throw "Include sunlight.js before including language files";
 	}
 	
-	sunlight.registerLanguage(["html"], {
+	sunlight.registerLanguage("html", {
 		scopes: {
 			string: [ ["\"", "\""], ["'", "'"] ],
 			doctype: [ ["<!doctype", ">"], ["<!DOCTYPE", ">"] ],

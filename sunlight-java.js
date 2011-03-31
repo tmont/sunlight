@@ -4,7 +4,7 @@
 		throw "Include sunlight.js before including language files";
 	}
 
-	sunlight.registerLanguage(["java"], {
+	sunlight.registerLanguage("java", {
 		keywords: [
 			//http://download.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html
 			"abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class", "const",
