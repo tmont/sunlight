@@ -106,11 +106,12 @@
 					}
 					
 					//the next non-whitespace character must be a "("
-					var peek = context.reader.peek(), count = 1;
+					var count = token.value.length, peek = context.reader.peek(count);
 					while (peek.length === count && peek !== context.reader.EOF) {
 						if (!/\s$/.test(peek)) {
 							if (peek[peek.length - 1] === "(") {
 								//this token really is a function
+								context.reader.read(token.value.length - 1);
 								return token;
 							}
 							
