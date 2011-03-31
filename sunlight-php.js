@@ -86,11 +86,11 @@
 				
 				
 				var ident = '', isNowdoc = false;
-				var peek = context.reader.peek(), c;
+				var peek = context.reader.peek();
 				while (peek !== context.reader.EOF && peek !== "\n") {
 					value += context.reader.read();
 					
-					if (value !== "'") {
+					if (peek !== "'") {
 						//ignore NOWDOC apostophres
 						ident += context.reader.current();
 					} else {
@@ -178,7 +178,7 @@
 			"!", "~",
 
 			//other
-			"?:", "?", ":", ".", "=>", "="
+			"?:", "?", ":", ".=", ".", "=>", "="
 		],
 		
 		analyzer: phpAnalyzer
