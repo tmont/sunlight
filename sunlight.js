@@ -248,7 +248,11 @@
 	var matchWord = function(context, wordMap, tokenName, doNotRead) {
 		wordMap = wordMap || [];
 		var current = context.reader.current();
-		if (!wordMap[current] && (!context.languageCaseInsensitive || !wordMap[current.toUpperCase()])) {
+		if (context.language.caseInsensitive) {
+			current = current.toUpperCase();
+		}
+		
+		if (!wordMap[current]) {
 			return null;
 		}
 		
@@ -663,12 +667,13 @@
 	var createHashMap = function(wordMap, boundary, caseInsensitive) {
 		//creates a hash table where the hash is the first character of the word
 		var newMap = { };
-		for (var i = 0; i < wordMap.length; i++) {
-			if (!newMap[wordMap[i][0]]) {
-				newMap[wordMap[i][0]] = [];
+		for (var i = 0, word; i < wordMap.length; i++) {
+			word = caseInsensitive ? wordMap[i].toUpperCase() : wordMap[i];
+			if (!newMap[word[0]]) {
+				newMap[word[0]] = [];
 			}
 			
-			newMap[wordMap[i][0]].push({ value: wordMap[i], regex: new RegExp(regexEscape(wordMap[i]) + boundary, caseInsensitive ? "i" : "") });
+			newMap[word[0]].push({ value: word, regex: new RegExp(regexEscape(word) + boundary, caseInsensitive ? "i" : "") });
 		}
 		
 		return newMap;
