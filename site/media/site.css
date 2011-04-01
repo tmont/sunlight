@@ -161,6 +161,11 @@ code, tt, pre {
 	height: 200px;
 	width: 800px;
 }
+#logo a {
+	width: 800px;
+	height: 200px;
+	display: block;
+}
 
 #wrapper {
 	min-height: 100%;
@@ -190,7 +195,7 @@ code, tt, pre {
 	border: none;
 }
 #footer p:first-child {
-	margin-top: 80px;
+	margin-top: 100px;
 }
 #footer p {
 	line-height: .6em;
@@ -219,6 +224,11 @@ code, tt, pre {
 }
 #nav li a:hover {
 	border-color: #000000;
+}
+
+
+.inset {
+	margin-left: 20px;
 }
 
 .box {
