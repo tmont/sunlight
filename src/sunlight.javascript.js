@@ -78,7 +78,7 @@
 					}
 					
 					//valid operator
-					if (previousNonWsToken.name === "operator" && sunlight.helpers.contains(["<", "<=", ">=", "==", "===", "!==", "!=", "="], previousNonWsToken.value)) {
+					if (previousNonWsToken.name === "operator" && sunlight.helpers.contains(["<", "<=", ">=", "==", "===", "!==", "!=", "=", ":"], previousNonWsToken.value)) {
 						return true;
 					}
 					
