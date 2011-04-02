@@ -56,6 +56,8 @@
 					return null;
 				}
 				
+				
+				
 				var isValid = function() {
 					var previousNonWsToken = context.token(context.count() - 1);
 					var previousToken = null;
@@ -77,12 +79,11 @@
 						return true;
 					}
 					
-					//valid operator
-					if (previousNonWsToken.name === "operator" && sunlight.util.contains(["<", "<=", ">=", "==", "===", "!==", "!=", "=", ":", "!", "~", "||", "&&"], previousNonWsToken.value)) {
-						return true;
+					if (previousNonWsToken.name === "keyword" || previousNonWsToken.name === "ident" || previousNonWsToken.name === "number") {
+						return false;
 					}
 					
-					return previousNonWsToken.name === "punctuation";
+					return true;
 				}();
 				
 				if (!isValid) {
@@ -125,7 +126,7 @@
 		
 		identFirstLetter: /[$A-Za-z_]/,
 		identAfterFirstLetter: /[\w\$]/,
-
+		
 		namedIdentRules: {
 			follows: [
 				[{ token: "keyword", values: ["function"] }, sunlight.util.whitespace]

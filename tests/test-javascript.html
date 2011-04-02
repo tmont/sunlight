@@ -99,17 +99,20 @@
 	4 = /foo/ //should be a regex
 	if (!/foo/.test("foo")) {} //should be a regex
 	if (!/foo/.test("foo") || /foo/.test("foo") && /foo/.test("foo")) {} //all should be a regex
+	4 + /regexafteroperator/ //should be a regex
+	/regexatstartofline/ //should be a regex
 	
 	/foo/gim.test("foo") //should be a regex with modifiers
 	/foo/asdfasdf //should be a regex with non-existent modifiers
 	
 	
 	//.test("foo"); //should not be a regex
-	4 /notaregex/ //should not be a regex
-	4 + /foo/ //should not be a regex
-	if /foo/ //should not be a regex
-	var foo = 5/foo; //should not be a regex
-	var foo = 5 /foo; //should not be a regex
+	
+	4 /identafterdivision1/ //should not be a regex
+	var foo = 5/identafterdivision2; //should not be a regex
+	var foo = 5 /identafterdivision3; //should not be a regex
+	if /regexafterkeyword/ //should not be a regex
+	
 	
 	var jsonLiteral = {
 		regex: /regexaftercolon/
@@ -132,14 +135,20 @@
 		assertExists("named-ident", "foo", "foo named ident");
 		assertExists("operator", ":", ": operator");
 		assertExists("globalFunction", "isNaN", "isNaN global function");
-		assertExists("regexLiteral", "/foo/", "regex literal");
+		
 		assertExists("regexLiteral", "/\\//", "regex literal with escaped forward slash");
 		assertExists("regexLiteral", "/\\\\/", "regex literal with escaped backslash");
 		assertExists("regexLiteral", "/foo/gim", "regex literal with valid modifiers");
 		assertExists("regexLiteral", "/foo/asdfasdf", "regex literal with invalid modifiers");
 		assertExists("regexLiteral", "/regexaftercolon/", "regex literal after colon");
-		assertExists("ident", "notaregex", "not a regex literal");
+		assertExists("regexLiteral", "/regexafteroperator/", "regex literal after operator");
+		assertExists("regexLiteral", "/regexatstartofline/", "regex literal at start of line");
+		assertExists("ident", "identafterdivision1", "not a regex literal after division operator");
+		assertExists("ident", "identafterdivision2", "not a regex literal after division operator");
+		assertExists("ident", "identafterdivision3", "not a regex literal after division operator");
+		assertExists("ident", "regexafterkeyword", "not a regex literal after keyword");
 		assertExists("comment", "//should not be a regex", "single line comment");
+		
 		assertExists("string", "\"he\\\\\\\"ad\"", "string with escaped backslash and escaped quote");
 		assertExists("string", "'missing jQuery\\\'s dependency'", "single quoted string with escaped quote");
 		assertExists("number", "0x2", "hex number");
