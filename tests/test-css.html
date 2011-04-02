@@ -16,7 +16,7 @@ html div.myClass {
 	opacity: 0.0;
 	background-color: #000000;
 	color: white;
-	font-family: "Courier New", Arial, sans-serif;
+	font-family: "Courier New", 'Arialola\'s', sans-serif;
 }
 
 body > .warning {
@@ -43,6 +43,8 @@ a:fake-pseudo-class {
 	<script type="text/javascript">//<![CDATA[
 		assertExists("rule", "@import", "css rule declaration");
 		assertExists("string", "\"Courier New\"", "font-family string");
+		assertExists("string", "\"Print style\\\"s\"", "string with escaped quote");
+		assertExists("string", "'Arialola\\'s'", "single quoted string with escaped quote");
 		assertExists("ident", "html", "html element selector");
 		assertExists("number", "0.0", "decimal number");
 		assertExists("keyword", "background-color", "background-color property");
@@ -50,5 +52,9 @@ a:fake-pseudo-class {
 		assertExists("id", "#wrapper", "id selector");
 		assertExists("class", ".warning", "class selector");
 		assertExists("operator", "~=", "attribute operator");
+		assertExists("pseudoElement", "before", "pseudo element");
+		assertExists("pseudoClass", "first-child", "pseudo class");
+		assertExists("function", "url", "url function");
+		assertExists("function", "rotate", "rotate function");
 	//]]></script>
 </html>
