@@ -1,7 +1,13 @@
 .sunlight-highlighted {
 	font-family: Consolas;
-	font-size: 16px;
+	font-size: 14px;
 	white-space: pre;
+}
+.sunlight-highlighted a {
+	border: none;
+	text-decoration: none;
+	font-weight: normal;
+	font-style: normal;
 }
 
 /* html */

@@ -484,28 +484,26 @@
 		
 		var tokenize = function(unhighlightedCode, language, continuation) {
 			var tokens = [];
-			var context = function() {
-				return {
-					reader: createCodeReader(unhighlightedCode), 
-					language: language,
-					token: function(index) { return tokens[index]; },
-					getAllTokens: function() { return tokens.slice(0); },
-					count: function() { return tokens.length; },
-					defaultData: {
-						text: "",
-						line: 1,
-						column: 1
-					},
-					createToken: function(name, value, line, column) {
-						return {
-							name: name,
-							line: line,
-							value: value,
-							column: column
-						};
-					}
-				};
-			}();
+			var context = {
+				reader: createCodeReader(unhighlightedCode), 
+				language: language,
+				token: function(index) { return tokens[index]; },
+				getAllTokens: function() { return tokens.slice(0); },
+				count: function() { return tokens.length; },
+				defaultData: {
+					text: "",
+					line: 1,
+					column: 1
+				},
+				createToken: function(name, value, line, column) {
+					return {
+						name: name,
+						line: line,
+						value: value,
+						column: column
+					};
+				}
+			};
 			
 			//if continuation is given, then we need to pick up where we left off from a previous parse
 			//basically it indicates that a scope was never closed, so we need to continue that scope
@@ -636,20 +634,14 @@
 		};
 	}();
 	
-	var highlighterConstructor = function() {
-		var defaults = {
-			tabWidth: 4
-		};
+	var highlighterConstructor = function(options) {
+		var merged = merge({}, globalOptions);
+		if (options) {
+			merged = merge(merged, options);
+		}
 		
-		return function(options) {
-			var merged = defaults;
-			if (options) {
-				merged = merge(temp, options);
-			}
-			
-			this.options = merged;
-		};
-	}();
+		this.options = merged;
+	};
 	
 	highlighterConstructor.prototype = highlighter;
 	
@@ -679,11 +671,15 @@
 		return newMap;
 	};
 	
+	var globalOptions = {
+		tabWidth: 4 
+	};
+	
 	window.Sunlight = {
 		version: "1.0",
 		Highlighter: highlighterConstructor,
 		createAnalyzer: function() { return create(defaultAnalyzer); },
-		defaultEscapeSequences: ["\\n", "\\t", "\\r", "\\\\", "\\v", "\\f"],
+		globalOptions: globalOptions,
 		
 		highlightAll: function(options) { 
 			var highlighter = new highlighterConstructor(options);
@@ -713,7 +709,8 @@
 			languages[languageData.name] = languageData;
 		},
 		
-		helpers: {
+		util: {
+			escapeSequences: ["\\n", "\\t", "\\r", "\\\\", "\\v", "\\f"],
 			contains: contains,
 			matchWord: matchWord,
 			createHashMap: createHashMap,

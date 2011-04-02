@@ -8,241 +8,74 @@
 
 	<body>
 <pre><code id="code" class="sunlight-highlight-php">&lt;?php
-
-    /**
-     * ProxyBuilder
-     *
-     * @package   Phroxy
-     * @version   1.0
-     * @copyright (c) 2010 Tommy Montgomery
-     */
-
-    namespace Phroxy;
-   
-    use UseThisClass, UseThisOtherClass, NoUseThisClass;
-   
-    /**
-     * Class for dynamically building interceptable proxies
-     *
-     * @package Phroxy
-     */
-    class ProxyBuilder implements ObjectBuilder, Countable, ArrayAccess {
-       
-        private $proxyCache = array();
-       
-        /**
-         * The namespace that the proxy is contained within
-         *
-         * @var string
-         */
-        const DEFAULT_NAMESPACE = 'Phroxy';
-       
-        /**
-         * Creates an interceptable proxy of the given class
-         *
-         * @uses   ReflectionCache::getClass()
-         * @uses   ReflectionUtil::isProxyable()
-         * @param  ReflectionClass $class The class to proxy, must be non-final and instantiable
-         * @param  array           $args  Constructor arguments
-         * @throws {@link ProxyException} if the class cannot be proxied
-         * @return object
-         */
-        public function build(ReflectionClass $class, array $args = array()) {
-            $name = $class-&gt;getName();
-            if (!isset($this-&gt;proxyCache[$name])) {
-                if (!ReflectionUtil::isProxyable($class)) {
-                    throw new ProxyException('The type ' . $name . ' cannot be proxied');
-                }
-               
-                $this-&gt;proxyCache[$name] = $this-&gt;buildProxy($class);
-            }
-           
-            if (!empty($args)) {
-                $proxy = ReflectionCache::getClass($this-&gt;proxyCache[$name]);
-                return $proxy-&gt;newInstanceArgs($args);
-            } else {
-                return new $this-&gt;proxyCache[$name]();
-            }
-        }
-       
-        /**
-         * Generates a unique proxy name for the given class
-         *
-         * @param  ReflectionClass $class
-         * @return string
-         */
-        protected function generateClassName(ReflectionClass $class) {
-            $prefix = 'PhroxyProxy_' . str_replace('\\', '_', $class-&gt;getName());
-            do {
-                $name = $prefix . '_' . uniqid();
-            } while (class_exists(self::DEFAULT_NAMESPACE . '\\' . $name) || interface_exists(self::DEFAULT_NAMESPACE . '\\' . $name));
-           
-            return $name;
-        }
-       
-        /**
-         * Creates a proxy definition and eval()s it
-         *
-         * @uses   generateClassName()
-         * @uses   buildNamespaceDeclaration()
-         * @uses   buildClassDefinition()
-         * @param  ReflectionClass $class
-         * @return string The name of the generated class
-         */
-        protected final function buildProxy(ReflectionClass $class) {
-            $name = $this-&gt;generateClassName($class);
-           
-            $code = $this-&gt;buildNamespaceDeclaration($class);
-            $code .= $this-&gt;buildClassDefinition($class, $name);
-           
-            eval($code);
-           
-            return self::DEFAULT_NAMESPACE . '\\' . $name;
-        }
-       
-        /**
-         * Builds the code needed for the namespace declaration
-         *
-         * @param  ReflectionClass $class
-         * @return string Literal PHP code
-         */
-        protected function buildNamespaceDeclaration(ReflectionClass $class) {
-            return "namespace Phroxy;\nuse ReflectionMethod, Exception;\n\n";
-        }
-       
-        /**
-         * Builds the code needed for a class
-         *
-         * @uses   buildMethod()
-         * @uses   ReflectionUtil::methodIsProxyable()
-         * @param  ReflectionClass $class
-         * @param  string          $className The name of the proxy
-         * @return string Literal PHP code
-         */
-        protected function buildClassDefinition(ReflectionClass $class, $className) {
-            $code = "class $className extends \\" . $class-&gt;getName() . " {\n";
-           
-            foreach ($class-&gt;getMethods() as $method) {
-                if (!ReflectionUtil::methodIsProxyable($method)) {
-                    continue;
-                }
-               
-                $code .= $this-&gt;buildMethod($method);
-            }
-           
-            $code .= '}';
-            return $code;
-        }
-       
-        /**
-         * Builds the code needed for a method
-         *
-         * @uses   buildMethodParameter()
-         * @param  ReflectionMethod $method
-         * @return string Literal PHP code
-         */
-        protected function buildMethod(ReflectionMethod $method) {
-            $code = "\t";
-            $code .= $method-&gt;isPublic() ? 'public ' : 'protected ';
-            $code .= $method-&gt;isStatic() ? 'static ' : '';
-            $code .= 'function ';
-            if ($method-&gt;returnsReference()) {
-                $code .= '&amp;';
-            }
-            $code .= $method-&gt;getName() . '(';
-           
-            $params = array();
-            $paramVars = array();
-            foreach ($method-&gt;getParameters() as $parameter) {
-                $params[] = $this-&gt;buildMethodParameter($parameter);
-                $paramVars[] = '$' . $parameter-&gt;getName();
-            }
-           
-            do {
-                $contextVar = '$context_' . uniqid();
-            } while (in_array($contextVar, $paramVars));
-           
-            do {
-                $interceptorsVar = '$interceptors_' . uniqid();
-            } while (in_array($interceptorsVar, $paramVars));
-           
-            $code .= implode(', ', $params) . ") {\n";
-            $methodCall = $method-&gt;getName() . '(' . implode(', ', $paramVars) . ')';
-           
-            $code .= &lt;&lt;&lt;METHODBODY
-        $contextVar = new InterceptionContext(isset(\$this) ? \$this : null, new ReflectionMethod(__CLASS__, __FUNCTION__), func_get_args());
-        ProxyHandler::interceptBefore($contextVar);
-
-        if ({$contextVar}-&gt;shouldCallNext()) {
-            try {
-                {$contextVar}-&gt;setReturnValue(parent::$methodCall);
-            } catch (Exception \$e) {
-                {$contextVar}-&gt;setException(\$e);
-            }
-        }
-
-        ProxyHandler::interceptAfter($contextVar);
-        \$exception = {$contextVar}-&gt;getException();
-        if (\$exception !== null) {
-            throw \$exception;
-        } else {
-            return {$contextVar}-&gt;getReturnValue();
-        }
-
-METHODBODY;
-           
-            $code .= "\t}\n";
-           
-            return $code;
-        }
-       
-        /**
-         * Builds the code needed for a method parameter
-         *
-         * @param  ReflectionParameter $parameter
-         * @return string Literal PHP code
-         */
-        protected final function buildMethodParameter(ReflectionParameter $parameter) {
-            $code = '';
-            if ($parameter-&gt;isArray()) {
-                $code .= 'array';
-            } else {
-                $class = $parameter-&gt;getClass();
-                if ($class instanceof ReflectionClass) {
-                    $code .= '\\' . $class-&gt;getName();
-                }
-            }
-           
-            $code .= ' ';
-            if ($parameter-&gt;isPassedByReference()) {
-                $code .= '&amp;';
-            }
-           
-            $code .= '$' . $parameter-&gt;getName();
-            if ($parameter-&gt;isOptional()) {
-                $code .= ' = ';
-                if ($parameter-&gt;isDefaultValueAvailable()) {
-                    $code .= var_export($parameter-&gt;getDefaultValue(), true);
-                } else {
-                    $code .= 'null';
-                }
-            }
-           
-            return $code;
-        }
 		
-		function test() {
-			$foo = &lt;&lt;&lt;HEREDOC
-oh hai!
-HEREDOC;
-
-			$foo = &lt;&lt;&lt;'NOWDOC'
-oh hai!
-NOWDOC;
+	namespace My\Namespace;
+	
+	use Exception;
+	use Iterator, ArrayAccess;
+	use Other\Namespace\Foo, Other\Namespace\Bar;
+	
+	interface Kissable extends Countable {
+		function kiss(array $foo = null);
+	}
+	
+	abstract class HenryKissable extends RecursiveIterator implements ArrayAccess, Iterator, Kissable {
+		const KISS = 'kiss';
+		private $myPrivateVar;
+		public $publicVar;
+		
+		#Perl-style comments are stupid
+		public function __construct($foo, Iterator $bar = null, array $kiss = array()) {
+			parent::__construct();
+			$this-&gt;myPrivateVar = $foo;
+			$this-&gt;publicVar = $bar ?: new self();
+			
+			foreach ($kiss as $key =&gt; $value) {
+				//unset stuff
+				unset($this[$key]);
+				$this[$key] = is_int($value) ? (int)$value : (string)$value;
+			}
 		}
-       
-    }
+		
+		protected final function invokeStatic() {
+			OhHai::Sup("this is a \"string\"");
+			static::doSomething();
+			
+			switch (KISS) {
+				case 5:
+				case 0x1a:
+					if (KISS === 'foo') {
+						return null;
+					} elseif (KISS === 'bar') {
+						return false;
+					} else {
+						return true;
+					}
+				case 1e3:
+					break;
+				default:
+					throw new OutOfBoundsException();
+			}
+		}
+		
+		public abstract function(ReflectionClass $class);
+		
+		/**
+		 * This does something
+		 */
+		private static function doSomething() {
+			$heredoc = &lt;&lt;&lt;LOL
+oh look
+a heredoc!
+LOL;
 
+			$nowdoc = &lt;&lt;&lt;'LULZ'
+oh look
+a nowdoc!
+LULZ;
+		}
+		
+	}
 ?&gt;</code></pre>
 	</body>
 

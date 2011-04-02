@@ -65,27 +65,24 @@
 		},
 
 		scopes: {
-			//token name => array[opener, closer, escape sequences (optional), zeroWidthCloser? (optional)]
-			
-			string: [ ["\"", "\"", sunlight.defaultEscapeSequences.concat(["\\\""])], ["'", "'", ["\\\'", "\\\\"]] ],
+			string: [ ["\"", "\"", sunlight.util.escapeSequences.concat(["\\\""])], ["'", "'", ["\\\'", "\\\\"]] ],
 			comment: [ ["//", "\n", null, true], ["/*", "*/"], ["#", "\n", null, true] ],
 			variable: [ ["$", { length: 1, regex: /[^\$A-Za-z0-9_]/ }, null, true] ]
 		},
 		
 		customParseRules: [
 			//heredoc/nowdoc
-			function (context) {
-				if (context.reader.current() !== '<' || context.reader.peek(2) !== '<<') {
+			function(context) {
+				if (context.reader.current() !== "<" || context.reader.peek(2) !== "<<") {
 					return null;
 				}
 				
-				var value = '<<<';
+				var value = "<<<";
 				var line = context.reader.getLine();
 				var column = context.reader.getColumn();
 				context.reader.read(2);
 				
-				
-				var ident = '', isNowdoc = false;
+				var ident = "", isNowdoc = false;
 				var peek = context.reader.peek();
 				while (peek !== context.reader.EOF && peek !== "\n") {
 					value += context.reader.read();
@@ -123,25 +120,20 @@
 		namedIdentRules: {
 			follows: [
 				//extends/implements class names
-				[{ token: "ident" }, sunlight.helpers.whitespace, { token: "keyword", values: ["extends", "implements"] }, sunlight.helpers.whitespace],
+				[{ token: "ident" }, sunlight.util.whitespace, { token: "keyword", values: ["extends", "implements"] }, sunlight.util.whitespace],
 
-				[{ token: "keyword", values: ["class", "interface", "abstract", "final", "new"] }, sunlight.helpers.whitespace],
+				[{ token: "keyword", values: ["class", "interface", "abstract", "final", "new"] }, sunlight.util.whitespace],
 			],
 			
 			precedes: [
 				//static method calls
-				[sunlight.helpers.whitespace, { token: "operator", values: ["::"] }],
+				[sunlight.util.whitespace, { token: "operator", values: ["::"] }],
 				
 				[{ token: "default" }, { token: "variable" }],
 			],
 
 			between: [
-				//namespace name
-				{ opener: { token: "keyword", values: ["namespace"] }, closer: { token: "punctuation", values: [";"] } },
-				
-				//use statements
-				{ opener: { token: "keyword", values: ["use"] }, closer: { token: "punctuation", values: [","] } },
-				{ opener: { token: "punctuation", values: [","] }, closer: { token: "punctuation", values: [",",  ";"] } }
+				{ opener: { token: "keyword", values: ["implements"] }, closer: { token: "punctuation", values: ["{"] } }
 			]
 		},
 

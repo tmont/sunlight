@@ -53,7 +53,7 @@
 		//these are considered attributes
 		namedIdentRules: {
 			precedes: [
-				[sunlight.helpers.whitespace, { token: "operator", values: ["="] }]
+				[sunlight.util.whitespace, { token: "operator", values: ["="] }]
 			]
 		},
 

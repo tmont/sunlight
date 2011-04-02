@@ -94,13 +94,13 @@
 		customParseRules: [
 			//functions
 			function() {
-				var functions = sunlight.helpers.createHashMap([
+				var functions = sunlight.util.createHashMap([
 					"matrix", "translate", "translateX", "translateY", "scaleX", "scaleY", "rotate", "skewX", "skewY", "skew",
 					"translate3d", "scaleZ", "translateZ", "rotate3d", "perspective", "url"
 				], "\\b");
 				
 				return function(context) {
-					var token = sunlight.helpers.matchWord(context, functions, "function", true);
+					var token = sunlight.util.matchWord(context, functions, "function", true);
 					if (token === null) {
 						return null;
 					}
@@ -127,7 +127,7 @@
 			
 			//pseudo classes
 			function() {
-				var pseudoClasses = sunlight.helpers.createHashMap([
+				var pseudoClasses = sunlight.util.createHashMap([
 					//http://www.w3.org/TR/css3-selectors/#selectors
 					"root", "nth-child", "nth-last-child", "nth-of-type", "nth-last-of-type", "first-child", "last-child", 
 					"first-of-type", "last-of-type", "only-child", "only-of-type", "empty", "link", "visited", "active",
@@ -139,12 +139,12 @@
 				], "\\b", false);
 				
 				return function(context) {
-					var previousToken = sunlight.helpers.getPreviousNonWsToken(context.getAllTokens(), context.count());
+					var previousToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
 					if (!previousToken || previousToken.name !== "operator" || previousToken.value !== ":") {
 						return null;
 					}
 					
-					return sunlight.helpers.matchWord(context, pseudoClasses, "pseudoClass");
+					return sunlight.util.matchWord(context, pseudoClasses, "pseudoClass");
 				};
 			}(),
 			
@@ -153,12 +153,12 @@
 				var pseudoElements = ["before", "after", "value", "choices", "repeat-item", "repeat-index", "marker"];
 				
 				return function(context) {
-					var previousToken = sunlight.helpers.getPreviousNonWsToken(context.getAllTokens(), context.count());
+					var previousToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
 					if (!previousToken || previousToken.name !== "operator" || previousToken.value !== "::") {
 						return null;
 					}
 					
-					return sunlight.helpers.matchWord(context, pseudoElements, "pseudoElement", "\\b");
+					return sunlight.util.matchWord(context, pseudoElements, "pseudoElement", "\\b");
 				};
 			}(),
 			
@@ -174,7 +174,7 @@
 				//make sure it's not a value to a function, e.g. not between "(" and ")"
 				//basically if we run into "(" before a "{" it's bad
 				var token, index = context.count(), tokens = context.getAllTokens();
-				while ((token = sunlight.helpers.getPreviousNonWsToken(tokens, index--)) !== undefined) {
+				while ((token = sunlight.util.getPreviousNonWsToken(tokens, index--)) !== undefined) {
 					if (token.name === "punctuation") {
 						if (token.value === "{" || token.value === ")") {
 							break;

@@ -318,7 +318,7 @@
 		},
 		
 		scopes: {
-			string: [ ["\"", "\"", sunlight.defaultEscapeSequences.concat(["\\\""])], ["'", "'", ["\\\'", "\\\\"]] ],
+			string: [ ["\"", "\"", sunlight.util.escapeSequences.concat(["\\\""])], ["'", "'", ["\\\'", "\\\\"]] ],
 			comment: [ ["--", "\n", null, true], ["/*", "*/"], ["#", "\n", null, true] ],
 			quotedIdent: [ ["`", "`", ["`\\`", "\\\\"]] ]
 		},
@@ -328,7 +328,7 @@
 
 		namedIdentRules: {
 			follows: [
-				[{ token: "keyword", values: ["from", "join"]}, sunlight.helpers.whitespace ]
+				[{ token: "keyword", values: ["from", "join"]}, sunlight.util.whitespace ]
 			]
 		},
 

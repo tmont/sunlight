@@ -43,7 +43,7 @@
 		},
 
 		scopes: {
-			string: [ ["\"", "\"", sunlight.defaultEscapeSequences.concat(["\\\""])], ["'", "'", sunlight.defaultEscapeSequences.concat(["\\\'", "\\\\"])] ],
+			string: [ ["\"", "\"", sunlight.util.escapeSequences.concat(["\\\""])], ["'", "'", sunlight.util.escapeSequences.concat(["\\\'", "\\\\"])] ],
 			comment: [ ["//", "\n", null, true], ["/*", "*/"] ]
 		},
 		
@@ -78,7 +78,7 @@
 					}
 					
 					//valid operator
-					if (previousNonWsToken.name === "operator" && sunlight.helpers.contains(["<", "<=", ">=", "==", "===", "!==", "!=", "=", ":"], previousNonWsToken.value)) {
+					if (previousNonWsToken.name === "operator" && sunlight.util.contains(["<", "<=", ">=", "==", "===", "!==", "!=", "=", ":", "!", "~", "||", "&&"], previousNonWsToken.value)) {
 						return true;
 					}
 					
@@ -128,7 +128,7 @@
 
 		namedIdentRules: {
 			follows: [
-				[{ token: "keyword", values: ["function"] }, sunlight.helpers.whitespace]
+				[{ token: "keyword", values: ["function"] }, sunlight.util.whitespace]
 			]
 		},
 

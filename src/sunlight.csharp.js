@@ -117,9 +117,9 @@
 					return null;
 				}
 				
-				var rule = sunlight.helpers.createProceduralRule(context.count() - 1, -1, [
+				var rule = sunlight.util.createProceduralRule(context.count() - 1, -1, [
 					{ token: "punctuation", values: ["}", "{"] },
-					sunlight.helpers.whitespace,
+					sunlight.util.whitespace,
 					{ token: "keyword", values: ["public", "private", "protected", "internal"], optional: true }
 				]);
 				
@@ -127,7 +127,7 @@
 					return null;
 				}
 				
-				//now we need to look ahead and verify that the next non-sunlight.helpers.whitespace token is "{"
+				//now we need to look ahead and verify that the next non-sunlight.util.whitespace token is "{"
 				var count = "get".length, peek = context.reader.peek(count), current, allGoodYo = false;
 				while (peek.length === count) {
 					if (!/\s$/.test(peek)) {
@@ -229,7 +229,7 @@
 		],
 		
 		scopes: {
-			string: [ ["\"", "\"", sunlight.defaultEscapeSequences.concat(["\\\""])], ["@\"", "\"", ["\"\""]], ["'", "'", ["\'", "\\\\"]] ],
+			string: [ ["\"", "\"", sunlight.util.escapeSequences.concat(["\\\""])], ["@\"", "\"", ["\"\""]], ["'", "'", ["\'", "\\\\"]] ],
 			comment: [ ["//", "\n", null, true], ["/*", "*/"] ],
 			pragma: [ ["#", "\n", null, true] ]
 		},
@@ -294,7 +294,7 @@
 						}
 						
 						if (
-							(token.name === "keyword" && sunlight.helpers.contains(acceptableKeywords, token.value))
+							(token.name === "keyword" && sunlight.util.contains(acceptableKeywords, token.value))
 							|| (token.name === "operator" && (token.value === ">" || token.value === ">>"))
 							|| token.name === "default"
 							|| (token.name === "punctuation" && token.value === ",")
@@ -329,8 +329,8 @@
 						}
 						
 						if (
-							(token.name === "keyword" && sunlight.helpers.contains(acceptableKeywords, token.value))
-							|| (token.name === "operator" && sunlight.helpers.contains(["<", "<<", ">", ">>"], token.value))
+							(token.name === "keyword" && sunlight.util.contains(acceptableKeywords, token.value))
+							|| (token.name === "operator" && sunlight.util.contains(["<", "<<", ">", ">>"], token.value))
 							|| (token.name === "punctuation" && token.value === ",")
 							|| token.name === "ident"
 							|| token.name === "default"
@@ -349,8 +349,8 @@
 					//this finds "Foo" in "Foo<Bar> foo"
 					
 					//if it's preceded by an ident or a primitive/alias keyword then it's no good (i.e. a generic method definition like "public void Foo<T>")
-					var token = sunlight.helpers.getPreviousNonWsToken(context.tokens, context.index);
-					if (token.name === "ident" || (token.name === "keyword" && sunlight.helpers.contains(primitives.concat(["string", "object", "void"]), token.value))) {
+					var token = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
+					if (token.name === "ident" || (token.name === "keyword" && sunlight.util.contains(primitives.concat(["string", "object", "void"]), token.value))) {
 						return false;
 					}
 					
@@ -387,7 +387,7 @@
 						if (
 							token.name === "default"
 							|| token.name === "ident"
-							|| (token.name === "keyword" && sunlight.helpers.contains(acceptableKeywords, token.value))
+							|| (token.name === "keyword" && sunlight.util.contains(acceptableKeywords, token.value))
 							|| (token.name === "punctuation" && token.value === ",")
 						) {
 							continue;
@@ -422,12 +422,12 @@
 				//using aliases, e.g. using Foo = System.Linq.Enumerable;
 				function(context) {
 					//previous non-ws token must be "using" and next non-ws token must be "="
-					var prevToken = sunlight.helpers.getPreviousNonWsToken(context.tokens, context.index);
+					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
 					if (prevToken.name !== "keyword" || prevToken.value !== "using") {
 						return false;
 					}
 					
-					var nextToken = sunlight.helpers.getNextNonWsToken(context.tokens, context.index);
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
 					if (nextToken.name !== "operator" || nextToken.value !== "=") {
 						return false;
 					}
@@ -438,7 +438,7 @@
 				//attributes
 				function(context) {
 					//if the next token is an equals sign, this is a named parameter (or something else not inside of an attribute)
-					var token = sunlight.helpers.getNextNonWsToken(context.tokens, context.index);
+					var token = sunlight.util.getNextNonWsToken(context.tokens, context.index);
 					if (token.name === "operator" && token.value === "=") {
 						return false;
 					}
@@ -501,7 +501,7 @@
 					}
 					
 					//next token should be either a keyword or an ident
-					token = sunlight.helpers.getNextNonWsToken(context.tokens, index);
+					token = sunlight.util.getNextNonWsToken(context.tokens, index);
 					if (token !== undefined && (token.name === "keyword" || token.name === "ident")) {
 						return true;
 					}
@@ -515,24 +515,24 @@
 				//special method parameters
 				//new: public new Foo Method() { } and new Foo();
 				//class/interface/event/struct/delegate names
-				[{ token: "keyword", values: ["class", "interface", "event", "struct", "enum", "delegate", "public", "private", "protected", "internal", "static", "virtual", "sealed", "new", "params"] }, sunlight.helpers.whitespace],
+				[{ token: "keyword", values: ["class", "interface", "event", "struct", "enum", "delegate", "public", "private", "protected", "internal", "static", "virtual", "sealed", "new", "params"] }, sunlight.util.whitespace],
 
 				//typeof/default
-				[{ token: "keyword", values: ["typeof", "default"] }, sunlight.helpers.whitespace, { token: "punctuation", values: ["("] }, sunlight.helpers.whitespace ],
+				[{ token: "keyword", values: ["typeof", "default"] }, sunlight.util.whitespace, { token: "punctuation", values: ["("] }, sunlight.util.whitespace ],
 				
 				//casting using "as"
-				[{ token: "keyword", values: ["as"] }, sunlight.helpers.whitespace ]
+				[{ token: "keyword", values: ["as"] }, sunlight.util.whitespace ]
 			],
 
 			precedes: [
 				//casting
-				[sunlight.helpers.whitespace, { token: "punctuation", values: [")"] }, sunlight.helpers.whitespace, { token: "ident" }],
-				[sunlight.helpers.whitespace, { token: "punctuation", values: [")"] }, sunlight.helpers.whitespace, { token: "keyword", values: ["this"] }],
+				[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "ident" }],
+				[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "keyword", values: ["this"] }],
 				
 				//arrays
-				[sunlight.helpers.whitespace, { token: "punctuation", values: ["["] }, sunlight.helpers.whitespace, { token: "punctuation", values: ["]"] }], //in method parameters
-				[sunlight.helpers.whitespace, { token: "punctuation", values: ["["] }, sunlight.helpers.whitespace, { token: "number" }, sunlight.helpers.whitespace, { token: "punctuation", values: ["]"] }], //declaration with integer
-				[sunlight.helpers.whitespace, { token: "punctuation", values: ["["] }, sunlight.helpers.whitespace, { token: "ident" }, sunlight.helpers.whitespace, { token: "punctuation", values: ["]"] }], //declaration with variable
+				[sunlight.util.whitespace, { token: "punctuation", values: ["["] }, sunlight.util.whitespace, { token: "punctuation", values: ["]"] }], //in method parameters
+				[sunlight.util.whitespace, { token: "punctuation", values: ["["] }, sunlight.util.whitespace, { token: "number" }, sunlight.util.whitespace, { token: "punctuation", values: ["]"] }], //declaration with integer
+				[sunlight.util.whitespace, { token: "punctuation", values: ["["] }, sunlight.util.whitespace, { token: "ident" }, sunlight.util.whitespace, { token: "punctuation", values: ["]"] }], //declaration with variable
 
 				//assignment: Object o = new object();
 				//method parameters: public int Foo(Foo foo, Bar b, Object o) { }
