@@ -45,6 +45,6 @@ function assertExists(className, content, description) {
 	if (data.passed) {
 		console.log("pass: " + description);
 	} else{
-		console.warn("fail: " + description);
+		console.error("fail: " + description);
 	}
 }
