@@ -150,7 +150,11 @@
 			
 			//pseudo elements
 			function() {
-				var pseudoElements = ["before", "after", "value", "choices", "repeat-item", "repeat-index", "marker"];
+				var pseudoElements = sunlight.util.createHashMap(
+					["before", "after", "value", "choices", "repeat-item", "repeat-index", "marker"],
+					"\\b",
+					false
+				);
 				
 				return function(context) {
 					var previousToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
@@ -158,7 +162,7 @@
 						return null;
 					}
 					
-					return sunlight.util.matchWord(context, pseudoElements, "pseudoElement", "\\b");
+					return sunlight.util.matchWord(context, pseudoElements, "pseudoElement");
 				};
 			}(),
 			
