@@ -120,6 +120,10 @@
 .sunlight-xml.sunlight-entity {
 	background-color: #FFFF00;
 }
+.sunlight-xml.sunlight-xmlOpenTag, .sunlight-xml.sunlight-xmlCloseTag {
+	background-color: #FFCC99;
+	color: #000000;
+}
 
 /* javascript */
 .sunlight-javascript.sunlight-keyword {

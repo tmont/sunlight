@@ -11,8 +11,13 @@
 			cdata: [ ["<![CDATA[", "]]>"] ]
 		},
 		
+		customTokens: {
+			xmlOpenTag: { values: ["<?xml"], boundary: "\\b" },
+			xmlCloseTag: { values: ["?>"], boundary: "" },
+		},
+		
 		customParseRules: [
-			//tag values can't be parsed as anything except an ident, so it must be done manually
+			//tag content can't be parsed as anything except an ident, so it must be done manually
 			function(context) {
 				var current = context.reader.current();
 				if (current === ">" || current === "<") {
@@ -90,8 +95,7 @@
 		},
 
 		operators: [
-			"<?xml", "?>", "=",
-			"/>", "</", "<", ">", ":"
+			"=", "/>", "</", "<", ">", ":"
 		]
 
 	});

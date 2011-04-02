@@ -702,7 +702,11 @@
 			languageData.keywords = createHashMap(languageData.keywords || [], "\\b", languageData.caseInsensitive);
 			languageData.operators = createHashMap(languageData.operators || [], "", languageData.caseInsensitive);
 			for (var tokenName in languageData.customTokens) {
-				languageData.customTokens[tokenName] = createHashMap(languageData.customTokens[tokenName], "\\b", languageData.caseInsensitive);
+				languageData.customTokens[tokenName] = createHashMap(
+					languageData.customTokens[tokenName].values, 
+					languageData.customTokens[tokenName].boundary, 
+					languageData.caseInsensitive
+				);
 			}
 			
 			languages[languageData.name] = languageData;
