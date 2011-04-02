@@ -7,7 +7,7 @@
 	</head>
 
 	<body>
-<pre><code class="sunlight-highlight-xml">&lt;?xml version="1.0" ?&gt;
+<pre><code id="code" class="sunlight-highlight-xml">&lt;?xml version="1.0" ?&gt;
 &lt;config xmlns:foo="http://example.com"&gt;
 	&lt;!-- sections --&gt;
 	&lt;section name="foo"&gt;Content of the section&lt;/section&gt;
@@ -19,7 +19,7 @@
 &lt;tags&gt; that shouldn't be tags&lt;/tags&gt;
 &lt;?xml lol! ?&gt;]]&gt;
 	
-	&lt;self-closing /&gt;
+	&lt;_self-closing /&gt;
 	
 	&lt;section&gt;
 		&lt;nested lulz="asdf"&gt;
@@ -30,7 +30,32 @@
 &lt;/config&gt;</code></pre>
 	</body>
 
+	<script type="text/javascript"  src="test.js"></script>
 	<script type="text/javascript">//<![CDATA[
-		Sunlight.highlightAll();
+		assertExists("ident", "config", "config tag");
+		assertExists("ident", "section", "section tag");
+		assertExists("ident", "_self-closing", "_self-closing tag");
+		assertExists("ident", "nested", "nested tag");
+		
+		assertExists("named-ident", "id", "id attribute");
+		assertExists("named-ident", "xmlns", "xmlns attribute");
+		assertExists("named-ident", "name", "name attribute");
+		assertExists("named-ident", "version", "version attribute");
+		assertExists("named-ident", "foo", "foo attribute");
+		assertExists("named-ident", "lulz", "lulz attribute");
+		
+		assertExists("content", "Content of the section", "content");
+		assertExists("content", "content", "nested content");
+		
+		assertExists("string", "\"1.0\"", "string");
+		assertExists("string", "\"http://example.com\"", "string");
+		
+		assertExists("comment", "<!-- cdata --" + ">", "comment");
+		assertExists("cdata", "<![CDATA[I can put whatever I want here HAHAHA!\n<tags> that shouldn't be tags</tags>\n<?xml lol! ?>]]>", "cdata");
+		
+		assertExists("operator", "/>", "self closing operator");
+		assertExists("operator", "<", "opening operator");
+		assertExists("operator", ">", "closing operator");
+		assertExists("operator", ":", "namespace operator");
 	//]]></script>
 </html>
