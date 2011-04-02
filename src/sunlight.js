@@ -257,12 +257,11 @@
 		}
 		
 		wordMap = wordMap[current];
-		for (var i = 0, word, regex; i < wordMap.length; i++) {
+		for (var i = 0, word, peek; i < wordMap.length; i++) {
 			word = wordMap[i].value;
-			regex = wordMap[i].regex;
 			
-			var peek = current + context.reader.peek(word.length);
-			if (word === peek || regex.test(peek)) {
+			peek = current + context.reader.peek(word.length);
+			if (word === peek || wordMap[i].regex.test(peek)) {
 				return context.createToken(tokenName, current + context.reader[doNotRead ? "peek" : "read"](word.length - 1), context.reader.getLine());
 			}
 		}
