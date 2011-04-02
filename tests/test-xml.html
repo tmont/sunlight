@@ -32,6 +32,9 @@
 
 	<script type="text/javascript"  src="test.js"></script>
 	<script type="text/javascript">//<![CDATA[
+		assertExists("xmlOpenTag", "<" + "?xml", "xml open tag");
+		assertExists("xmlCloseTag", "?>", "xml close tag");
+		
 		assertExists("ident", "config", "config tag");
 		assertExists("ident", "section", "section tag");
 		assertExists("ident", "_self-closing", "_self-closing tag");
