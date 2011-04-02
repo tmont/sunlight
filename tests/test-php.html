@@ -8,18 +8,19 @@
 
 	<body>
 <pre><code id="code" class="sunlight-highlight-php">&lt;?php
-		
+
 	namespace My\Namespace;
 	
-	use Exception;
-	use Iterator, ArrayAccess;
-	use Other\Namespace\Foo, Other\Namespace\Bar;
+	use UseThisClass;
+	use AlsoUseThis, AndUseThis;
+	use My\Favorite\UseMePlease;
+	use Other\Namespace\UseMe, Other\Namespace\NoUseMe;
 	
 	interface Kissable extends Countable {
 		function kiss(array $foo = null);
 	}
 	
-	abstract class HenryKissable extends RecursiveIterator implements ArrayAccess, Iterator, Kissable {
+	abstract class HenryKissable extends ExtendedClass implements ImplementedInterface1, ImplementedInterface2, ImplementedInterface3 {
 		const KISS = 'kiss';
 		private $myPrivateVar;
 		public $publicVar;
@@ -38,7 +39,7 @@
 		}
 		
 		protected final function invokeStatic() {
-			OhHai::Sup("this is a \"string\"");
+			StaticClass::invoke("this is a \"string\"");
 			static::doSomething();
 			
 			switch (KISS) {
@@ -58,13 +59,14 @@
 			}
 		}
 		
-		public abstract function(ReflectionClass $class);
+		public abstract function(TypeHinted $var);
 		
 		/**
 		 * This does something
 		 */
 		private static function doSomething() {
-			$heredoc = &lt;&lt;&lt;LOL
+			$heredoc = "this one is my \"favorite\"";
+			$heredoc .= &lt;&lt;&lt;LOL
 oh look
 a heredoc!
 LOL;
@@ -81,26 +83,42 @@ LULZ;
 
 	<script type="text/javascript"  src="test.js"></script>
 	<script type="text/javascript">//<![CDATA[
-		assertExists("operator", "<" + "?php", "<" + "?php token");
-		assertExists("operator", "?>", "?> token");
+		assertExists("openTag", "<" + "?php", "open tag");
+		assertExists("closeTag", "?>", "close tag");
+		
 		assertExists("keyword", "namespace", "namespace keyword");
 		assertExists("keyword", "use", "use keyword");
 		assertExists("keyword", "class", "class keyword");
+		assertExists("keyword", "interface", "class keyword");
 		assertExists("keyword", "public", "public keyword");
+		assertExists("keyword", "static", "static keyword");
 		assertExists("keyword", "function", "function keyword");
-		assertExists("named-ident", "UseThisClass", "class after use");
-		assertExists("named-ident", "UseThisOtherClass", "class after use");
-		assertExists("named-ident", "NoUseThisClass", "class after use");
-		assertExists("named-ident", "ReflectionClass", "class after use");
-		assertExists("ident", "DEFAULT_NAMESPACE", "const ident");
+		assertExists("keyword", "parent", "parent keyword");
+		assertExists("keyword", "self", "self keyword");
+		
+		assertExists("ident", "KISS", "const ident");
+		
+		assertExists("named-ident", "OutOfBoundsException", "named ident after new");
+		assertExists("named-ident", "ExtendedClass", "extended class");
+		assertExists("named-ident", "ImplementedInterface1", "implemented interface");
+		assertExists("named-ident", "ImplementedInterface2", "implemented interface");
+		assertExists("named-ident", "ImplementedInterface3", "implemented interface");
+		assertExists("named-ident", "StaticClass", "named ident for static class method call");
+		
+		assertExists("comment", "#Perl-style comments are stupid", "Perl-style comment");
+		assertExists("comment", "//unset stuff", "Single line comment");
+		assertExists("comment", "/**\n\t\t * This does something\n\t\t */", "multi line comment");
+		
 		assertExists("language-construct", "array", "array language construct");
 		assertExists("variable", "$this", "$this variable");
-		assertExists("variable", "$name", "$name variable");
-		assertExists("string", "'PhroxyProxy_'", "string");
-		assertExists("function", "uniqid", "uniqid function");
+		assertExists("variable", "$kiss", "$kiss variable");
+		assertExists("variable", "$myPrivateVar", "private member variable");
+		assertExists("string", "'foo'", "single quoted string");
+		assertExists("string", "\"this one is my \\\"favorite\\\"\"", "double quoted string with escaped quote");
+		assertExists("function", "is_int", "is_int function");
 		assertExists("operator", ".=", ".= operator");
 		assertExists("operator", "->", "-> operator");
-		assertExists("nowdoc", "<<<'NOWDOC'\noh hai!\nNOWDOC", "nowdoc");
-		assertExists("heredoc", "<<<HEREDOC\noh hai!\nHEREDOC", "heredoc");
+		assertExists("nowdoc", "<<<'LULZ'\noh look\na nowdoc!\nLULZ", "nowdoc");
+		assertExists("heredoc", "<<<LOL\noh look\na heredoc!\nLOL", "heredoc");
 	//]]></script>
 </html>

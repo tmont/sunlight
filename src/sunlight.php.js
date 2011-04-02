@@ -73,6 +73,21 @@
 			constant: {
 				values: ["__CLASS__", "__DIR__", "__FILE__", "__LINE__", "__FUNCTION__", "__METHOD__", "__NAMESPACE__"],
 				boundary: "\\b"
+			},
+			
+			openTag: {
+				values: ["<?php"],
+				boundary: "\\s"
+			},
+			
+			shortOpenTag: {
+				values: ["<?=", "<?"],
+				boundary: ""
+			},
+			
+			closeTag: {
+				values: ["?>"],
+				boundary: ""
 			}
 		},
 
@@ -150,9 +165,6 @@
 		},
 
 		operators: [
-			//open/close tags
-			"<?php", "?>", "<?=", "<?",
-			
 			//member access
 			"::", "->",
 			
