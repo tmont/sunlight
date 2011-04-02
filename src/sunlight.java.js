@@ -21,7 +21,7 @@
 			//token name => array[opener, closer, escape token (optional), zeroWidthCloser? (optional)]
 			//escape token is either a hard-coded string or an object with keys length and regex, e.g. { length: 2, regex: /\d;/ }
 			
-			string: [ ["\"", "\"", sunlight.defaultEscapeSequences.concat(["\\\""])], ["'", "'", ["\'", "\\\\"]] ],
+			string: [ ["\"", "\"", sunlight.util.escapeSequences.concat(["\\\""])], ["'", "'", ["\'", "\\\\"]] ],
 			comment: [ ["//", "\n", null, true], ["/*", "*/"] ],
 			annotation: [ ["@", { length: 1, regex: /\B/ }, null, true] ],
 		},
@@ -31,23 +31,23 @@
 
 		namedIdentRules: {
 			follows: [
-				[{ token: "ident" }, sunlight.helpers.whitespace, { token: "keyword", values: ["extends", "implements"] }, sunlight.helpers.whitespace],
+				[{ token: "ident" }, sunlight.util.whitespace, { token: "keyword", values: ["extends", "implements"] }, sunlight.util.whitespace],
 				
 				//method/property return values
 				//new: public new Foo Method() { } and new Foo();
 				//class/interface names
-				[{ token: "keyword", values: ["class", "interface", "enum", "public", "private", "protected", "static", "final", "new"] }, sunlight.helpers.whitespace]
+				[{ token: "keyword", values: ["class", "interface", "enum", "public", "private", "protected", "static", "final", "new"] }, sunlight.util.whitespace]
 			],
 
 			precedes: [
 				//casting
-				[sunlight.helpers.whitespace, { token: "punctuation", values: [")"] }, sunlight.helpers.whitespace, { token: "ident" }],
-				[sunlight.helpers.whitespace, { token: "punctuation", values: [")"] }, sunlight.helpers.whitespace, { token: "keyword", values: ["this"] }],
+				[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "ident" }],
+				[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "keyword", values: ["this"] }],
 				
 				//arrays
-				[sunlight.helpers.whitespace, { token: "punctuation", values: ["["] }, sunlight.helpers.whitespace, { token: "punctuation", values: ["]"] }], //in method parameters
-				[sunlight.helpers.whitespace, { token: "punctuation", values: ["["] }, sunlight.helpers.whitespace, { token: "number" }, sunlight.helpers.whitespace, { token: "punctuation", values: ["]"] }], //declaration with integer
-				[sunlight.helpers.whitespace, { token: "punctuation", values: ["["] }, sunlight.helpers.whitespace, { token: "ident" }, sunlight.helpers.whitespace, { token: "punctuation", values: ["]"] }], //declaration with variable
+				[sunlight.util.whitespace, { token: "punctuation", values: ["["] }, sunlight.util.whitespace, { token: "punctuation", values: ["]"] }], //in method parameters
+				[sunlight.util.whitespace, { token: "punctuation", values: ["["] }, sunlight.util.whitespace, { token: "number" }, sunlight.util.whitespace, { token: "punctuation", values: ["]"] }], //declaration with integer
+				[sunlight.util.whitespace, { token: "punctuation", values: ["["] }, sunlight.util.whitespace, { token: "ident" }, sunlight.util.whitespace, { token: "punctuation", values: ["]"] }], //declaration with variable
 
 				//assignment: Object o = new object();
 				//method parameters: public int Foo(Foo foo, Bar b, Object o) { }

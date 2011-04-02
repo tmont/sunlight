@@ -17,29 +17,34 @@
 		],
 		
 		customTokens: {
-			reservedWord: [
-				"abstract", "boolean", "byte", "char", "class", "const", "debugger", "double",
-				"enum", "export", "extends", "final", "float", "goto", "implements", "import",
-				"int", "interface", "long", "native", "package", "private", "protected", "public",
-				"short", "static", "super", "synchronized", "throws", "transient", "volatile"
-			],
+			reservedWord: {
+				values: [
+					"abstract", "boolean", "byte", "char", "class", "const", "debugger", "double",
+					"enum", "export", "extends", "final", "float", "goto", "implements", "import",
+					"int", "interface", "long", "native", "package", "private", "protected", "public",
+					"short", "static", "super", "synchronized", "throws", "transient", "volatile"
+				],
+				boundary: "\\b"
+			},
 			
-			globalVariable: ["NaN", "Infinity"],
+			globalVariable: {
+				values: ["NaN", "Infinity"],
+				boundary: "\\b"
+			},
 			
-			globalFunction: [
-				"encodeURI", "encodeURIComponent", 
-				"decodeURI", "decodeURIComponent",
-				"parseInt", "parseFloat",
-				"isNaN",
-				"isFinite",
-				"eval"
-			],
+			globalFunction: {
+				values: ["encodeURI", "encodeURIComponent", "decodeURI", "decodeURIComponent", "parseInt", "parseFloat", "isNaN", "isFinite", "eval"],
+				boundary: "\\b"
+			},
 			
-			globalObject: [
-				"Math", "JSON",
-				"XMLHttpRequest", "XDomainRequest", "ActiveXObject",
-				"Boolean", "Date", "Array", "Image", "Function", "Object", "Number", "RegExp", "String"
-			]
+			globalObject: {
+				values: [
+					"Math", "JSON",
+					"XMLHttpRequest", "XDomainRequest", "ActiveXObject",
+					"Boolean", "Date", "Array", "Image", "Function", "Object", "Number", "RegExp", "String"
+				],
+				boundary: "\\b"
+			}
 		},
 
 		scopes: {

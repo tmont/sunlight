@@ -240,12 +240,15 @@
 		],
 		
 		customTokens: {
-			rule: [
-				"@import", "@media", "@font-face", "@phonetic-alphabet", "@hyphenate-resource", "@font-feature-values",
-				"@charset", "@namespace", "@page", 
-				"@bottom-left-corner", "@bottom-left", "@bottom-center", "@bottom-right", "@bottom-right-corner",
-				"@top-left-corner", "@top-left", "@top-center", "@top-right", "@top-right-corner"
-			]
+			rule: {
+				values: [
+					"@import", "@media", "@font-face", "@phonetic-alphabet", "@hyphenate-resource", "@font-feature-values",
+					"@charset", "@namespace", "@page", 
+					"@bottom-left-corner", "@bottom-left", "@bottom-center", "@bottom-right", "@bottom-right-corner",
+					"@top-left-corner", "@top-left", "@top-center", "@top-right", "@top-right-corner"
+				],
+				boundary: "\\b"
+			}
 		},
 		
 		scopes: {
