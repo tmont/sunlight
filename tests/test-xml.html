@@ -11,8 +11,8 @@
 &lt;config xmlns:foo="http://example.com"&gt;
 	&lt;!-- sections --&gt;
 	&lt;section name="foo"&gt;Content of the section&lt;/section&gt;
-	&lt;section name="bar"&gt;Content of the section&lt;/section&gt;
-	&lt;section foo:id="12" name="foo"&gt;Content of the section&lt;/section&gt;
+	&lt;section name="bar"&gt;Content of the section&amp;beforeopentag;&lt;/section&gt;
+	&lt;section foo:id="12" name="foo"&gt;Content of the section & stuff&lt;/section&gt;
 	
 	&lt;!-- cdata --&gt;
 &lt;![CDATA[I can put whatever I want here HAHAHA!
@@ -23,8 +23,8 @@
 	
 	&lt;section&gt;
 		&lt;nested lulz="asdf"&gt;
-			And again...
-			&lt;again&gt;content&lt;/again&gt;
+			And again&amp;hellip;
+			&lt;again&gt;nested content&lt;/again&gt;
 		&lt;/nested&gt;
 	&lt;/section&gt;
 &lt;/config&gt;</code></pre>
@@ -45,13 +45,17 @@
 		assertExists("named-ident", "lulz", "lulz attribute");
 		
 		assertExists("content", "Content of the section", "content");
-		assertExists("content", "content", "nested content");
+		assertExists("content", "Content of the section & stuff", "content");
+		assertExists("content", "nested content", "content in nested tag");
 		
 		assertExists("string", "\"1.0\"", "string");
 		assertExists("string", "\"http://example.com\"", "string");
 		
 		assertExists("comment", "<!-- cdata --" + ">", "comment");
 		assertExists("cdata", "<![CDATA[I can put whatever I want here HAHAHA!\n<tags> that shouldn't be tags</tags>\n<?xml lol! ?>]]>", "cdata");
+		
+		assertExists("entity", "&hellip;", "entity in content");
+		assertExists("entity", "&beforeopentag;", "entity before open tag");
 		
 		assertExists("operator", "/>", "self closing operator");
 		assertExists("operator", "<", "opening operator");

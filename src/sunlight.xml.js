@@ -29,20 +29,53 @@
 					return null;
 				}
 				
+				var getEntity = function() {
+					//find semicolon, or whitespace, or < or >
+					var count = 2, peek = context.reader.peek(count);
+					var line = context.reader.getLine();
+					var column = context.reader.getColumn();
+					while (peek.length === count) {
+						if (peek[peek.length - 1] === ";") {
+							return context.createToken("entity", context.reader.read(count), line, column);
+						}
+						
+						if (!/[A-Za-z0-9]$/.test(peek)) {
+							break;
+						}
+						
+						peek = context.reader.peek(++count);
+					}
+					
+					return null;
+				};
+				
 				//read until <
 				var value = context.reader.current();
 				var line = context.reader.getLine();
 				var column = context.reader.getColumn();
-				var peek;
+				var peek, entity, tokens = [];
 				while ((peek = context.reader.peek()) !== context.reader.EOF) {
 					if (peek === "<") {
 						break;
 					}
 					
-					value += context.reader.read();
+					if (peek === "&" && (entity = getEntity())) {
+						//might be an entity
+						tokens.push(context.createToken("content", value, line, column));
+						tokens.push(entity);
+						line = context.reader.getLine();
+						column = context.reader.getColumn();
+						value = "";
+					} else {
+						value += context.reader.read();
+					}
 				}
 				
-				return context.createToken("content", value, line, column);
+				if (value !== "") {
+					tokens.push(context.createToken("content", value, line, column));
+				}
+				
+				return tokens;
 			}
 		],
 		
