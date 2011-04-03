@@ -1,11 +1,11 @@
-if (!console || !console.log || !console.error) {
+if (typeof(console) === "undefined" || typeof(console.log) === "undefined") {
 	console = function() {
 		var log = function() { 
 			var pre = document.createElement("pre");
 			document.body.appendChild(pre);
 			return function(text) {
 				pre.appendChild(document.createTextNode(text));
-				pre.appendChild(document.createTextNode("\n-------------------\n"));
+				pre.appendChild(document.createTextNode("\r\n-------------------\r\n"));
 			}
 		}();
 		
@@ -25,6 +25,10 @@ var tags = document.getElementById("code").getElementsByTagName("*");
 var nbsp = String.fromCharCode(0x00a0);
 function exists(className, content) {
 	content = content.replace(/ /g, nbsp).replace(/\t/g, nbsp + nbsp + nbsp + nbsp);
+	if (!+"\v1") {
+		content = content.replace(/\n/g, "\r\n");
+	}
+	
 	var searched = 0;
 	var regex = new RegExp("\s*sunlight-" + className + "\s*");
 	for (var i = 0; i < tags.length; i++) {

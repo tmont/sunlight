@@ -10,6 +10,9 @@
  */
 (function(window, undefined){
 
+	//http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
+	var isIe = !+"\v1"; //we have to sniff this because IE requires \r\n
+
 	//http://javascript.crockford.com/prototypal.html
 	var create = function(o) {
         function F() {}
@@ -147,9 +150,7 @@
 		return  {
 			defaultEnter: function(context) { return defaultEnter(context.tokens[context.index].name)(context); },
 			defaultExit: function(context) { return true; },
-			writeCurrentToken: function(context) { 
-				context.setTextOfLastNode(context.tokens[context.index].value);
-			},
+			writeCurrentToken: function(context) { context.setTextOfLastNode(context.tokens[context.index].value); },
 			
 			//this handles the named ident mayhem
 			enter_ident: function(context) {
@@ -181,6 +182,7 @@
 	var languages = { };
 	
 	var createCodeReader = function(text) {
+		text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 		var index = 0;
 		var line = 1;
 		var column = 1;
@@ -512,7 +514,7 @@
 					return {
 						name: name,
 						line: line,
-						value: value,
+						value: isIe ? value.replace(/\n/g, "\r\n") : value,
 						column: column
 					};
 				}
@@ -607,11 +609,11 @@
 				analyzerContext.index = i;
 				tokenName = analyzerContext.tokens[i].name;
 				enter = "enter_" + tokenName;
-				exit = "exit_" + tokenName;
+				//exit = "exit_" + tokenName;
 				
 				analyzer[enter] ? analyzer[enter](analyzerContext) : analyzer.defaultEnter(analyzerContext);
 				analyzer.writeCurrentToken(analyzerContext);
-				analyzer[exit] ? analyzer[exit](analyzerContext) : analyzer.defaultExit(analyzerContext);
+				//analyzer[exit] ? analyzer[exit](analyzerContext) : analyzer.defaultExit(analyzerContext);
 			}
 			
 			return analyzerContext;
@@ -702,6 +704,8 @@
 	var globalOptions = {
 		tabWidth: 4
 	};
+	
+	
 	
 	window.Sunlight = {
 		version: "1.0",

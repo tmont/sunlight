@@ -11,11 +11,11 @@ TESTING
 
 BUGS
 - IE
-	- CSS language definition is totally jacked
-	- scopes that end in a line break don't work
+	- CSS hex color parse rule doesn't work
 	- sunlight.css doesn't work, need to clean up class names
 - fix PHP analyzer to use DOM elements
 - tab width no longer works since we're not encoding anything anymore
+- remove exit analysis
 
 FUNCTIONALITY
 - line numbers
