@@ -41,6 +41,9 @@ AND LEFT(f.foo) = 'f'
 		assertExists("comment", "#comment 2", "# comment");
 		assertExists("comment", "/* multi\nline comment */", "multi line comment");
 		
+		assertExists("quotedIdent", "`foo`", "quoted ident");
+		assertExists("quotedIdent", "`foo.name`", "quoted ident");
+		
 		assertExists("keyword", "select", "select keyword");
 		assertExists("keyword", "SELECT", "SELECT keyword");
 		assertExists("keyword", "from", "from keyword");
