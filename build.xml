@@ -21,7 +21,9 @@
 		<classpath refid="task.classpath"/>
 	</taskdef>
 	
-	<target name="release" depends="archive, compress" description="Creates deployment packages" />
+	<target name="release" depends="archive, compress" description="Creates deployment packages">
+		<copy file="${src.dir}/jquery.sunlight.js" todir="${build.dir}" />
+	</target>
 
 	<target name="archive" depends="clean, set-product-revision" description="Creates a source code tarball">
 		<mkdir dir="${build.dist}"/>
@@ -30,7 +32,7 @@
 
 		<!-- non compressed files and test HTML files -->
 		<tar destfile="${build.dist}/${package.source}.tar.gz" compression="gzip">
-			<tarfileset dir="${basedir}" excludes="site/**,build/**" prefix="${package.source}"/>
+			<tarfileset dir="${basedir}" includes="src/**,tests/**" prefix="${package.source}"/>
 		</tar>
 	</target>
 	
