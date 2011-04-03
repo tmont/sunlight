@@ -1,4 +1,4 @@
-if (!console) {
+if (!console || !console.log || !console.error) {
 	console = function() {
 		var log = function() { 
 			var pre = document.createElement("pre");

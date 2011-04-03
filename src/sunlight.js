@@ -1,3 +1,13 @@
+/**
+ * Sunlight
+ *    Intelligent syntax highlighting
+ *
+ * http://sunlightjs.com/
+ *
+ * (c) 2011 Tommy Montgomery <http://tommymontgomery.com>
+ *
+ * Licensed under WTFPL <http://sam.zoy.org/wtfpl/>
+ */
 (function(window, undefined){
 
 	//http://javascript.crockford.com/prototypal.html
@@ -326,8 +336,6 @@
 		};
 		
 		var parseNextToken = function(context) {
-			//helpers
-			
 			var isIdentMatch = function() {
 				return context.language.identFirstLetter && context.language.identFirstLetter.test(context.reader.current());
 			};
@@ -608,7 +616,7 @@
 			 */
 			highlightNode: function highlightRecursive(node) {
 				var match, languageId, partialContext;
-				if ((match = node.className.match(/\s*sunlight-highlight-(\S+)\s*/)) === null || /(?:\s|^)sunlight-highlighted\s*/.test()) {
+				if ((match = node.className.match(/\s*sunlight-highlight-(\S+)\s*/)) === null || /(?:\s|^)sunlight-highlighted\s*/.test(node.className)) {
 					//not a valid sunlight node or it's already been highlighted
 					return;
 				}

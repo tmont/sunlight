@@ -1,0 +1,34 @@
+PARSING
+- PHP class name highlighting in use statements
+- C# class name highlighting in using aliases
+- C# extern alias?
+- CSS mozilla/webkit/opera/ie specific stuff
+- CSS element selectors
+
+TESTING
+- IE
+- PHP short tags
+- benchmarks
+
+FUNCTIONALITY
+- line numbers
+- fancier display? (maybe just for block-level elements or something)
+	- code folding
+	- line highlighting
+- customizable class prefix
+
+LANGUAGES
+- Java
+- T-SQL
+- PostgreSQL
+- Oracle
+- Python
+- Ruby
+- Perl
+- ASP.NET
+- Razor (ASP.NET MVC)
+
+WEB
+- document case sensitivity
+- document changes to custom token definition
+- download links
