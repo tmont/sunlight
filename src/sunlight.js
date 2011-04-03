@@ -262,7 +262,7 @@
 			
 			peek = current + context.reader.peek(word.length);
 			if (word === peek || wordMap[i].regex.test(peek)) {
-				return context.createToken(tokenName, current + context.reader[doNotRead ? "peek" : "read"](word.length - 1), context.reader.getLine());
+				return context.createToken(tokenName, context.reader.current() + context.reader[doNotRead ? "peek" : "read"](word.length - 1), context.reader.getLine());
 			}
 		}
 		
