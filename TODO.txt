@@ -6,9 +6,16 @@ PARSING
 - CSS element selectors
 
 TESTING
-- IE
 - PHP short tags
 - benchmarks
+
+BUGS
+- IE
+	- CSS language definition is totally jacked
+	- scopes that end in a line break don't work
+	- sunlight.css doesn't work, need to clean up class names
+- fix PHP analyzer to use DOM elements
+- tab width no longer works since we're not encoding anything anymore
 
 FUNCTIONALITY
 - line numbers
@@ -31,4 +38,5 @@ LANGUAGES
 WEB
 - document case sensitivity
 - document changes to custom token definition
+- document changes to analyzer context api
 - download links

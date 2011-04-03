@@ -14,7 +14,7 @@
 		
 		customTokens: {
 			xmlOpenTag: { values: ["<?xml"], boundary: "\\b" },
-			xmlCloseTag: { values: ["?>"], boundary: "" },
+			xmlCloseTag: { values: ["?>"], boundary: "" }
 		},
 		
 		customParseRules: [

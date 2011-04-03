@@ -138,16 +138,18 @@
 	var defaultAnalyzer = function() {
 		var defaultEnter = function(suffix) {
 			return function(context) {
-				return context.append("<span class=\"sunlight-" + suffix + " sunlight-" + context.language.name + "\">") || true;
+				var element = document.createElement("span");
+				element.className = "sunlight-" + suffix + " sunlight-" + context.language.name;
+				return context.addNode(element) || true;
 			};
 		};
 	
 		return  {
 			defaultEnter: function(context) { return defaultEnter(context.tokens[context.index].name)(context); },
-			defaultExit: function(context) { return context.append("</span>") || true; },
-			enter_default: function() {},
-			exit_default: function() {},
-			writeCurrentToken: function(context) { context.appendAndEncode(context.tokens[context.index].value); },
+			defaultExit: function(context) { return true; },
+			writeCurrentToken: function(context) { 
+				context.setTextOfLastNode(context.tokens[context.index].value);
+			},
 			
 			//this handles the named ident mayhem
 			enter_ident: function(context) {
@@ -179,13 +181,12 @@
 	var languages = { };
 	
 	var createCodeReader = function(text) {
-		text = text.replace("\r\n", "\n").replace("\r", "\n"); //normalize line endings to unix
 		var index = 0;
 		var line = 1;
 		var column = 1;
 		var length = text.length;
 		var EOF = undefined;
-		var currentChar = length > 0 ? text[0] : EOF;
+		var currentChar = length > 0 ? text.charAt(0) : EOF;
 		var nextReadBeginsLine = false;
 		
 		var getCharacters = function(count) {
@@ -195,10 +196,9 @@
 			
 			count = count || 1;
 			
-			var value = "";
-			var num = 1;
-			while (num <= count && text[index + num] !== EOF) {
-				value += text[index + num++];
+			var value = "", num = 1;
+			while (num <= count && text.charAt(index + num) !== "") {
+				value += text.charAt(index + num++);
 			}
 			
 			return value === "" ? EOF : value;
@@ -234,11 +234,11 @@
 						column = 1;
 					}
 					
-					if (value[value.length - 1] === "\n") {
+					if (value.charAt(value.length - 1) === "\n") {
 						nextReadBeginsLine = true;
 					}
 					
-					currentChar = value[value.length - 1];
+					currentChar = value.charAt(value.length - 1);
 				} else {
 					index = length;
 					currentChar = EOF;
@@ -272,7 +272,13 @@
 			
 			peek = current + context.reader.peek(word.length);
 			if (word === peek || wordMap[i].regex.test(peek)) {
-				return context.createToken(tokenName, context.reader.current() + context.reader[doNotRead ? "peek" : "read"](word.length - 1), context.reader.getLine());
+				var line = context.reader.getLine(), column = context.reader.getColumn();
+				return context.createToken(
+					tokenName, 
+					context.reader.current() + context.reader[doNotRead ? "peek" : "read"](word.length - 1), 
+					line, 
+					column
+				);
 			}
 		}
 		
@@ -367,7 +373,7 @@
 			var parsePunctuation = function() {
 				var current = context.reader.current();
 				if (/[^\w\s]/.test(regexEscape(current))) {
-					return context.createToken("punctuation", current, context.reader.getLine());
+					return context.createToken("punctuation", current, context.reader.getLine(), context.reader.getColumn());
 				}
 				
 				return null;
@@ -380,6 +386,7 @@
 				
 				var ident = context.reader.current();
 				var peek = context.reader.peek();
+				var line = context.reader.getLine(), column = context.reader.getColumn();
 				while (peek !== context.reader.EOF) {
 					if (!context.language.identAfterFirstLetter.test(peek)) {
 						break;
@@ -389,7 +396,7 @@
 					peek = context.reader.peek();
 				}
 				
-				return context.createToken(isNamed ? "namedIdent" : "ident", ident, context.reader.getLine());
+				return context.createToken(isNamed ? "namedIdent" : "ident", ident, line, column);
 			};
 			
 			var parseDefault = function() {
@@ -426,8 +433,7 @@
 			};
 			
 			var parseNumber = function() {
-				var current = context.reader.current();
-				var number;
+				var current = context.reader.current(), number, line = context.reader.getLine(), column = context.reader.getColumn();
 				
 				if (!/\d/.test(current)) {
 					//is it a decimal followed by a number?
@@ -459,7 +465,7 @@
 					peek = context.reader.peek();
 				}
 				
-				return context.createToken("number", number, context.reader.getLine());
+				return context.createToken("number", number, line, column);
 			};
 			
 			var parseCustomRules = function() {
@@ -521,7 +527,7 @@
 			while (!context.reader.isEof()) {
 				var token = parseNextToken(context);
 				
-				//flush default data if needed (in pretty much all languages this is just whitespace (a notable exception is XML (nested parens)))
+				//flush default data if needed (in pretty much all languages this is just whitespace)
 				if (token !== null) {
 					if (context.defaultData.text !== "") {
 						tokens.push(context.createToken("default", context.defaultData.text, context.defaultData.line, context.defaultData.column)); 
@@ -545,6 +551,7 @@
 		
 		var createAnalyzerContext = function(unhighlightedCode, language, partialContext, options) {
 			var buffer = "";
+			var nodes = [];
 			
 			//based on http://phpjs.org/functions/htmlentities:425
 			var encode = function() {
@@ -574,9 +581,14 @@
 				index: partialContext.index ? partialContext.index + 1 : 0,
 				language: language,
 				continuation: parseData.continuation,
+				
 				append: function(text) { buffer += text; },
 				appendAndEncode: function(text) { buffer += encode(text); },
-				getHtml: function() { return buffer; }
+				getHtml: function() { return buffer; },
+				
+				addNode: function(element) { nodes.push(element); },
+				setTextOfLastNode: function(text) { nodes[nodes.length - 1].appendChild(document.createTextNode(text)); },
+				getNodes: function() { return nodes; }
 			};
 		};
 		
@@ -622,13 +634,21 @@
 				}
 				
 				languageId = match[1];
+				
 				for (var j = 0, span; j < node.childNodes.length; j++) {
 					if (node.childNodes[j].nodeType === 3) {
-						//text nodex
+						//text nodes
 						span = document.createElement("span");
+						
 						span.className = "sunlight-highlighted";
 						partialContext = highlightText.call(this, node.childNodes[j].nodeValue, languageId, partialContext);
-						span.innerHTML = partialContext.getHtml();
+						//span.innerHTML = partialContext.getHtml();
+						
+						var nodes = partialContext.getNodes();
+						for (var k = 0; k < nodes.length; k++) {
+							span.appendChild(nodes[k]);
+						}
+						
 						node.replaceChild(span, node.childNodes[j]);
 					} else {
 						highlightRecursive.call(this, node.childNodes[j]);
@@ -666,13 +686,14 @@
 	var createHashMap = function(wordMap, boundary, caseInsensitive) {
 		//creates a hash table where the hash is the first character of the word
 		var newMap = { };
-		for (var i = 0, word; i < wordMap.length; i++) {
+		for (var i = 0, word, firstChar; i < wordMap.length; i++) {
 			word = caseInsensitive ? wordMap[i].toUpperCase() : wordMap[i];
-			if (!newMap[word[0]]) {
-				newMap[word[0]] = [];
+			firstChar = word.charAt(0);
+			if (!newMap[firstChar]) {
+				newMap[firstChar] = [];
 			}
 			
-			newMap[word[0]].push({ value: word, regex: new RegExp(regexEscape(word) + boundary, caseInsensitive ? "i" : "") });
+			newMap[firstChar].push({ value: word, regex: new RegExp(regexEscape(word) + boundary, caseInsensitive ? "i" : "") });
 		}
 		
 		return newMap;

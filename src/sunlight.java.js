@@ -23,7 +23,7 @@
 			
 			string: [ ["\"", "\"", sunlight.util.escapeSequences.concat(["\\\""])], ["'", "'", ["\'", "\\\\"]] ],
 			comment: [ ["//", "\n", null, true], ["/*", "*/"] ],
-			annotation: [ ["@", { length: 1, regex: /\B/ }, null, true] ],
+			annotation: [ ["@", { length: 1, regex: /\B/ }, null, true] ]
 		},
 
 		identFirstLetter: /[A-Za-z_]/,

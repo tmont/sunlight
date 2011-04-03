@@ -149,20 +149,22 @@
 				//extends/implements class names
 				[{ token: "ident" }, sunlight.util.whitespace, { token: "keyword", values: ["extends", "implements"] }, sunlight.util.whitespace],
 
-				[{ token: "keyword", values: ["class", "interface", "abstract", "final", "new"] }, sunlight.util.whitespace],
+				[{ token: "keyword", values: ["class", "interface", "abstract", "final", "new"] }, sunlight.util.whitespace]
 			],
 			
 			precedes: [
 				//static method calls
 				[sunlight.util.whitespace, { token: "operator", values: ["::"] }],
 				
-				[{ token: "default" }, { token: "variable" }],
+				[{ token: "default" }, { token: "variable" }]
 			],
 
 			between: [
 				{ opener: { token: "keyword", values: ["implements"] }, closer: { token: "punctuation", values: ["{"] } }
 			]
 		},
+		
+		//caseInsensitive: true,
 
 		operators: [
 			//member access
