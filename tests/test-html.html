@@ -6,10 +6,11 @@
 	</head>
 
 	<body>
-<pre><code class="sunlight-highlight-html">&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot;
+<pre><code id="code" class="sunlight-highlight-html">&lt;?xml version=&quot;1.0&quot; ?&gt;
+&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot;
 &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;
 
-&lt;html&gt;
+&lt;html xml:lang="en-us"&gt;
 	&lt;head&gt;
 		&lt;script type=&quot;text/javascript&quot; src=&quot;sunlight.js&quot;&gt;&lt;/script&gt;
 		&lt;script type=&quot;text/javascript&quot; src=&quot;sunlight-html.js&quot;&gt;&lt;/script&gt;
@@ -18,7 +19,7 @@
 
 	&lt;body&gt;
 		&lt;div id=&quot;wrapper&quot;&gt;
-			&lt;span&gt;It was&lt;/span&gt; the best of times; it was the worst of times&amp;amp;hellip;
+			&lt;span&gt;It was&lt;/span&gt; the best of times; it was the worst of times&amp;hellip;
 		&lt;/div&gt;
 		
 		&lt;ul class=&quot;menu&quot;&gt;
@@ -29,13 +30,51 @@
 		&lt;/ul&gt;
 	&lt;/body&gt;
 
+	&lt;!-- comment --&gt;
 	&lt;script type=&quot;text/javascript&quot;&gt;//&lt;![CDATA[
 		Sunlight.highlightAll();
 	//]]&gt;&lt;/script&gt;
 &lt;/html&gt;</code></pre>
 	</body>
 
+	<script type="text/javascript"  src="test.js"></script>
 	<script type="text/javascript">//<![CDATA[
-		Sunlight.highlightAll();
+		assertExists("xmlOpenTag", "<" + "?xml", "xml open tag");
+		assertExists("xmlCloseTag", "?>", "xml close tag");
+		assertExists("doctype", "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">", "doctype");
+		
+		assertExists("ident", "html", "html tag");
+		assertExists("ident", "script", "script tag");
+		assertExists("ident", "link", "link tag");
+		assertExists("ident", "body", "body tag");
+		assertExists("ident", "div", "div tag");
+		assertExists("ident", "ul", "ul tag");
+		assertExists("ident", "a", "a tag");
+		assertExists("ident", "span", "span tag");
+		
+		assertExists("named-ident", "id", "id attribute");
+		assertExists("named-ident", "version", "version attribute");
+		assertExists("named-ident", "class", "class attribute");
+		assertExists("named-ident", "href", "href attribute");
+		assertExists("named-ident", "xml", "xml prefix");
+		assertExists("named-ident", "lang", "lang attribute");
+		
+		assertExists("content", "It was", "content");
+		assertExists("content", " the best of times; it was the worst of times", "content");
+		assertExists("content", "Item", "content");
+		
+		assertExists("string", "\"1.0\"", "string");
+		assertExists("string", "\"#fragment\"", "string");
+		assertExists("string", "\"nofollow\"", "string");
+		
+		assertExists("comment", "<!-- comment --" + ">", "comment");
+		assertExists("cdata", "<![CDATA[\n\t\tSunlight.highlightAll();\n\t//]]>", "cdata");
+		
+		assertExists("entity", "&hellip;", "entity in content");
+		
+		assertExists("operator", "/>", "self closing operator");
+		assertExists("operator", "<", "opening operator");
+		assertExists("operator", ">", "closing operator");
+		assertExists("operator", ":", "namespace operator");
 	//]]></script>
 </html>

@@ -671,7 +671,7 @@
 	};
 	
 	var globalOptions = {
-		tabWidth: 4 
+		tabWidth: 4
 	};
 	
 	window.Sunlight = {
