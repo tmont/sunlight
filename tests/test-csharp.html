@@ -130,13 +130,18 @@ string";
 	<script type="text/javascript"  src="test.js"></script>
 	<script type="text/javascript">//<![CDATA[
 		assertExists("keyword", "using", "using keyword");
-		assertExists("named-ident", "UsingAlias", "using alias");
 		assertExists("keyword", "class", "class keyword");
 		assertExists("keyword", "in", "in keyword");
 		assertExists("keyword", "const", "const keyword");
 		assertExists("keyword", "readonly", "readonly keyword");
 		assertExists("keyword", "internal", "internal keyword");
 		assertExists("keyword", "event", "event keyword");
+		assertExists("keyword", "set", "set contextual keyword");
+		assertExists("keyword", "get", "get contextual keyword");
+		assertExists("keyword", "value", "value contextual keyword");
+		assertExists("keyword", "yield return", "yield return");
+		
+		assertExists("named-ident", "UsingAlias", "using alias");
 		assertExists("named-ident", "ValueHandlerFactoryBase", "class name");
 		assertExists("named-ident", "MarshalByRefObject", "base class name");
 		assertExists("named-ident", "IValueHandlerFactory", "implemented interface");
@@ -147,19 +152,6 @@ string";
 		assertExists("named-ident", "Obsolete", "attribute on field on same line");
 		assertExists("named-ident", "Obsolete", "attribute on field on same line");
 		assertExists("named-ident", "Object", "Object name");
-		assertExists("pragma", "#if NET_20", "pragma");
-		assertExists("pragma", "#endregion", "endregion pragma");
-		assertExists("ident", "Iterate", "method name");
-		assertExists("ident", "Meh", "method name");
-		assertExists("ident", "T1", "type param 1");
-		assertExists("ident", "T2", "type param 2");
-		assertExists("keyword", "set", "set contextual keyword");
-		assertExists("ident", "set", "non-keyword set");
-		assertExists("keyword", "get", "get contextual keyword");
-		assertExists("ident", "get", "non-keyword get");
-		assertExists("keyword", "value", "value contextual keyword");
-		assertExists("ident", "value", "non-keyword value");
-		assertExists("ident", "AttributeNamedParameter", "named parameter in attribute");
 		assertExists("named-ident", "Func", "ident before generic return value");
 		assertExists("named-ident", "ArgumentException", "class name after new");
 		assertExists("named-ident", "Pure", "attribute");
@@ -168,18 +160,34 @@ string";
 		assertExists("named-ident", "AnAttribute", "attribute");
 		assertExists("named-ident", "FirstAttribute", "attribute");
 		assertExists("named-ident", "SecondGeneric", "second generic argument");
+		assertExists("named-ident", "ArrayOfSomething", "class name before []");
+		assertExists("named-ident", "GarbanzoBean", "class name");
+		
+		assertExists("pragma", "#if NET_20", "#if pragma");
+		assertExists("pragma", "#endif", "#endif pragma");
+		assertExists("pragma", "#region verify that casts are properly colored", "#region pragma");
+		assertExists("pragma", "#endregion", "#endregion pragma");
+		
+		assertExists("ident", "Iterate", "method name");
+		assertExists("ident", "set", "non-keyword set");
+		assertExists("ident", "get", "non-keyword get");
+		assertExists("ident", "value", "non-keyword value");
+		assertExists("ident", "AttributeNamedParameter", "named parameter in attribute");
+		assertExists("ident", "Meh", "method name");
+		assertExists("ident", "T1", "type param 1");
+		assertExists("ident", "T2", "type param 2");
 		assertExists("ident", "DoStuff", "method name");
 		assertExists("ident", "DoOtherStuff", "method name");
 		assertExists("ident", "fooEnumerable", "parameter name after generic");
 		assertExists("ident", "@class", "@ syntax for idents");
-		assertExists("named-ident", "ArrayOfSomething", "class name before []");
 		assertExists("ident", "criterionFieldName", "parameter name");
+		
 		assertExists("comment", "/* multi\n\t\t\tline comment\n\t\t\t*/", "multi line comment");
-		assertExists("named-ident", "GarbanzoBean", "class name");
-		assertExists("keyword", "yield return", "yield return");
 		assertExists("comment", "//neither foo below should be a named ident", "single line comment");
+		
 		assertExists("string", "\"this is \\\"a\\\" string\"", "string with escaped quote");
 		assertExists("string", "@\"this is \"\"another\"\"\nmulti line\nstring\"", "verbatim string with escaped quote");
+		
 		assertExists("xmlDocCommentMeta", "///", "xml doc comment ///");
 		assertExists("xmlDocCommentMeta", "<summary>", "xml doc comment <summary>");
 		assertExists("xmlDocCommentMeta", "</summary>", "xml doc comment </summary>");
