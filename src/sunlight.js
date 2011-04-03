@@ -142,7 +142,7 @@
 		var defaultHandleToken = function(suffix) {
 			return function(context) {
 				var element = document.createElement("span");
-				element.className = "sunlight-" + suffix + " sunlight-" + context.language.name;
+				element.className = "sunlight-" + suffix;
 				element.appendChild(context.createTextNode(context.tokens[context.index].value));
 				return context.addNode(element) || true;
 			};
@@ -176,9 +176,6 @@
 			}
 		};
 	}();
-	
-	//registered languages
-	var languages = { };
 	
 	var createCodeReader = function(text) {
 		text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
@@ -616,7 +613,7 @@
 						//text nodes
 						span = document.createElement("span");
 						
-						span.className = "sunlight-highlighted";
+						span.className = "sunlight-highlighted sunlight-" + languageId;
 						partialContext = highlightText.call(this, node.childNodes[j].nodeValue, languageId, partialContext);
 						
 						nodes = partialContext.getNodes();
@@ -677,6 +674,8 @@
 	var globalOptions = {
 		tabWidth: 4
 	};
+	
+	var languages = { };
 	
 	window.Sunlight = {
 		version: "1.0",

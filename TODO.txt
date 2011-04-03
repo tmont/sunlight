@@ -12,8 +12,8 @@ TESTING
 BUGS
 - IE
 	- CSS hex color parse rule doesn't work
-	- sunlight.css doesn't work, need to clean up class names
 	- everything after first line indented by one space (wtf?)
+	- custom parse rules in general don't work
 - fix PHP analyzer to use DOM elements
 
 FUNCTIONALITY
@@ -38,4 +38,5 @@ WEB
 - document case sensitivity
 - document changes to custom token definition
 - document changes to analyzer context api
+- document changes to class names for tokens
 - download links
