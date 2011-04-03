@@ -44,7 +44,7 @@
 
 
 /* php */
-.sunlight-php .sunlight-keyword, .sunlight-php .sunlight-language-construct {
+.sunlight-php .sunlight-keyword, .sunlight-php .sunlight-languageConstruct {
 	color: #0000CC;
 	text-decoration: none;
 }

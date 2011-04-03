@@ -109,7 +109,9 @@ LULZ;
 		assertExists("comment", "//unset stuff", "Single line comment");
 		assertExists("comment", "/**\n\t\t * This does something\n\t\t */", "multi line comment");
 		
-		assertExists("language-construct", "array", "array language construct");
+		assertExists("languageConstruct", "array", "array language construct");
+		assertExists("languageConstruct", "unset", "unset language construct");
+		assertExists("languageConstruct", "return", "return language construct");
 		assertExists("variable", "$this", "$this variable");
 		assertExists("variable", "$kiss", "$kiss variable");
 		assertExists("variable", "$myPrivateVar", "private member variable");

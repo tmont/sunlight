@@ -1,14 +1,22 @@
-(function(sunlight, undefined){
+(function(sunlight, document, undefined){
 
 	if (sunlight === undefined || sunlight["registerLanguage"] === undefined) {
 		throw "Include sunlight.js before including language files";
 	}
 
+	var addFunctionLink = function(context) {
+		var word = context.tokens[context.index].value;
+		var suffix = context.tokens[context.index].name;
+		var link = document.createElement("a");
+		link.className = "sunlight-" + suffix;
+		link.setAttribute("href", "http://php.net/" + word);
+		link.appendChild(context.createTextNode(word));
+		context.addNode(link);
+	}
+	
 	var phpAnalyzer = sunlight.createAnalyzer();
-	phpAnalyzer.enter_languageConstruct = function(context) { context.append("<a class=\"sunlight-language-construct sunlight-php\" href=\"http://php.net/" + context.tokens[context.index].value + "\">") };
-	phpAnalyzer.exit_languageConstruct = function(context) { context.append("</a>") };
-	phpAnalyzer.enter_function = function(context) { context.append("<a class=\"sunlight-function sunlight-php\" href=\"http://php.net/" + context.tokens[context.index].value + "\">") };
-	phpAnalyzer.exit_function = function(context) { context.append("</a>") };
+	phpAnalyzer.handle_languageConstruct = addFunctionLink;
+	phpAnalyzer.handle_function = addFunctionLink;
 	
 	sunlight.registerLanguage("php", {
 		keywords: [
@@ -201,4 +209,4 @@
 		
 		analyzer: phpAnalyzer
 	});
-}(window["Sunlight"]));
+}(window["Sunlight"], document));
