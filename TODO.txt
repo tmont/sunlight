@@ -13,9 +13,8 @@ BUGS
 - IE
 	- CSS hex color parse rule doesn't work
 	- sunlight.css doesn't work, need to clean up class names
+	- everything after first line indented by one space (wtf?)
 - fix PHP analyzer to use DOM elements
-- tab width no longer works since we're not encoding anything anymore
-- remove exit analysis
 
 FUNCTIONALITY
 - line numbers

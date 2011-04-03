@@ -22,7 +22,7 @@ console.log("highlighting time: " + (new Date().getTime() - start.getTime()) + "
 
 //tests
 var tags = document.getElementById("code").getElementsByTagName("*");
-var nbsp = String.fromCharCode(0x00a0);
+var nbsp = String.fromCharCode(0xa0);
 function exists(className, content) {
 	content = content.replace(/ /g, nbsp).replace(/\t/g, nbsp + nbsp + nbsp + nbsp);
 	if (!+"\v1") {

@@ -8,7 +8,7 @@
  *
  * Licensed under WTFPL <http://sam.zoy.org/wtfpl/>
  */
-(function(window, undefined){
+(function(window, document, undefined){
 
 	//http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
 	var isIe = !+"\v1"; //we have to sniff this because IE requires \r\n
@@ -139,30 +139,29 @@
 	};
 	
 	var defaultAnalyzer = function() {
-		var defaultEnter = function(suffix) {
+		var defaultHandleToken = function(suffix) {
 			return function(context) {
 				var element = document.createElement("span");
 				element.className = "sunlight-" + suffix + " sunlight-" + context.language.name;
+				element.appendChild(context.createTextNode(context.tokens[context.index].value));
 				return context.addNode(element) || true;
 			};
 		};
 	
 		return  {
-			defaultEnter: function(context) { return defaultEnter(context.tokens[context.index].name)(context); },
-			defaultExit: function(context) { return true; },
-			writeCurrentToken: function(context) { context.setTextOfLastNode(context.tokens[context.index].value); },
+			handleToken: function(context) { return defaultHandleToken(context.tokens[context.index].name)(context); },
 			
 			//this handles the named ident mayhem
-			enter_ident: function(context) {
+			handle_ident: function(context) {
 				var evaluate = function(rules, createRule) {
 					rules = rules || [];
 					for (var i = 0; i < rules.length; i++) {
 						if (typeof(rules[i]) === "function") {
 							if (rules[i](context)) {
-								return defaultEnter("named-ident")(context);
+								return defaultHandleToken("named-ident")(context);
 							}
 						} else if (createRule && createRule(rules[i])(context.tokens)) {
-							return defaultEnter("named-ident")(context);
+							return defaultHandleToken("named-ident")(context);
 						}
 					}
 					
@@ -173,7 +172,7 @@
 					|| evaluate(context.language.namedIdentRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData.slice(0), context.language.caseInsensitive); })
 					|| evaluate(context.language.namedIdentRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData.slice(0), context.language.caseInsensitive); })
 					|| evaluate(context.language.namedIdentRules.between, function(ruleData) { return createBetweenRule(context.index, ruleData.opener, ruleData.closer, context.language.caseInsensitive); })
-					|| defaultEnter("ident")(context);
+					|| defaultHandleToken("ident")(context);
 			}
 		};
 	}();
@@ -552,44 +551,23 @@
 		};
 		
 		var createAnalyzerContext = function(unhighlightedCode, language, partialContext, options) {
-			var buffer = "";
 			var nodes = [];
-			
-			//based on http://phpjs.org/functions/htmlentities:425
-			var encode = function() {
-				var charMap = [
-					["&", "&amp;"],
-					["'", "&#039;"],
-					["<", "&lt;"],
-					[">", "&gt;"],
-					["\t", new Array(options.tabWidth + 1).join("&#160;")],
-					[" ", "&#160;"]
-				];
-				
+			var parseData = tokenize(unhighlightedCode, language, partialContext.continuation);
+			var prepareText = function() {
+				var nbsp = String.fromCharCode(0xa0);
+				var tab = new Array(options.tabWidth + 1).join(nbsp);
 				return function(text) {
-					var encodedText = text;
-					for (var i = 0; i < charMap.length; i++) {
-						encodedText = encodedText.split(charMap[i][0]).join(charMap[i][1]);
-					}
-					
-					return encodedText;
+					return text.split(" ").join(nbsp).split("\t").join(tab);
 				};
 			}();
-			
-			var parseData = tokenize(unhighlightedCode, language, partialContext.continuation);
 			
 			return {
 				tokens: (partialContext.tokens || []).concat(parseData.tokens),
 				index: partialContext.index ? partialContext.index + 1 : 0,
 				language: language,
 				continuation: parseData.continuation,
-				
-				append: function(text) { buffer += text; },
-				appendAndEncode: function(text) { buffer += encode(text); },
-				getHtml: function() { return buffer; },
-				
-				addNode: function(element) { nodes.push(element); },
-				setTextOfLastNode: function(text) { nodes[nodes.length - 1].appendChild(document.createTextNode(text)); },
+				addNode: function(node) { nodes.push(node); },
+				createTextNode: function(text) { return document.createTextNode(prepareText(text)); },
 				getNodes: function() { return nodes; }
 			};
 		};
@@ -605,15 +583,12 @@
 		
 			var analyzerContext = createAnalyzerContext(unhighlightedCode, language, partialContext, this.options);
 			var analyzer = language.analyzer;
-			for (var i = partialContext.index ? partialContext.index + 1 : 0, tokenName, enter, exit; i < analyzerContext.tokens.length; i++) {
+			for (var i = partialContext.index ? partialContext.index + 1 : 0, tokenName, func, exit; i < analyzerContext.tokens.length; i++) {
 				analyzerContext.index = i;
 				tokenName = analyzerContext.tokens[i].name;
-				enter = "enter_" + tokenName;
-				//exit = "exit_" + tokenName;
+				func = "handle_" + tokenName;
 				
-				analyzer[enter] ? analyzer[enter](analyzerContext) : analyzer.defaultEnter(analyzerContext);
-				analyzer.writeCurrentToken(analyzerContext);
-				//analyzer[exit] ? analyzer[exit](analyzerContext) : analyzer.defaultExit(analyzerContext);
+				analyzer[func] ? analyzer[func](analyzerContext) : analyzer.handleToken(analyzerContext);
 			}
 			
 			return analyzerContext;
@@ -629,25 +604,23 @@
 			 * Recursively highlights a DOM node
 			 */
 			highlightNode: function highlightRecursive(node) {
-				var match, languageId, partialContext;
+				var match;
 				if ((match = node.className.match(/\s*sunlight-highlight-(\S+)\s*/)) === null || /(?:\s|^)sunlight-highlighted\s*/.test(node.className)) {
 					//not a valid sunlight node or it's already been highlighted
 					return;
 				}
 				
-				languageId = match[1];
-				
-				for (var j = 0, span; j < node.childNodes.length; j++) {
+				var languageId = match[1];
+				for (var j = 0, span, nodes, k, partialContext; j < node.childNodes.length; j++) {
 					if (node.childNodes[j].nodeType === 3) {
 						//text nodes
 						span = document.createElement("span");
 						
 						span.className = "sunlight-highlighted";
 						partialContext = highlightText.call(this, node.childNodes[j].nodeValue, languageId, partialContext);
-						//span.innerHTML = partialContext.getHtml();
 						
-						var nodes = partialContext.getNodes();
-						for (var k = 0; k < nodes.length; k++) {
+						nodes = partialContext.getNodes();
+						for (k = 0; k < nodes.length; k++) {
 							span.appendChild(nodes[k]);
 						}
 						
@@ -705,8 +678,6 @@
 		tabWidth: 4
 	};
 	
-	
-	
 	window.Sunlight = {
 		version: "1.0",
 		Highlighter: highlighterConstructor,
@@ -758,4 +729,4 @@
 		}
 	};
 
-}(window));
+}(window, document));
