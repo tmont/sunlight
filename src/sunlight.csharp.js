@@ -131,7 +131,7 @@
 				var count = "get".length, peek = context.reader.peek(count), current, allGoodYo = false;
 				while (peek.length === count) {
 					if (!/\s$/.test(peek)) {
-						if (peek[peek.length - 1] !== "{") {
+						if (peek.charAt(peek.length - 1) !== "{") {
 							return null;
 						}
 						
@@ -166,7 +166,7 @@
 				while (peek.length === count) {
 					if (!/\s$/.test(peek)) {
 						var peekPlus1 = context.reader.peek(count + 1);
-						if (peek[peek.length - 1] === "=" && peekPlus1[peekPlus1.length - 1] !== "=") {
+						if (peek.charAt(peek.length - 1) === "=" && peekPlus1.charAt(peekPlus1.length - 1) !== "=") {
 							//"value" is on the left side of an assignment, so this is not the droid we're looking for
 							return null;
 						}
