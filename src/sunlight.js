@@ -628,7 +628,7 @@
 			 */
 			highlightNode: function highlightRecursive(node) {
 				var match;
-				if ((match = node.className.match(/\s*sunlight-highlight-(\S+)\s*/)) === null || /(?:\s|^)sunlight-highlighted\s*/.test(node.className)) {
+				if ((match = node.className.match(/(?:\s|^)sunlight-highlight-(\S+)(?:\s|$)/)) === null || /(?:\s|^)sunlight-highlighted(?:\s|$)/.test(node.className)) {
 					//not a valid sunlight node or it's already been highlighted
 					return;
 				}
