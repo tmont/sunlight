@@ -7,8 +7,8 @@
 	</head>
 
 	<body>
-<pre><code id="code" class="sunlight-highlight-css">@import "/my/style/sheet.css"
-@import url(/my/style/sheet.css) screen "Print style\"s"
+<pre><code id="code" class="sunlight-highlight-css">@import "/my/style/sheet.css";
+@import url(/my/style/sheet.css) screen "Print style\"s";
 
 html div.myClass {
 	width: 100%;
@@ -23,6 +23,9 @@ body > .warning {
 	color: #FF0000;
 	background-image: url(warning.png); /* ".png" should not be colored as a class */
 	border: 2px solid none;
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity = 50);
+	filter: alpha(opacity=50);
+	opacity: 0.5;
 }
 
 #wrapper div[lang~="en"]:first-child::before {
@@ -35,6 +38,10 @@ body > .warning {
 
 a:fake-pseudo-class {
 	transform: rotate(5deg);
+	-moz-background-inline-policy: -moz-initial;
+	-o-device-pixel-ratio: meh;
+	-webkit-background-origin: lolwut;
+	-ms-accelerator: snoo-snoo;
 }
 </code></pre>
 	</body>
@@ -42,19 +49,39 @@ a:fake-pseudo-class {
 	<script type="text/javascript"  src="test.js"></script>
 	<script type="text/javascript">//<![CDATA[
 		assertExists("rule", "@import", "css rule declaration");
+		
 		assertExists("string", "\"Courier New\"", "font-family string");
 		assertExists("string", "\"Print style\\\"s\"", "string with escaped quote");
 		assertExists("string", "'Arialola\\'s'", "single quoted string with escaped quote");
-		assertExists("ident", "html", "html element selector");
+		
+		assertExists("element", "html", "html element selector");
+		
+		assertExists("ident", "css", "css extension");
+		
 		assertExists("number", "0.0", "decimal number");
-		assertExists("keyword", "background-color", "background-color property");
 		assertExists("hexColor", "#FF0000", "hex color");
 		assertExists("id", "#wrapper", "id selector");
 		assertExists("class", ".warning", "class selector");
+		assertExists("class", ".myClass", "class selector");
 		assertExists("operator", "~=", "attribute operator");
 		assertExists("pseudoElement", "before", "pseudo element");
 		assertExists("pseudoClass", "first-child", "pseudo class");
+		
 		assertExists("function", "url", "url function");
 		assertExists("function", "rotate", "rotate function");
+		assertExists("function", "alpha", "alpha function");
+		assertExists("function", "Alpha", "capitalized alpha function");
+		
+		assertExists("keyword", "background-color", "background-color property");
+		assertExists("keyword", "width", "width property");
+		assertExists("keyword", "position", "position property");
+		assertExists("keyword", "color", "color property");
+		assertExists("keyword", "filter", "filter property");
+		assertExists("keyword", "-moz-background-inline-policy", "mozilla specific property");
+		assertExists("keyword", "-o-device-pixel-ratio", "opera specific property");
+		assertExists("keyword", "-ms-accelerator", "ie specific property");
+		assertExists("keyword", "-webkit-background-origin", "webkit specific property");
+		
+		assertExists("microsoftFilterPrefix", "progid:DXImageTransform.Microsoft", "Microsoft filter prefix");
 	//]]></script>
 </html>

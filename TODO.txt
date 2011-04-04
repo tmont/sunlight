@@ -2,8 +2,7 @@ PARSING
 - PHP class name highlighting in use statements
 - C# class name highlighting in using aliases
 - C# extern alias?
-- CSS mozilla/webkit/opera/ie specific stuff
-- CSS element selectors
+- CSS values (none, solid, inset, etc.)
 
 TESTING
 - PHP short tags
@@ -17,6 +16,8 @@ FUNCTIONALITY
 	- code folding
 	- line highlighting
 - customizable class prefix
+- create dark theme
+- consolidate default theme
 
 LANGUAGES
 - Java
@@ -35,4 +36,5 @@ WEB
 - document changes to analyzer context api
 - document changes to class names for tokens
 - document browser support
+- update demos
 - download links

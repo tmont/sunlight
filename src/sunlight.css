@@ -174,6 +174,12 @@
 }
 
 /* css */
+.sunlight-css .sunlight-microsoftFilterPrefix {
+	color: magenta;
+}
+.sunlight-css .sunlight-element {
+	color: #0000FF;
+}
 .sunlight-css .sunlight-string {
 	color: #990000;
 }
