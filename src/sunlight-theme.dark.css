@@ -1,9 +1,18 @@
 /* global styles */
-.sunlight-highlighted {
+.sunlight-container * {
 	font-family: Consolas;
 	font-size: 14px;
 	white-space: pre;
 	background-color: #262626;
+	color: #FFFFFF;
+}
+.sunlight-container .sunlight-line-number-margin {
+	float: left;
+	margin-right: 5px;
+	padding: 0 2px;
+	border-right: 1px solid #705E5E;
+	background-color: #473434;
+	color: #D3BCBC;
 }
 .sunlight-highlighted a {
 	border: none;
@@ -22,7 +31,7 @@
 	color: #737272;
 }
 .sunlight-number {
-	color: #F87FF7;
+	color: #EEA4EE;
 }
 .sunlight-named-ident {
 	color: #EDEC97;

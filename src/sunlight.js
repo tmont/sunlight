@@ -18,7 +18,10 @@
         function F() {}
         F.prototype = o;
         return new F();
-    }
+    };
+	
+	//gets defined after the first call to highlight something
+	var getComputedStyle = false;
 	
 	//array.contains()
 	var contains = function(arr, value, caseInsensitive) {
@@ -573,8 +576,28 @@
 		};
 		
 		//partialContext allows us to perform a partial parse, and then pick up where we left off at a later time
-		//this functionality enables nested highlights (language withint a language, e.g. PHP within HTML followed by more PHP)
+		//this functionality enables nested highlights (language within a language, e.g. PHP within HTML followed by more PHP)
 		var highlightText = function(unhighlightedCode, languageId, partialContext) {
+			if (!getComputedStyle) {
+				//http://blargh.tommymontgomery.com/2010/04/get-computed-style-in-javascript/
+				getComputedStyle = function() {
+					var func = null;
+					if (document.defaultView && document.defaultView.getComputedStyle) {
+						func = document.defaultView.getComputedStyle;
+					} else if (typeof(document.body.currentStyle) !== "undefined") {
+						func = function(element, anything) {
+							return element["currentStyle"];
+						};
+					} else {
+						func = function() { return null; };
+					}
+
+					return function(element, style) {
+						return func(element, null)[style];
+					}
+				}();
+			};
+			
 			partialContext = partialContext || { };
 			var language = languages[languageId];
 			if (language === undefined) {
@@ -632,6 +655,28 @@
 				
 				//indicate that this node has been highlighted
 				node.className += " sunlight-highlighted";
+				
+				if (this.options.lineNumbers === true || (this.options.lineNumbers === "automatic" && getComputedStyle(node, "display") === "block")) {
+					var container = document.createElement("div");
+					container.className = "sunlight-container";
+					var lineContainer = document.createElement("div");
+					lineContainer.className = "sunlight-line-number-margin";
+					var lineCount = node.innerHTML.replace(/[^\n]/g, "").length;
+					
+					var numbers = [];
+					for (var i = this.options.lineNumberStart; i <= this.options.lineNumberStart + lineCount; i++) {
+						numbers.push(i);
+					}
+					
+					lineContainer.appendChild(document.createTextNode(numbers.join("\n")));
+					
+					container.appendChild(lineContainer);
+					node.parentNode.appendChild(container);
+					node.parentNode.removeChild(node);
+					container.appendChild(node);
+				} else {
+					console.log("not adding line numbers: %s", getComputedStyle(node, "display"));
+				}
 			}
 		};
 	}();
@@ -675,7 +720,9 @@
 	};
 	
 	var globalOptions = {
-		tabWidth: 4
+		tabWidth: 4,
+		lineNumbers: "automatic", //true/false/"automatic"
+		lineNumberStart: 1
 	};
 	
 	var languages = { };

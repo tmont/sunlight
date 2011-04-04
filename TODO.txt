@@ -4,6 +4,7 @@ PARSING
 - CSS property values (none, solid, inset, etc.)
 
 TESTING
+- line numbers in IE/Chrome/Safari/Opera
 
 BUGS
 - getNextNonWsToken() doesn't really work correctly: it needs to completely ignore whitespace tokens
@@ -11,10 +12,6 @@ BUGS
 - C# new Integer[foo] has foo highlighted as a named ident
 
 FUNCTIONALITY
-- line numbers
-- fancier display? (maybe just for block-level elements or something)
-	- code folding
-	- line highlighting
 - customizable class prefix
 
 LANGUAGES
@@ -34,5 +31,6 @@ WEB
 - document changes to analyzer context api
 - document changes to class names for tokens
 - document browser support (ie6+, fx2+, safari 4+, chrome 10, opera 11)
+- document line number option
 - download links
 - link to source control

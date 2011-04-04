@@ -1,8 +1,18 @@
 /* global styles */
-.sunlight-highlighted {
+.sunlight-container * {
 	font-family: Consolas;
 	font-size: 14px;
 	white-space: pre;
+	background-color: #FFFFFF;
+	color: #000000;
+}
+.sunlight-container .sunlight-line-number-margin {
+	float: left;
+	margin-right: 5px;
+	padding: 0 2px;
+	border-right: 1px solid #CCCCCC;
+	background-color: #EEEEEE;
+	color: #848484;
 }
 .sunlight-highlighted a {
 	border: none;
