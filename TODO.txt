@@ -8,6 +8,7 @@ TESTING
 BUGS
 - getNextNonWsToken() doesn't really work correctly: it needs to completely ignore whitespace tokens
   when incrementing/decrementing
+- C# new Integer[foo] has foo highlighted as a named ident
 
 FUNCTIONALITY
 - line numbers
@@ -15,7 +16,6 @@ FUNCTIONALITY
 	- code folding
 	- line highlighting
 - customizable class prefix
-- create dark theme
 
 LANGUAGES
 - Java
@@ -34,6 +34,5 @@ WEB
 - document changes to analyzer context api
 - document changes to class names for tokens
 - document browser support (ie6+, fx2+, safari 4+, chrome 10, opera 11)
-- update demos
 - download links
 - link to source control

@@ -1,0 +1,148 @@
+/* global styles */
+.sunlight-highlighted {
+	font-family: Consolas;
+	font-size: 14px;
+	white-space: pre;
+	background-color: #262626;
+}
+.sunlight-highlighted a {
+	border: none;
+	text-decoration: none;
+	font-weight: normal;
+	font-style: normal;
+}
+
+.sunlight-string {
+	color: #61FF5F;
+}
+.sunlight-ident, .sunlight-operator, .sunlight-punctuation {
+	color: #FFFFFF;
+}
+.sunlight-comment {
+	color: #737272;
+}
+.sunlight-number {
+	color: #F87FF7;
+}
+.sunlight-named-ident {
+	color: #EDEC97;
+}
+.sunlight-keyword {
+	color: #A8BFF8;
+}
+
+/* multi language stuff */
+.sunlight-shortOpenTag, .sunlight-openTag, .sunlight-closeTag, .sunlight-xmlOpenTag, .sunlight-xmlCloseTag {
+	background-color: #88323D;
+	color: #FFFFFF;
+}
+.sunlight-content {
+	color: #FFFFFF;
+}
+.sunlight-function {
+	color: #F1CB73;
+}
+
+/* html/xml */
+.sunlight-html .sunlight-string, .sunlight-xml .sunlight-string {
+	color: #61FF5F;
+}
+.sunlight-cdata {
+	color: #AE67A2;
+}
+.sunlight-html .sunlight-ident, .sunlight-html .sunlight-operator, .sunlight-xml .sunlight-ident, .sunlight-xml .sunlight-operator {
+	color: #A28F49;
+}
+.sunlight-html .sunlight-named-ident, .sunlight-xml .sunlight-named-ident {
+	color: #D6E382;
+}
+.sunlight-html .sunlight-entity, .sunlight-xml .sunlight-entity {
+	background-color: #594F4F;
+	color: #FFFFFF;
+	border: 1px solid #92A02E;
+}
+
+/* html */
+.sunlight-html .sunlight-doctype {
+	color: #98CDE6;
+}
+
+
+/* php */
+.sunlight-php .sunlight-languageConstruct {
+	color: #A8BFF8;
+}
+.sunlight-php .sunlight-heredoc, .sunlight-php .sunlight-nowdoc {
+	color: #61FF5F;
+}
+.sunlight-php .sunlight-constant {
+	color: #2B91AF;
+}
+.sunlight-php .sunlight-variable {
+	color: #D5E8EB;
+}
+.sunlight-php .sunlight-function {
+	text-decoration: none;
+}
+
+/* c# */
+.sunlight-csharp .sunlight-xmlDocCommentContent {
+	color: #5C8C5C;
+}
+.sunlight-csharp .sunlight-pragma {
+	color: #737272;
+	font-style: italic;
+}
+.sunlight-csharp .sunlight-xmlDocCommentMeta {
+	color: #737272;
+}
+
+
+/* javascript */
+.sunlight-javascript .sunlight-globalVariable, .sunlight-javascript .sunlight-globalObject {
+	color: #EDEC97;
+}
+.sunlight-javascript .sunlight-reservedWord {
+	color: #FFFFFF;
+	font-style: italic;
+}
+.sunlight-javascript .sunlight-globalFunction {
+	color: #F1CB73;
+}
+.sunlight-javascript .sunlight-regexLiteral {
+	color: #A4D6D3;
+}
+
+/* mysql */
+.sunlight-mysql .sunlight-quotedIdent {
+	color: #999900;
+}
+
+/* css */
+.sunlight-css .sunlight-microsoftFilterPrefix {
+	color: #6AD9E3;
+}
+.sunlight-css .sunlight-element {
+	color: #EDEC97;
+}
+.sunlight-css .sunlight-named-ident {
+	color: #000099;
+}
+.sunlight-css .sunlight-rule {
+	color: #FF8196;
+}
+.sunlight-css .sunlight-keyword {
+	color: #A8BFF8;
+}
+.sunlight-css .sunlight-class {
+	color: #EB8383;
+}
+.sunlight-css .sunlight-id {
+	color: #8A8E13;
+}
+.sunlight-css .sunlight-pseudoClass, .sunlight-css .sunlight-pseudoElement {
+	color: #DFA6ED;
+}
+.sunlight-css .sunlight-hexColor {
+	color: #FFFFFF;
+}
