@@ -1,7 +1,7 @@
 PARSING
 - PHP class name highlighting in use statements
 - C# class name highlighting in using aliases
-- CSS values (none, solid, inset, etc.)
+- CSS property values (none, solid, inset, etc.)
 
 TESTING
 
