@@ -4,7 +4,6 @@ PARSING
 - CSS property values (none, solid, inset, etc.)
 
 TESTING
-- line numbers in IE/Chrome/Safari/Opera
 
 BUGS
 - getNextNonWsToken() doesn't really work correctly: it needs to completely ignore whitespace tokens

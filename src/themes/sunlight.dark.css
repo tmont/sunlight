@@ -9,6 +9,7 @@
 .sunlight-container .sunlight-line-number-margin {
 	float: left;
 	margin-right: 5px;
+	margin-top: 0;
 	padding: 0 2px;
 	border-right: 1px solid #705E5E;
 	background-color: #473434;

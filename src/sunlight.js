@@ -655,7 +655,7 @@
 				if (this.options.lineNumbers === true || (this.options.lineNumbers === "automatic" && getComputedStyle(node, "display") === "block")) {
 					var container = document.createElement("div");
 					container.className = "sunlight-container";
-					var lineContainer = document.createElement("div");
+					var lineContainer = document.createElement("pre");
 					lineContainer.className = "sunlight-line-number-margin";
 					var lineCount = node.innerHTML.replace(/[^\n]/g, "").length;
 					
@@ -664,7 +664,7 @@
 						numbers.push(i);
 					}
 					
-					lineContainer.appendChild(document.createTextNode(numbers.join("\n")));
+					lineContainer.appendChild(document.createTextNode(numbers.join(isIe ? "\r" : "\n")));
 					
 					container.appendChild(lineContainer);
 					node.parentNode.appendChild(container);
