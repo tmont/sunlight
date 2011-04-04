@@ -154,7 +154,7 @@
 		return  {
 			handleToken: function(context) { return defaultHandleToken(context.tokens[context.index].name)(context); },
 			
-			//just append whitespace as text nodes
+			//just append default content as a text node
 			handle_default: function(context) { return context.addNode(context.createTextNode(context.tokens[context.index].value)); },
 			
 			//this handles the named ident mayhem
@@ -184,7 +184,7 @@
 	}();
 	
 	var createCodeReader = function(text) {
-		text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+		text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n"); //normalize line endings to unix
 		var index = 0;
 		var line = 1;
 		var column = 1;
@@ -618,14 +618,10 @@
 		};
 		
 		return {
-			/**
-			 * Highlights a block of text
-			 */
+			//highlights a block of text
 			highlight: function(code, languageId) { highlightText.call(this, code, languageId); },
 			
-			/**
-			 * Recursively highlights a DOM node
-			 */
+			//recursively highlights a DOM node
 			highlightNode: function highlightRecursive(node) {
 				var match;
 				if ((match = node.className.match(/(?:\s|^)sunlight-highlight-(\S+)(?:\s|$)/)) === null || /(?:\s|^)sunlight-highlighted(?:\s|$)/.test(node.className)) {
@@ -674,8 +670,6 @@
 					node.parentNode.appendChild(container);
 					node.parentNode.removeChild(node);
 					container.appendChild(node);
-				} else {
-					console.log("not adding line numbers: %s", getComputedStyle(node, "display"));
 				}
 			}
 		};
