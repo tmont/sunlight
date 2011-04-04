@@ -26,7 +26,7 @@ var nbsp = String.fromCharCode(0xa0);
 function exists(className, content) {
 	content = content.replace(/ /g, nbsp).replace(/\t/g, nbsp + nbsp + nbsp + nbsp);
 	if (!+"\v1") {
-		content = content.replace(/\n/g, "\r\n");
+		content = content.replace(/\n/g, "\r");
 	}
 	
 	var searched = 0;
