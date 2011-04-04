@@ -12,7 +12,6 @@ TESTING
 BUGS
 - IE
 	- CSS hex color parse rule doesn't work
-	- everything after first line indented by one space (wtf?)
 	- custom parse rules in general don't work
 
 FUNCTIONALITY

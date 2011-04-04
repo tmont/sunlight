@@ -151,6 +151,9 @@
 		return  {
 			handleToken: function(context) { return defaultHandleToken(context.tokens[context.index].name)(context); },
 			
+			//just append whitespace as text nodes
+			handle_default: function(context) { return context.addNode(context.createTextNode(context.tokens[context.index].value)); },
+			
 			//this handles the named ident mayhem
 			handle_ident: function(context) {
 				var evaluate = function(rules, createRule) {
@@ -510,7 +513,7 @@
 					return {
 						name: name,
 						line: line,
-						value: isIe ? value.replace(/\n/g, "\r\n") : value,
+						value: isIe ? value.replace(/\n/g, "\r") : value,
 						column: column
 					};
 				}
