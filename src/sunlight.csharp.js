@@ -10,6 +10,9 @@
 	
 	sunlight.registerLanguage("csharp", {
 		keywords: primitives.concat([
+			//this is also contextual (must be first thing in the file or something), but it's never used so i don't really care
+			"extern alias",
+			
 			//class qualifiers
 			"public", "private", "protected", "internal", "static", "sealed", "abstract", "partial",
 

@@ -1,7 +1,6 @@
 PARSING
 - PHP class name highlighting in use statements
 - C# class name highlighting in using aliases
-- C# extern alias?
 - CSS values (none, solid, inset, etc.)
 
 TESTING
@@ -35,6 +34,6 @@ WEB
 - document changes to custom token definition
 - document changes to analyzer context api
 - document changes to class names for tokens
-- document browser support
+- document browser support (ie6+, fx2+, safari 4+, chrome 10, opera 11)
 - update demos
 - download links

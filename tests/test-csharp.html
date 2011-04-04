@@ -7,7 +7,8 @@
 	</head>
 
 	<body>
-<pre><code id="code" class="sunlight-highlight-csharp">using System;
+<pre><code id="code" class="sunlight-highlight-csharp">extern alias GridV1;
+using System;
 using UsingAlias = System.Linq.Enumerable;
 
 namespace My.Namespace {
@@ -140,6 +141,7 @@ string";
 		assertExists("keyword", "get", "get contextual keyword");
 		assertExists("keyword", "value", "value contextual keyword");
 		assertExists("keyword", "yield return", "yield return");
+		assertExists("keyword", "extern alias", "extern alias");
 		
 		assertExists("named-ident", "UsingAlias", "using alias");
 		assertExists("named-ident", "ValueHandlerFactoryBase", "class name");
