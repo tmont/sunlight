@@ -37,4 +37,5 @@ WEB
 - document changes to custom token definition
 - document changes to analyzer context api
 - document changes to class names for tokens
+- document browser support
 - download links
