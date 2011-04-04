@@ -9,6 +9,8 @@ TESTING
 - benchmarks
 
 BUGS
+- getNextNonWsToken() doesn't really work correctly: it needs to completely ignore whitespace tokens
+  when incrementing/decrementing
 
 FUNCTIONALITY
 - line numbers

@@ -419,7 +419,7 @@
 					return true;
 				},
 				
-				//using aliases, e.g. using Foo = System.Linq.Enumerable;
+				//using aliases, e.g. "Foo" in "using Foo = System.Linq.Enumerable;"
 				function(context) {
 					//previous non-ws token must be "using" and next non-ws token must be "="
 					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
