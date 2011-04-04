@@ -5,7 +5,6 @@ PARSING
 - CSS values (none, solid, inset, etc.)
 
 TESTING
-- benchmarks
 
 BUGS
 - getNextNonWsToken() doesn't really work correctly: it needs to completely ignore whitespace tokens
