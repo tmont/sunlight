@@ -9,7 +9,6 @@ TESTING
 BUGS
 - getNextNonWsToken() doesn't really work correctly: it needs to completely ignore whitespace tokens
   when incrementing/decrementing
-- C# new Integer[foo] has foo highlighted as a named ident
 
 FUNCTIONALITY
 - customizable class prefix

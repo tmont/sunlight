@@ -45,7 +45,7 @@ namespace My.Namespace {
 		 */
 		public new Object Value {
 			get { 
-				var get = foo > 0 ? new Integer[foo] : new Integer[0];
+				var get = foo > 0 ? new Integer[initialArrayLength] : new Integer[0];
 				return new List&lt;object&gt; {
 					get
 				};
@@ -74,7 +74,7 @@ namespace My.Namespace {
 		///
 		/// &lt;param name="foos"&gt;Collection of &lt;see cref="Foo" /&gt;&lt;/param&gt;
 		[FirstAttribute]
-		[Pure(typeof(IDisposable[])), OutOfThisWorld]
+		[Pure(typeof(IDisposable[])), OutOfThisWorld, ThirdAttribute]
 		[OutOfThisWorld(AttributeNamedParameter = "foo")]
 		[Another]
 		Action&lt;IDisposable&gt; DoOtherStuff(IEnumerable&lt;Foo&gt; fooEnumerable, string[] strings) {
@@ -161,6 +161,7 @@ string";
 		assertExists("named-ident", "Another", "attribute");
 		assertExists("named-ident", "AnAttribute", "attribute");
 		assertExists("named-ident", "FirstAttribute", "attribute");
+		assertExists("named-ident", "ThirdAttribute", "attribute");
 		assertExists("named-ident", "SecondGeneric", "second generic argument");
 		assertExists("named-ident", "ArrayOfSomething", "class name before []");
 		assertExists("named-ident", "GarbanzoBean", "class name");
@@ -183,6 +184,7 @@ string";
 		assertExists("ident", "fooEnumerable", "parameter name after generic");
 		assertExists("ident", "@class", "@ syntax for idents");
 		assertExists("ident", "criterionFieldName", "parameter name");
+		assertExists("ident", "initialArrayLength", "array length initializer between []");
 		
 		assertExists("comment", "/* multi\n\t\t\tline comment\n\t\t\t*/", "multi line comment");
 		assertExists("comment", "//neither foo below should be a named ident", "single line comment");

@@ -438,7 +438,7 @@
 					return true;
 				},
 				
-				//attributes
+				//attributes (friggin' attributes...)
 				function(context) {
 					//if the next token is an equals sign, this is a named parameter (or something else not inside of an attribute)
 					var token = sunlight.util.getNextNonWsToken(context.tokens, context.index);
@@ -450,7 +450,7 @@
 					//we need to verify that we're between [], but not in something like "new string[foo]" for instance
 					
 					//first, verify that we're inside an opening bracket
-					var index = context.index, bracketCount = [0, 0];
+					var index = context.index, bracketCount = [0, 0], foundComma = false;
 					while ((token = context.tokens[--index]) !== undefined) {
 						if (token.name === "punctuation") {
 							if (token.value === "[") {
@@ -463,10 +463,17 @@
 								continue;
 							}
 							
+							if (token.value === ",") {
+								foundComma = true;
+							}
+							
 							//exit rules
 							if (token.value === "{" || token.value === "}" || token.value === ";") {
 								break;
 							}
+						} else if (token.name === "ident" && bracketCount[1] === 0 && !foundComma) {
+							//prevents false positives like "new Integer[initialArrayLength]" but not things like "[FirstAttribute, SecondAttribute]"
+							return false;
 						}
 					}
 					
