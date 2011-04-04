@@ -44,6 +44,9 @@
 
 
 /* php */
+.sunlight-php .sunlight-shortOpenTag, .sunlight-php .sunlight-closeTag, .sunlight-php .sunlight-openTag {
+	background-color: #FFCC99;
+}
 .sunlight-php .sunlight-keyword, .sunlight-php .sunlight-languageConstruct {
 	color: #0000CC;
 	text-decoration: none;

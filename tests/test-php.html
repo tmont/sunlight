@@ -78,13 +78,21 @@ LULZ;
 		}
 		
 	}
-?&gt;</code></pre>
+?&gt;
+
+&lt;? 
+	//short tags 
+?&gt;
+
+&lt;?= 'lol' ?&gt;</code></pre>
 	</body>
 
 	<script type="text/javascript"  src="test.js"></script>
 	<script type="text/javascript">//<![CDATA[
 		assertExists("openTag", "<" + "?php", "open tag");
 		assertExists("closeTag", "?>", "close tag");
+		assertExists("shortOpenTag", "<" + "?", "short open tag");
+		assertExists("shortOpenTag", "<" + "?=", "short open tag echo");
 		
 		assertExists("keyword", "namespace", "namespace keyword");
 		assertExists("keyword", "use", "use keyword");
