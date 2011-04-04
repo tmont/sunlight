@@ -61,8 +61,6 @@
 					return null;
 				}
 				
-				
-				
 				var isValid = function() {
 					var previousNonWsToken = context.token(context.count() - 1);
 					var previousToken = null;

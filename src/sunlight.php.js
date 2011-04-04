@@ -164,6 +164,7 @@
 				//static method calls
 				[sunlight.util.whitespace, { token: "operator", values: ["::"] }],
 				
+				//typehints
 				[{ token: "default" }, { token: "variable" }]
 			],
 

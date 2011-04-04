@@ -10,9 +10,6 @@ TESTING
 - benchmarks
 
 BUGS
-- IE
-	- CSS hex color parse rule doesn't work
-	- custom parse rules in general don't work
 
 FUNCTIONALITY
 - line numbers

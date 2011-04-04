@@ -40,7 +40,7 @@
 					var line = context.reader.getLine();
 					var column = context.reader.getColumn();
 					while (peek.length === count) {
-						if (peek[peek.length - 1] === ";") {
+						if (peek.charAt(peek.length - 1) === ";") {
 							return context.createToken("entity", context.reader.read(count), line, column);
 						}
 						
