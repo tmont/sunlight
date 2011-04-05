@@ -1,6 +1,6 @@
 /* global styles */
 .sunlight-container {
-	clear: left;
+	clear: both;
 }
 .sunlight-container * {
 	white-space: pre;
@@ -8,7 +8,7 @@
 .sunlight-highlighted, .sunlight-container {
 	background-color: #FFFFFF;
 	color: #000000;
-	font-family: Consolas;
+	font-family: Consolas, Inconsolata, Monaco, "Courier New";
 	font-size: 14px;
 	line-height: 16px;
 }

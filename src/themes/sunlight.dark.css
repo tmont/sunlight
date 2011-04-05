@@ -1,6 +1,6 @@
 /* global styles */
 .sunlight-container {
-	clear: left;
+	clear: both;
 }
 .sunlight-container * {
 	white-space: pre;
