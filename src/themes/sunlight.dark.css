@@ -1,16 +1,24 @@
 /* global styles */
+.sunlight-container {
+	clear: left;
+}
 .sunlight-container * {
-	font-family: Consolas;
-	font-size: 14px;
 	white-space: pre;
+}
+.sunlight-highlighted, .sunlight-container {
 	background-color: #262626;
 	color: #FFFFFF;
+	font-family: Consolas, Inconsolata, Monaco, "Courier New";
+	font-size: 14px;
+	line-height: 16px;
 }
 .sunlight-container .sunlight-line-number-margin {
 	float: left;
 	margin-right: 5px;
 	margin-top: 0;
-	padding: 0 2px;
+	padding: 0;
+	padding-right: 2px !important;
+	padding-left: 2px !important;
 	border-right: 1px solid #705E5E;
 	background-color: #473434;
 	color: #D3BCBC;

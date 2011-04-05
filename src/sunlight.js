@@ -667,7 +667,7 @@
 					lineContainer.appendChild(document.createTextNode(numbers.join(isIe ? "\r" : "\n")));
 					
 					container.appendChild(lineContainer);
-					node.parentNode.appendChild(container);
+					node.parentNode.insertBefore(container, node);
 					node.parentNode.removeChild(node);
 					container.appendChild(node);
 				}
