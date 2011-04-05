@@ -2,13 +2,16 @@
 
 	<property name="src.dir" value="${basedir}/src"/>
 	
-	<property name="build.dir" value="${basedir}/build"/>
-	<property name="build.dist" value="${build.dir}/dist"/>
-	<property name="temp.dir" value="${build.dir}/temp"/>
-	
 	<property name="product.name" value="Sunlight"/>
 	<property name="product.shortname" value="sunlight"/>
 	<property name="product.version" value="1.0"/>
+	
+	<property name="build.dir" value="${basedir}/build"/>
+	<property name="build.dist" value="${build.dir}/dist"/>
+	<property name="deploy.dir" value="${build.dir}/${product.version}"/>
+	<property name="temp.dir" value="${build.dir}/temp"/>
+	<property name="lang.dir" value="${deploy.dir}/lang"/>
+	<property name="themes.dir" value="${deploy.dir}/themes"/>
 	
 	<property environment="env"/>
 	
@@ -22,7 +25,12 @@
 	</taskdef>
 	
 	<target name="release" depends="archive, compress" description="Creates deployment packages">
-		<copy file="${src.dir}/jquery.sunlight.js" todir="${build.dir}" />
+		<copy file="${src.dir}/jquery.sunlight.js" todir="${deploy.dir}" />
+		
+		<!-- copy themes -->
+		<copy todir="${themes.dir}">
+			<fileset dir="${src.dir}/themes" />
+		</copy>
 	</target>
 
 	<target name="archive" depends="clean, set-product-revision" description="Creates a source code tarball">
@@ -37,11 +45,10 @@
 	</target>
 	
 	<target name="clean" depends="init" description="Deletes directories and files created by the build sequence">
-		<delete dir="${build.dist}"/>
 		<delete dir="${build.dir}"/>
 	</target>
 	
-	<target name="compress" depends="init, clean, copy-uncompressed" description="Compresses JavaScript source files using YUI compressor">
+	<target name="compress" depends="init, clean, create-build-dirs, copy-uncompressed" description="Compresses JavaScript source files using YUI compressor">
 		<!-- combine all files for sunlight-all.js -->
 		<concat destfile="${temp.dir}/sunlight-all.js" encoding="UTF-8" eol="lf">
 			<fileset dir="${temp.dir}" includes="sunlight.js"/>
@@ -54,9 +61,12 @@
 			<fileset dir="${temp.dir}" includes="sunlight.css.js"/>
 		</concat>
 	
-		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${build.dir}">
+		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${deploy.dir}">
 			<include name="sunlight-all.js"/>
 			<include name="sunlight.js"/>
+		</yui-compressor>
+		
+		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${lang.dir}">
 			<include name="sunlight.csharp.js"/>
 			<include name="sunlight.javascript.js"/>
 			<include name="sunlight.php.js"/>
@@ -81,6 +91,12 @@
 		internal targets only below
 		######################################################
 	-->
+	
+	<target name="create-build-dirs">
+		<mkdir dir="${deploy.dir}"/>
+		<mkdir dir="${lang.dir}"/>
+		<mkdir dir="${themes.dir}"/>
+	</target>
 	
 	<target name="copy-uncompressed">
 		<mkdir dir="${temp.dir}"/>
