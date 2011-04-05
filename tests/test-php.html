@@ -67,7 +67,7 @@
 		private static function doSomething() {
 			$heredoc = "this one is my \"favorite\"";
 			$heredoc .= &lt;&lt;&lt;LOL
-oh look
+oh 'look'
 a heredoc!
 LOL;
 
@@ -129,6 +129,6 @@ LULZ;
 		assertExists("operator", ".=", ".= operator");
 		assertExists("operator", "->", "-> operator");
 		assertExists("nowdoc", "<<<'LULZ'\noh look\na nowdoc!\nLULZ", "nowdoc");
-		assertExists("heredoc", "<<<LOL\noh look\na heredoc!\nLOL", "heredoc");
+		assertExists("heredoc", "<<<LOL\noh 'look'\na heredoc!\nLOL", "heredoc");
 	//]]></script>
 </html>

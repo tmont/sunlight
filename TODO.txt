@@ -8,7 +8,6 @@ TESTING
 BUGS
 - getNextNonWsToken() doesn't really work correctly: it needs to completely ignore whitespace tokens
   when incrementing/decrementing
-- PHP heredoc/nowdoc doesn't correctly detect heredoc if there is an apostophre in the string body
 
 FUNCTIONALITY
 - customizable class prefix
@@ -25,4 +24,3 @@ LANGUAGES
 - Razor (ASP.NET MVC)
 
 WEB
-- update heredoc example in documentation once bug is fixed
