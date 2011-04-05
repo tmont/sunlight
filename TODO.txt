@@ -25,11 +25,4 @@ LANGUAGES
 - Razor (ASP.NET MVC)
 
 WEB
-- document case sensitivity
-- document changes to custom token definition
-- document changes to analyzer context api
-- document changes to class names for tokens
-- document browser support (ie6+, fx2+, safari 4+, chrome 10, opera 11)
-- document line number option
-- download links
-- link to source control
+- update heredoc example in documentation once bug is fixed

@@ -619,7 +619,7 @@
 		
 		return {
 			//highlights a block of text
-			highlight: function(code, languageId) { highlightText.call(this, code, languageId); },
+			highlight: function(code, languageId) { return highlightText.call(this, code, languageId); },
 			
 			//recursively highlights a DOM node
 			highlightNode: function highlightRecursive(node) {
