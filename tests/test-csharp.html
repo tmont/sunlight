@@ -127,6 +127,8 @@ string";
 		}
 	}
 }</pre>
+
+		<pre id="undefinedTokenFix" class="sunlight-highlight-csharp">UndefinedTokenFix&lt;Foo&gt; undefinedTokenFix = new List&lt;Foo&gt;();</pre>
 	</body>
 	<script type="text/javascript"  src="test.js"></script>
 	<script type="text/javascript">//<![CDATA[
@@ -199,5 +201,9 @@ string";
 		assertExists("xmlDocCommentMeta", "</c>", "xml doc comment <c/c>");
 		assertExists("xmlDocCommentContent", "generic parameters", "xml doc comment content between tags");
 		assertExists("xmlDocCommentContent", " Tests the coloring of generic method definitions and", "xml doc comment content");
+		
+		//undefined token when ident is the first token
+		assertExists("named-ident", "UndefinedTokenFix", "undefined token fix", "undefinedTokenFix");
+		assertExists("ident", "undefinedTokenFix", "undefined token fix", "undefinedTokenFix");
 	//]]></script>
 </html>
