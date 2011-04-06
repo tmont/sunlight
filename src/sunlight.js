@@ -722,7 +722,7 @@
 	var languages = { };
 	
 	window.Sunlight = {
-		version: "1.0",
+		version: "1.1",
 		Highlighter: highlighterConstructor,
 		createAnalyzer: function() { return create(defaultAnalyzer); },
 		globalOptions: globalOptions,

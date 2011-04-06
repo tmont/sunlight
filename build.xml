@@ -4,7 +4,7 @@
 	
 	<property name="product.name" value="Sunlight"/>
 	<property name="product.shortname" value="sunlight"/>
-	<property name="product.version" value="1.0"/>
+	<property name="product.version" value="1.1"/>
 	
 	<property name="build.dir" value="${basedir}/build"/>
 	<property name="build.dist" value="${build.dir}/dist"/>
