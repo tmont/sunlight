@@ -18,9 +18,6 @@ BUGS
 	- public static IEnumerable<T> Walk<T>(this IEnumerable<T> source, Action<T> action)
 		- Walk and source are named idents
 - CSS
-	- missing vertical-align keyword
-	- missing zoom keyword
-	- border-* needs to come before border (and probably other keywords as well)
 	- only the first element selector isn't selected in foo:before, foo:before, foo:before {
 	- html isn't highlighted as an element in *:first-child+html
 

@@ -54,47 +54,51 @@
 			"background-clip", "background-origin", "background-size", "background",
 			
 			//border
-			"border", "border-top", "border-bottom", "border-right", "border-left", "border-spacing",
+			"border-collapse",
 			"border-top-style", "border-right-style", "border-left-style", "border-bottom-style", "border-style",
 			"border-top-width", "border-right-width", "border-left-width", "border-bottom-width", "border-width",
 			"border-top-color", "border-right-color", "border-left-color", "border-bottom-color", "border-color",
-			
-			"border-radius", "border-top-left-radius", "border-top-right-radius", "border-bottom-right-radius", 
-			"border-bottom-left-radius",
-		
-			"border-image", "border-image-source", "border-image-slice", "border-image-width", "border-image-outset", 
-			"border-image-repeat",
+			"border-radius", "border-top-left-radius", "border-top-right-radius", "border-bottom-right-radius", "border-bottom-left-radius",
+			"border-image-repeat", "border-image-source", "border-image-slice", "border-image-width", "border-image-outset", "border-image", 
+			"border-top", "border-bottom", "border-right", "border-left", "border-spacing", "border", 
 			
 			//miscellaneous effects
 			"box-decoration-break", "box-shadow",
 			
 			//speech (http://www.w3.org/TR/css3-speech/)
-			"voice-volume", "voice-balance", "speak", "pause-before", "pause-after", "pause", "rest-before", "rest-after", 
+			"voice-volume", "voice-balance", "pause-before", "pause-after", "pause", "rest-before", "rest-after", 
 			"rest", "cue-before", "cue-after", "cue", "mark-before", "mark-after", "mark", "voice-family", "voice-rate",
 			"voice-pitch", "voice-pitch-range", "voice-stress", "voice-duration", "phonemes", "speak-header", "speak-numeral",
 			"speak-punctuation", "pitch-range", "play-during", "richness", "speak", "speech-rate",
 			
 			//ui (http://www.w3.org/TR/css3-ui/)
-			"appearance", "icon", "box-sizing", "outline", "outline-width", "outline-style", "outline-color", "outline-offset",
+			"appearance", "icon", "box-sizing", "outline-width", "outline-style", "outline-color", "outline-offset", "outline", 
 			"resize", "cursor", "nav-index", "nav-up", "nav-right", "nav-down", "nav-left",
 			
 			//box-model (http://www.w3.org/TR/css3-box/)
 			"display", "position", "float", "clear", "visibility", "bottom", "top", "left", "right",
 			"overflow", "overflow-x", "overflow-y", "overflow-style",
 			"marquee-style", "marquee-direction", "marquee-play-count", "marquee-speed",
-			"padding", "padding-top", "padding-right", "padding-bottom", "padding-left",
-			"margin", "margin-top", "margin-right", "margin-bottom", "margin-left",
+			"padding-top", "padding-right", "padding-bottom", "padding-left", "padding",
+			"margin-top", "margin-right", "margin-bottom", "margin-left", "margin",
 			"width", "height", "min-width", "max-width", "min-height", "max-height",
-			"rotation", "rotation-point",
+			"rotation-point", "rotation",
 			
 			//text (http://www.w3.org/TR/css3-text/)
-			"text-transform", "white-space-collapsing", "white-space", "line-break", "word-break", 
-			"hyphens", "hyphenate-character", "hyphenate-limit-before", "hyphenate-limit-after", "hyphenate-limit-lines", 
-			"hyphenate-limit-last", "hyphenate-resource", "text-wrap", "word-wrap", "text-align", "text-align-first",
-			"text-align-last", "text-justify", "word-spacing", "letter-spacing", "text-trim", "text-autospace", "text-indent",
-			"hanging-punctuation", "text-decoration-line", "text-decoration-color", "text-decoration-style", "text-decoration",
-			"text-decoration-skip", "text-underline-position", "text-emphasis-style", "text-emphasis-color", "text-emphasis",
-			"text-emphasis-position", "text-shadow", "text-outline", 
+			
+			"white-space-collapsing", "white-space", 
+			"line-break", "word-break", 
+			"hyphens", "hyphenate-character", "hyphenate-limit-before", "hyphenate-limit-after", "hyphenate-limit-lines", "hyphenate-limit-last", "hyphenate-resource", 
+			"text-wrap", "word-wrap", 
+			"text-align-first", "text-align-last", "text-align",
+			"text-justify", "word-spacing", "letter-spacing", "text-trim", "text-autospace", "text-indent",
+			"hanging-punctuation", 
+			"text-decoration-line", "text-decoration-color", "text-decoration-style", "text-decoration-skip", "text-decoration",
+			"text-underline-position", 
+			"text-emphasis-position", "text-emphasis-style", "text-emphasis-color", "text-emphasis",
+			"text-shadow", "text-outline", 
+			"text-transform", 
+			"vertical-align",
 			
 			//writing modes (http://www.w3.org/TR/css3-writing-modes/)
 			"direction", "unicode-bidi", "writing-mode", "text-orientation", "text-combine", 
@@ -103,15 +107,17 @@
 			"color", "opacity",
 			
 			//font (http://www.w3.org/TR/css3-fonts/)
-			"font-family", "font-weight", "font-stretch", "font-style", "font-size", "font-size-adjust", "font",
-			"font-synthesis", "src", "unicode-range", "font-variant", "font-feature-settings", "font-kerning",
-			"vertical-position", "font-variant-ligatures", "font-variant-caps", "font-variant-numeric",
-			"font-variant-alternates", "font-variant-east-asian", "font-feature-settings", "font-language-override",
+			"font-family", "font-weight", "font-stretch", "font-style", "font-size-adjust", "font-size", 
+			"font-synthesis", "src", "unicode-range", "font-feature-settings", "font-kerning",
+			"vertical-position", 
+			"font-variant-ligatures", "font-variant-caps", "font-variant-numeric", "font-variant-alternates", "font-variant-east-asian", "font-variant",
+			"font-feature-settings", "font-language-override",
+			"font",
 			
 			"line-height", "text-height",
 			
 			//transformations (http://www.w3.org/TR/css3-2d-transforms/ & http://www.w3.org/TR/css3-3d-transforms/)
-			"transform", "transform-origin", "transform-style", "perspective", "perspective-origin", "backface-visibility",
+			"transform-origin", "transform-style", "perspective-origin", "perspective", "backface-visibility", "transform", 
 			
 			//transition (http://www.w3.org/TR/css3-transitions/)
 			"transition-property", "transition-duration", "transition-timing-function", "transition-delay",
@@ -124,14 +130,16 @@
 			"column-rule", "break-before", "break-after", "break-inside", "column-span", "column-fill",
 			
 			//tables
-			"border-collapse", "caption-side", "table-layout", "empty-cells",
+			"caption-side", "table-layout", "empty-cells",
 			
 			//print
-			"fit", "fit-position", "image-orientation", "orphans", "page", "page-break-after", "page-break-before", "page-break-inside",
+			"fit-position", "fit", 
+			"image-orientation", "orphans", 
+			"page-break-after", "page-break-before", "page-break-inside", "page",
 			"size", "widows",
 			
 			//other
-			"content", "z-index", "counter-increment", "counter-reset", "azimuth", "elevation", "quotes", "filter",
+			"content", "z-index", "counter-increment", "counter-reset", "azimuth", "elevation", "quotes", "filter", "zoom",
 			
 			//vendor specific
 			"-moz-appearance","-moz-background-clip","-moz-background-inline-policy","-moz-background-origin","-moz-background-size","-moz-binding","-moz-border-bottom-colors","-moz-border-left-colors","-moz-border-right-colors","-moz-border-top-colors","-moz-border-end","-moz-border-end-color","-moz-border-end-style","-moz-border-end-width","-moz-border-image","-moz-border-start","-moz-border-start-color","-moz-border-start-style","-moz-border-start-width","-moz-box-align","-moz-box-direction","-moz-box-flex","-moz-box-flexgroup","-moz-box-ordinal-group","-moz-box-orient","-moz-box-pack","-moz-box-sizing","-moz-column-count","-moz-column-gap","-moz-column-width","-moz-column-rule","-moz-column-rule-width","-moz-column-rule-style","-moz-column-rule-color","-moz-float-edge","-moz-font-feature-settings","-moz-font-language-override","-moz-force-broken-image-icon","-moz-image-region","-moz-margin-end","-moz-margin","-moz-opacity","-moz-outline","-moz-outline-color","-moz-outline-offset","-moz-outline-radius","-moz-outline-radius-bottomleft","-moz-outline-radius-bottomright","-moz-outline-radius-topleft","-moz-outline-radius-topright","-moz-outline-style","-moz-outline-width","-moz-padding-end","-moz-padding-start","-moz-stack-sizing","-moz-tab-size","-moz-transform","-moz-transform-origin","-moz-transition","-moz-transition-delay","-moz-transition-duration","-moz-transition-property","-moz-transition-timing-function","-moz-user-focus","-moz-user-input","-moz-user-modify","-moz-user-select","-moz-window-shadow",

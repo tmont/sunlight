@@ -14,6 +14,7 @@ html div.myClass {
 	width: 100%;
 	min-height: 100%;
 	opacity: 0.0;
+	background: transparent url(foo.png) no-repeat;
 	background-color: #000000;
 	color: white;
 	font-family: "Courier New", 'Arialola\'s', sans-serif;
@@ -23,6 +24,10 @@ body > .warning {
 	color: #FF0000;
 	background-image: url(warning.png); /* ".png" should not be colored as a class */
 	border: 2px solid none;
+	border-image: url(warning.png);
+	border-radius: url(warning.png);
+	border-top: 1px dotted #FFFFFF;
+	border-top-color: magenta;
 	filter: progid:DXImageTransform.Microsoft.Alpha(opacity = 50);
 	filter: alpha(opacity=50);
 	opacity: 0.5;
@@ -42,6 +47,8 @@ a:fake-pseudo-class {
 	-o-device-pixel-ratio: meh;
 	-webkit-background-origin: lolwut;
 	-ms-accelerator: snoo-snoo;
+	zoom: 1; /* IE crap */
+	vertical-align: middle;
 }
 </code></pre>
 	</body>
@@ -73,6 +80,11 @@ a:fake-pseudo-class {
 		assertExists("function", "Alpha", "capitalized alpha function");
 		
 		assertExists("keyword", "background-color", "background-color property");
+		assertExists("keyword", "background", "background property");
+		assertExists("keyword", "border", "border property");
+		assertExists("keyword", "border-top", "border-top property");
+		assertExists("keyword", "border-top-color", "border-top-color property");
+		assertExists("keyword", "vertical-align", "vertical-align property");
 		assertExists("keyword", "width", "width property");
 		assertExists("keyword", "position", "position property");
 		assertExists("keyword", "color", "color property");
