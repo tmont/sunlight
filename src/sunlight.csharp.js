@@ -353,8 +353,10 @@
 					
 					//if it's preceded by an ident or a primitive/alias keyword then it's no good (i.e. a generic method definition like "public void Foo<T>")
 					var token = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
-					if (token.name === "ident" || (token.name === "keyword" && sunlight.util.contains(primitives.concat(["string", "object", "void"]), token.value))) {
-						return false;
+					if (token !== undefined) {
+						if (token.name === "ident" || (token.name === "keyword" && sunlight.util.contains(primitives.concat(["string", "object", "void"]), token.value))) {
+							return false;
+						}
 					}
 					
 					//need to look ahead and verify that this ident precedes a generic definition, and then non-optional whitespace and then an ident
@@ -426,12 +428,12 @@
 				function(context) {
 					//previous non-ws token must be "using" and next non-ws token must be "="
 					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
-					if (prevToken.name !== "keyword" || prevToken.value !== "using") {
+					if (prevToken === undefined || prevToken.name !== "keyword" || prevToken.value !== "using") {
 						return false;
 					}
 					
 					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-					if (nextToken.name !== "operator" || nextToken.value !== "=") {
+					if (nextToken === undefined || nextToken.name !== "operator" || nextToken.value !== "=") {
 						return false;
 					}
 					
@@ -442,7 +444,7 @@
 				function(context) {
 					//if the next token is an equals sign, this is a named parameter (or something else not inside of an attribute)
 					var token = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-					if (token.name === "operator" && token.value === "=") {
+					if (token !== undefined && token.name === "operator" && token.value === "=") {
 						return false;
 					}
 					

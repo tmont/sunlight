@@ -10,12 +10,29 @@ BUGS
   when incrementing/decrementing
 - if heredoc/nowdoc isn't closed (e.g. EOF is reached) it will print "undefined"
 	- this might occur in other parse rules as well
+- C#:
+	- if an attribute is the first thing in the string it doesn't get highlighted
+	- container.Resolve<Foo>(); has Resolve as a named ident
+	- expression.Parameters[0].Name has Parameters as a named ident
+	- new NHibernate.Cfg.Configuration() has NHibernate as a named ident (same for fully qualified stuff in PHP)
+	- public static IEnumerable<T> Walk<T>(this IEnumerable<T> source, Action<T> action)
+		- Walk and source are named idents
+- CSS
+	- missing vertical-align keyword
+	- missing zoom keyword
+	- border-* needs to come before border (and probably other keywords as well)
+	- only the first element selector isn't selected in foo:before, foo:before, foo:before {
+	- html isn't highlighted as an element in *:first-child+html
 
 FUNCTIONALITY
 - customizable class prefix
 - code folding
 - line number permalinks
 - show/hide code block
+- "plain" language
+- line highlighting (?)
+- PHP constants like PREG_OFFSET_CAPTURE
+- moar php functions! (preg_match and friends...)
 
 LANGUAGES
 - Java
