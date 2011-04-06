@@ -1,0 +1,21 @@
+1.1 2011-04-xx
+--------------
+- Bugfixes
+	- custom named ident rules in C# definition threw errors if the first token of the
+	  string was an ident
+
+1.0 2011-04-04
+--------------
+- Initial release
+- Themes
+	- default
+	- dark
+- Languages
+	- C#
+	- PHP
+	- JavaScript
+	- HTML
+	- XML
+	- MySQL
+	- PHP
+	- CSS
