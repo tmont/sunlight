@@ -8,9 +8,14 @@ TESTING
 BUGS
 - getNextNonWsToken() doesn't really work correctly: it needs to completely ignore whitespace tokens
   when incrementing/decrementing
+- if heredoc/nowdoc isn't closed (e.g. EOF is reached) it will print "undefined"
+	- this might occur in other parse rules as well
 
 FUNCTIONALITY
 - customizable class prefix
+- code folding
+- line number permalinks
+- show/hide code block
 
 LANGUAGES
 - Java
@@ -24,3 +29,5 @@ LANGUAGES
 - Razor (ASP.NET MVC)
 
 WEB
+- change helpers to util in documentation
+- follows, precedes, between should be teletype, not em in documentation
