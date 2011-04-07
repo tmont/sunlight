@@ -84,6 +84,10 @@ namespace My.Namespace {
 			return foo &lt; 1 || foo &gt; 2;
 		}
 		
+		public IEnumerable&lt;TGenericTest1&gt; MoreGenericMadness&lt;TGenericTest2&gt;(GenericCollection1&lt;TGenericTest1&gt; shouldNotBeNamed, GenericCollection2&lt;TGenericTest4&gt; somethingElse) {
+			var foo = container.ShouldNotBeNamed&lt;Foo&gt;();
+		}
+		
 		//method without an access modifier: "Action" should be a named ident
 		Action DoStuff() { }
 
@@ -190,6 +194,7 @@ public class Foo { }</pre>
 		assertExists("ident", "@class", "@ syntax for idents");
 		assertExists("ident", "criterionFieldName", "parameter name");
 		assertExists("ident", "initialArrayLength", "array length initializer between []");
+		assertExists("ident", "ShouldNotBeNamed", "generic method invocation");
 		
 		assertExists("comment", "/* multi\n\t\t\tline comment\n\t\t\t*/", "multi line comment");
 		assertExists("comment", "//neither foo below should be a named ident", "single line comment");

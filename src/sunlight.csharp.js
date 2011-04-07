@@ -347,14 +347,19 @@
 					return false;
 				},
 				
-				//generic declarations and return values (generic preceding an ident)
+				//generic declarations and return values (ident preceding a generic definition)
 				function(context) {
 					//this finds "Foo" in "Foo<Bar> foo"
 					
 					//if it's preceded by an ident or a primitive/alias keyword then it's no good (i.e. a generic method definition like "public void Foo<T>")
+					//also a big fail if it is preceded by a ., i.e. a generic method invocation like container.Resolve<Foo>()
 					var token = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
 					if (token !== undefined) {
-						if (token.name === "ident" || (token.name === "keyword" && sunlight.util.contains(primitives.concat(["string", "object", "void"]), token.value))) {
+						if (
+							token.name === "ident" 
+							|| (token.name === "keyword" && sunlight.util.contains(primitives.concat(["string", "object", "void"]), token.value))
+							|| (token.name === "operator" && token.value === ".")
+						) {
 							return false;
 						}
 					}
