@@ -11,7 +11,6 @@ BUGS
 - if heredoc/nowdoc isn't closed (e.g. EOF is reached) it will print "undefined"
 	- this might occur in other parse rules as well
 - C#:
-	- if an attribute is the first thing in the string it doesn't get highlighted
 	- container.Resolve<Foo>(); has Resolve as a named ident
 	- expression.Parameters[0].Name has Parameters as a named ident
 	- new NHibernate.Cfg.Configuration() has NHibernate as a named ident (same for fully qualified stuff in PHP)

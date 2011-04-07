@@ -129,6 +129,9 @@ string";
 }</pre>
 
 		<pre id="undefinedTokenFix" class="sunlight-highlight-csharp">UndefinedTokenFix&lt;Foo&gt; undefinedTokenFix = new List&lt;Foo&gt;();</pre>
+		<pre id="attributeFix" class="sunlight-highlight-csharp">[FirstToken]
+public class Foo { }</pre>
+
 	</body>
 	<script type="text/javascript"  src="test.js"></script>
 	<script type="text/javascript">//<![CDATA[
@@ -205,5 +208,8 @@ string";
 		//undefined token when ident is the first token
 		assertExists("named-ident", "UndefinedTokenFix", "undefined token fix", "undefinedTokenFix");
 		assertExists("ident", "undefinedTokenFix", "undefined token fix", "undefinedTokenFix");
+		
+		//when attribute is first token
+		assertExists("named-ident", "FirstToken", "attribute as first token", "attributeFix");
 	//]]></script>
 </html>

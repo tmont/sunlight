@@ -1,8 +1,11 @@
 1.1 2011-04-xx
 --------------
 - Bugfixes
-	- custom named ident rules in C# definition threw errors if the first token of the
-	  string was an ident
+	- C#
+		- custom named ident rules in C# definition threw errors if the first token of the
+		  string was an ident
+		- attribute names weren't being recognized as named idents if it was the first
+		  token
 
 1.0 2011-04-04
 --------------

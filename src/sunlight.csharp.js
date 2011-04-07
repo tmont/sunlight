@@ -488,7 +488,7 @@
 					
 					//next, verify we're inside a closing bracket
 					index = context.index;
-					var foundCloser = false;
+					var indexOfLastBracket = -1;
 					while ((token = context.tokens[++index]) !== undefined) {
 						if (token.name === "punctuation") {
 							if (token.value === "[") {
@@ -496,7 +496,7 @@
 								continue;
 							}
 							if (token.value === "]") {
-								foundCloser = true;
+								indexOfLastBracket = index;
 								bracketCount[1]++;
 								continue;
 							}
@@ -508,12 +508,12 @@
 						}
 					}
 					
-					if (!foundCloser || bracketCount[0] !== bracketCount[1]) {
+					if (indexOfLastBracket < 0 || bracketCount[0] !== bracketCount[1]) {
 						return false;
 					}
 					
-					//next token should be either a keyword or an ident
-					token = sunlight.util.getNextNonWsToken(context.tokens, index);
+					//next token after the last closing bracket should be either a keyword or an ident
+					token = sunlight.util.getNextNonWsToken(context.tokens, indexOfLastBracket);
 					if (token !== undefined && (token.name === "keyword" || token.name === "ident")) {
 						return true;
 					}
