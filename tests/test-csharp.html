@@ -90,7 +90,9 @@ namespace My.Namespace {
 		}
 		
 		//method without an access modifier: "Action" should be a named ident
-		Action DoStuff() { }
+		Action DoStuff() { 
+			Fully1.Qualified1.FullyQualifiedClass1 fqc = new Fully2.Qualified2.FullyQualifiedClass2();
+		}
 
 		protected override sealed T NumbersTest&lt;T&gt;(ref Foo foo, out Bar @class, params ArrayOfSomething[] somethings) where T : event, IDisposable, IFoo {
 			//let's test out numbers
@@ -176,6 +178,8 @@ public class Foo { }</pre>
 		assertExists("named-ident", "ArrayOfSomething", "class name before []");
 		assertExists("named-ident", "AnotherArrayOfSomething", "class name before []");
 		assertExists("named-ident", "GarbanzoBean", "class name");
+		assertExists("named-ident", "FullyQualifiedClass1", "fully qualified class naming");
+		assertExists("named-ident", "FullyQualifiedClass2", "fully qualified class naming");
 		
 		assertExists("pragma", "#if NET_20", "#if pragma");
 		assertExists("pragma", "#endif", "#endif pragma");
@@ -198,6 +202,10 @@ public class Foo { }</pre>
 		assertExists("ident", "initialArrayLength", "array length initializer between []");
 		assertExists("ident", "GenericMethodInvocation", "generic method invocation");
 		assertExists("ident", "ArrayAccess", "accessing specific array index");
+		assertExists("ident", "Fully1", "fully qualified class naming");
+		assertExists("ident", "Fully2", "fully qualified class naming");
+		assertExists("ident", "Qualified1", "fully qualified class naming");
+		assertExists("ident", "Qualified2", "fully qualified class naming");
 		
 		assertExists("comment", "/* multi\n\t\t\tline comment\n\t\t\t*/", "multi line comment");
 		assertExists("comment", "//neither foo below should be a named ident", "single line comment");

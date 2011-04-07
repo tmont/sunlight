@@ -524,6 +524,48 @@
 					}
 					
 					return false;
+				},
+				
+				//after the new keyword "new Foo.Bar.Baz()"
+				function(context) {
+					//must be preceded by "new"
+					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
+					if (!prevToken || prevToken.name !== "keyword" || prevToken.value !== "new") {
+						return false;
+					}
+					
+					//if the next token is "." then don't color it (fully qualified type name)
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
+						return false;
+					}
+					
+					return true;
+				},
+				
+				//fully qualified type names
+				function(context) {
+					//next token is not "."
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
+						return false;
+					}
+					
+					//go backward and make sure that there are only idents and dots before the new keyword
+					var token, index = context.index;
+					while ((token = context.tokens[--index]) !== undefined) {
+						if (token.name === "keyword" && token.value === "new") {
+							return true;
+						}
+						
+						if (token.name === "default" || token.name === "ident" || (token.name === "operator" && token.value === ".")) {
+							continue;
+						}
+						
+						break;
+					}
+					
+					return false;
 				}
 			],
 			
@@ -532,7 +574,7 @@
 				//special method parameters
 				//new: public new Foo Method() { } and new Foo();
 				//class/interface/event/struct/delegate names
-				[{ token: "keyword", values: ["class", "interface", "event", "struct", "enum", "delegate", "public", "private", "protected", "internal", "static", "virtual", "sealed", "new", "params"] }, sunlight.util.whitespace],
+				[{ token: "keyword", values: ["class", "interface", "event", "struct", "enum", "delegate", "public", "private", "protected", "internal", "static", "virtual", "sealed", "params"] }, sunlight.util.whitespace],
 
 				//typeof/default
 				[{ token: "keyword", values: ["typeof", "default"] }, sunlight.util.whitespace, { token: "punctuation", values: ["("] }, sunlight.util.whitespace ],

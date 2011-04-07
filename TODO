@@ -8,15 +8,17 @@ TESTING
 BUGS
 - getNextNonWsToken() doesn't really work correctly: it needs to completely ignore whitespace tokens
   when incrementing/decrementing
-- if heredoc/nowdoc isn't closed (e.g. EOF is reached) it will print "undefined"
-	- this might occur in other parse rules as well
 - C#:
-	- new NHibernate.Cfg.Configuration() has NHibernate as a named ident (same for fully qualified stuff in PHP)
 	- public static IEnumerable<T> Walk<T>(this IEnumerable<T> source, Action<T> action)
 		- Walk and source are named idents
+- PHP:
+	- fully qualified class names aren't colored correctly
+	- if heredoc/nowdoc isn't closed (e.g. EOF is reached) it will print "undefined"
+		- this might occur in other parse rules as well
 
 FUNCTIONALITY
 - customizable class prefix
+- customizable number parsing
 - code folding
 - line number permalinks
 - show/hide code block

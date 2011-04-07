@@ -8,6 +8,7 @@
 		  token
 		- don't highlight "Resolve" in "container.Resolve<Foo>()", i.e. a generic method invocation
 		- fixed named ident false positive for array access, e.g. foo.Bar[0].Name had "Bar" as a named ident
+		- fixed named ident detection for Fully.Qualified.ClassNames
 	- CSS
 		- fixed issues with element selectors not being highlighted
 
