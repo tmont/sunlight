@@ -6,12 +6,12 @@
 	
 	var peekSelectorToken = function(context) {
 		//make sure it's not part of a property value
-		//basically if we run into ":" before "}" it's bad
+		//basically if we run into "{" before "}" it's bad
 		var token, index = context.count(), tokens = context.getAllTokens();
-		while ((token = sunlight.util.getPreviousNonWsToken(tokens, index--)) !== undefined) {
+		while ((token = context.token(--index)) !== undefined) {
 			if (token.name === "punctuation" && token.value === "}") {
 				break;
-			} else if (token.name === "operator" && token.value === ":") {
+			} else if (token.name === "punctuation" && token.value === "{") {
 				return null;
 			}
 		}
@@ -238,12 +238,14 @@
 				var className = peekSelectorToken(context);
 				if (className === null) {
 					return null;
-					
 				}
 				
 				var line = context.reader.getLine(), column = context.reader.getColumn();
 				context.reader.read(className.length);
-				return context.createToken("class", "." + className, line, column);
+				return [
+					context.createToken("operator", ".", line, column),
+					context.createToken("class", className, line, column + 1)
+				];
 			},
 			
 			//element selctors (div, html, body, etc.)
@@ -323,7 +325,7 @@
 		identAfterFirstLetter: /[\w-]/,
 
 		operators: [
-			"::", ":", ">", "+", "~=", "^=", "$=", "|=", "="
+			"::", ":", ">", "+", "~=", "^=", "$=", "|=", "=", ".", "*"
 		]
 
 	});

@@ -6,6 +6,8 @@
 		  string was an ident
 		- attribute names weren't being recognized as named idents if it was the first
 		  token
+	- CSS
+		- fixed issues with element selectors not being highlighted
 
 1.0 2011-04-04
 --------------

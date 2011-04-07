@@ -16,9 +16,6 @@ BUGS
 	- new NHibernate.Cfg.Configuration() has NHibernate as a named ident (same for fully qualified stuff in PHP)
 	- public static IEnumerable<T> Walk<T>(this IEnumerable<T> source, Action<T> action)
 		- Walk and source are named idents
-- CSS
-	- only the first element selector isn't selected in foo:before, foo:before, foo:before {
-	- html isn't highlighted as an element in *:first-child+html
 
 FUNCTIONALITY
 - customizable class prefix

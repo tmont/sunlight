@@ -50,6 +50,22 @@ a:fake-pseudo-class {
 	zoom: 1; /* IE crap */
 	vertical-align: middle;
 }
+
+/* new clearfix */
+.clearfix:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+}
+* html .clearfix             { zoom: 1; } /* IE6 */
+*:first-child+shouldBeNamed .shouldBeNamed { zoom: 1; } /* IE7 */
+
+pseudotest1:before, pseudotest2:after {
+	/* stuff goes here */
+}
 </code></pre>
 	</body>
 
@@ -62,15 +78,27 @@ a:fake-pseudo-class {
 		assertExists("string", "'Arialola\\'s'", "single quoted string with escaped quote");
 		
 		assertExists("element", "html", "html element selector");
+		assertExists("element", "shouldBeNamed", "element selector after :pseudoclass+");
+		assertExists("element", "pseudotest1", "element selector before pseudoclass+");
+		assertExists("element", "pseudotest2", "element selector after pseudoclass+");
 		
 		assertExists("ident", "css", "css extension");
+		
+		assertExists("class", "warning", "class selector");
+		assertExists("class", "myClass", "class selector");
+		assertExists("class", "shouldBeNamed", "class selector");
+		
 		
 		assertExists("number", "0.0", "decimal number");
 		assertExists("hexColor", "#FF0000", "hex color");
 		assertExists("id", "#wrapper", "id selector");
-		assertExists("class", ".warning", "class selector");
-		assertExists("class", ".myClass", "class selector");
+		
 		assertExists("operator", "~=", "attribute operator");
+		assertExists("operator", ".", "dot operator");
+		assertExists("operator", ">", "child operator");
+		assertExists("operator", "*", "catchall operator");
+		assertExists("operator", "+", "sibling operator");
+		
 		assertExists("pseudoElement", "before", "pseudo element");
 		assertExists("pseudoClass", "first-child", "pseudo class");
 		
