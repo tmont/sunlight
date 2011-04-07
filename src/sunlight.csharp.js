@@ -548,8 +548,6 @@
 				
 				//arrays
 				[sunlight.util.whitespace, { token: "punctuation", values: ["["] }, sunlight.util.whitespace, { token: "punctuation", values: ["]"] }], //in method parameters
-				[sunlight.util.whitespace, { token: "punctuation", values: ["["] }, sunlight.util.whitespace, { token: "number" }, sunlight.util.whitespace, { token: "punctuation", values: ["]"] }], //declaration with integer
-				[sunlight.util.whitespace, { token: "punctuation", values: ["["] }, sunlight.util.whitespace, { token: "ident" }, sunlight.util.whitespace, { token: "punctuation", values: ["]"] }], //declaration with variable
 
 				//assignment: Object o = new object();
 				//method parameters: public int Foo(Foo foo, Bar b, Object o) { }
