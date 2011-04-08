@@ -88,7 +88,7 @@ namespace My.Namespace {
 		}
 		
 		public IEnumerable&lt;TReturnValue&gt; GenericMethod&lt;TMethod&gt;(GenericCollection1&lt;TParameter&gt; shouldNotBeNamed, GenericCollection2&lt;TGenericTest4&gt; somethingElse) {
-			container.GenericMethodInvocation&lt;Foo&gt;();
+			container.GenericMethodInvocation&lt;GenericMethodDefinition&gt;();
 			expression.ArrayAccess[0].Name; //ArrayAccess should not be a named ident
 		}
 		
@@ -184,6 +184,7 @@ public class Foo { }</pre>
 		assertExists("named-ident", "FullyQualifiedClass2", "fully qualified class naming");
 		assertExists("named-ident", "TanningBooth", "class that starts with T");
 		assertExists("named-ident", "InvalidOperationException", "new()'d class");
+		assertExists("named-ident", "GenericMethodDefinition", "generic method definition during invocation");
 		
 		assertExists("pragma", "#if NET_20", "#if pragma");
 		assertExists("pragma", "#endif", "#endif pragma");

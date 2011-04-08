@@ -318,6 +318,9 @@
 									
 									bracketCountLeft[1] += token.value.length;
 									break;
+								case ".":
+									//allows generic method invocations, like "Foo" in "foo.Resolve<Foo>()"
+									break;
 								default:
 									return false;
 							}
@@ -342,7 +345,10 @@
 						break;
 					}
 					
+					
+					
 					if (!foundIdent || bracketCountLeft[0] === 0) {
+						
 						//not inside a generic definition
 						return false;
 					}
