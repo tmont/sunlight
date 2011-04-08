@@ -10,6 +10,7 @@ BUGS
   when incrementing/decrementing
 
 FUNCTIONALITY
+- don't throw on unknown languages
 - customizable class prefix
 - customizable number parsing
 - code folding
