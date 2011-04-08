@@ -84,7 +84,7 @@ namespace My.Namespace {
 			return foo &lt; 1 || foo &gt; 2;
 		}
 		
-		public IEnumerable&lt;TGenericTest1&gt; MoreGenericMadness&lt;TGenericTest2&gt;(GenericCollection1&lt;TGenericTest1&gt; shouldNotBeNamed, GenericCollection2&lt;TGenericTest4&gt; somethingElse) {
+		public IEnumerable&lt;TGenericTest1&gt; GenericMethod&lt;TGenericTest2&gt;(GenericCollection1&lt;TGenericTest1&gt; shouldNotBeNamed, GenericCollection2&lt;TGenericTest4&gt; somethingElse) {
 			container.GenericMethodInvocation&lt;Foo&gt;();
 			expression.ArrayAccess[0].Name; //ArrayAccess should not be a named ident
 		}
@@ -207,6 +207,8 @@ public class Foo { }</pre>
 		assertExists("ident", "Qualified1", "fully qualified class naming");
 		assertExists("ident", "Qualified2", "fully qualified class naming");
 		assertExists("ident", "PropertyAccessor", "property name");
+		assertExists("ident", "shouldNotBeNamed", "parameter in generic method");
+		assertExists("ident", "GenericMethod", "generic method name");
 		
 		assertExists("comment", "/* multi\n\t\t\tline comment\n\t\t\t*/", "multi line comment");
 		assertExists("comment", "//neither foo below should be a named ident", "single line comment");
