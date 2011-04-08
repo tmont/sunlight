@@ -26,6 +26,7 @@ FUNCTIONALITY
 - line highlighting (?)
 - PHP constants like PREG_OFFSET_CAPTURE
 - moar php functions! (preg_match and friends...)
+- use naming convention to not color generic definitions (T, T1, TFrom, etc.)
 
 LANGUAGES
 - Java
