@@ -59,6 +59,12 @@
 			}
 		}
 		
+		function noModifier() {
+			$fqc = new Fully1\Qualified1\FullyQualifiedClassName1();
+			$fqc = new \Fully2\Qualified2\FullyQualifiedClassName2();
+			$notFullyQualified = new NotFullyQualified();
+		}
+		
 		public abstract function(TypeHinted $var);
 		
 		/**
@@ -105,6 +111,10 @@ LULZ;
 		assertExists("keyword", "self", "self keyword");
 		
 		assertExists("ident", "KISS", "const ident");
+		assertExists("ident", "Fully1", "namespace name in fully qualified new() 1");
+		assertExists("ident", "Fully2", "namespace name in fully qualified new() 2");
+		assertExists("ident", "Qualified1", "namespace name in fully qualified new() 1");
+		assertExists("ident", "Qualified2", "namespace name in fully qualified new() 2");
 		
 		assertExists("named-ident", "OutOfBoundsException", "named ident after new");
 		assertExists("named-ident", "ExtendedClass", "extended class");
@@ -112,6 +122,10 @@ LULZ;
 		assertExists("named-ident", "ImplementedInterface2", "implemented interface");
 		assertExists("named-ident", "ImplementedInterface3", "implemented interface");
 		assertExists("named-ident", "StaticClass", "named ident for static class method call");
+		assertExists("named-ident", "FullyQualifiedClassName1", "fully qualified class name 1");
+		assertExists("named-ident", "FullyQualifiedClassName2", "fully qualified class name 2");
+		assertExists("named-ident", "NotFullyQualified", "not fully qualified class name");
+		assertExists("named-ident", "OutOfBoundsException", "class name after new");
 		
 		assertExists("comment", "#Perl-style comments are stupid", "Perl-style comment");
 		assertExists("comment", "//unset stuff", "Single line comment");
