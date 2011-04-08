@@ -4,7 +4,10 @@
 	- CSS
 		- added vertical-align keyword
 		- added zoom keyword
-		
+	- C#
+		- use type definition naming convention (^T([A-Z0-9]\w*)?$) to make sure generic type 
+		  definitions (e.g. T) are not named idents
+	
 - Bugfixes
 	- C#
 		- fixed false positive named ident detection for generics

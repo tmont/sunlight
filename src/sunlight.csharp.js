@@ -8,6 +8,13 @@
 	//things that are allowed inside a generic type definition
 	var acceptableKeywords = primitives.concat(["in", "out", "string", "object"]);
 	
+	var createNamedIdentFunction = function(func) {
+		var typeDefinitionRegex = /^T([A-Z0-9]\w*)?$/;
+		return function(context) {
+			return !typeDefinitionRegex.test(context.tokens[context.index].value) && func(context);
+		};
+	};
+	
 	sunlight.registerLanguage("csharp", {
 		keywords: primitives.concat([
 			//this is also contextual (must be first thing in the file or something), but it's never used so i don't really care
@@ -243,7 +250,7 @@
 		namedIdentRules: {
 			custom: [
 				//extends/implements/type constraints
-				function(context) {
+				createNamedIdentFunction(function(context) {
 					//between ":" and "{" but not case statements
 					
 					//look backward for a ":" not preceded by a "case"
@@ -281,10 +288,10 @@
 					}
 					
 					return true;
-				},
+				}),
 				
 				//generic definitions/params between "<" and ">"
-				function(context) {
+				createNamedIdentFunction(function(context) {
 					//between < and > and preceded by an ident and not preceded by "class"
 					var index = context.index, token;
 					
@@ -362,11 +369,11 @@
 					}
 					
 					return false;
-				},
+				}),
 				
 				//generic declarations and return values (ident preceding a generic definition)
 				//this finds "Foo" in "Foo<Bar> foo"
-				function(context) {
+				createNamedIdentFunction(function(context) {
 					//if it's preceded by an ident or a primitive/alias keyword then it's no good (i.e. a generic method definition like "public void Foo<T>")
 					//also a big fail if it is preceded by a ., i.e. a generic method invocation like container.Resolve()
 					var token = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
@@ -446,10 +453,10 @@
 					}
 					
 					return true;
-				},
+				}),
 				
 				//using aliases, e.g. "Foo" in "using Foo = System.Linq.Enumerable;"
-				function(context) {
+				createNamedIdentFunction(function(context) {
 					//previous non-ws token must be "using" and next non-ws token must be "="
 					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
 					if (prevToken === undefined || prevToken.name !== "keyword" || prevToken.value !== "using") {
@@ -462,10 +469,10 @@
 					}
 					
 					return true;
-				},
+				}),
 				
 				//attributes (friggin' attributes...)
-				function(context) {
+				createNamedIdentFunction(function(context) {
 					//if the next token is an equals sign, this is a named parameter (or something else not inside of an attribute)
 					var token = sunlight.util.getNextNonWsToken(context.tokens, context.index);
 					if (token !== undefined && token.name === "operator" && token.value === "=") {
@@ -543,10 +550,10 @@
 					}
 					
 					return false;
-				},
+				}),
 				
 				//after the new keyword "new Foo.Bar.Baz()"
-				function(context) {
+				createNamedIdentFunction(function(context) {
 					//must be preceded by "new"
 					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
 					if (!prevToken || prevToken.name !== "keyword" || prevToken.value !== "new") {
@@ -560,10 +567,10 @@
 					}
 					
 					return true;
-				},
+				}),
 				
 				//fully qualified type names
-				function(context) {
+				createNamedIdentFunction(function(context) {
 					//next token is not "."
 					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
 					if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
@@ -604,34 +611,51 @@
 					}
 					
 					return false;
-				}
-			],
+				}),
 			
-			follows: [
-				//method/property return values
-				//special method parameters
-				//new: public new Foo Method() { } and new Foo();
-				//class/interface/event/struct/delegate names
-				[{ token: "keyword", values: ["class", "interface", "event", "struct", "enum", "delegate", "public", "private", "protected", "internal", "static", "virtual", "sealed", "params"] }, sunlight.util.whitespace],
+				//can't use the follows/precedes utilities since we need to verify that it doesn't match the type definition naming convention
+				createNamedIdentFunction(function(context) {
+					var follows = [
+						//method/property return values
+						//special method parameters
+						//new: public new Foo Method() { } and new Foo();
+						//class/interface/event/struct/delegate names
+						[{ token: "keyword", values: ["class", "interface", "event", "struct", "enum", "delegate", "public", "private", "protected", "internal", "static", "virtual", "sealed", "params"] }, sunlight.util.whitespace],
 
-				//typeof/default
-				[{ token: "keyword", values: ["typeof", "default"] }, sunlight.util.whitespace, { token: "punctuation", values: ["("] }, sunlight.util.whitespace ],
-				
-				//casting using "as"
-				[{ token: "keyword", values: ["as"] }, sunlight.util.whitespace ]
-			],
+						//typeof/default
+						[{ token: "keyword", values: ["typeof", "default"] }, sunlight.util.whitespace, { token: "punctuation", values: ["("] }, sunlight.util.whitespace ],
+						
+						//casting using "as"
+						[{ token: "keyword", values: ["as"] }, sunlight.util.whitespace ]
+					];
+					
+					var precedes = [
+						//casting
+						[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "ident" }],
+						[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "keyword", values: ["this"] }],
+						
+						//arrays
+						[sunlight.util.whitespace, { token: "punctuation", values: ["["] }, sunlight.util.whitespace, { token: "punctuation", values: ["]"] }], //in method parameters
 
-			precedes: [
-				//casting
-				[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "ident" }],
-				[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "keyword", values: ["this"] }],
-				
-				//arrays
-				[sunlight.util.whitespace, { token: "punctuation", values: ["["] }, sunlight.util.whitespace, { token: "punctuation", values: ["]"] }], //in method parameters
-
-				//assignment: Object o = new object();
-				//method parameters: public int Foo(Foo foo, Bar b, Object o) { }
-				[{ token: "default" }, { token: "ident" }]
+						//assignment: Object o = new object();
+						//method parameters: public int Foo(Foo foo, Bar b, Object o) { }
+						[{ token: "default" }, { token: "ident" }]
+					];
+					
+					for (var i = 0; i < follows.length; i++) {
+						if (sunlight.util.createProceduralRule(context.index - 1, -1, follows[i], false)(context.tokens)) {
+							return true;
+						}
+					}
+					
+					for (i = 0; i < precedes.length; i++) {
+						if (sunlight.util.createProceduralRule(context.index + 1, 1, precedes[i], false)(context.tokens)) {
+							return true;
+						}
+					}
+					
+					return false;
+				})
 			]
 		},
 

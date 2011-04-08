@@ -12,7 +12,10 @@ using System;
 using UsingAlias = System.Linq.Enumerable;
 
 namespace My.Namespace {
-	public abstract class ValueHandlerFactoryBase&lt;in T&gt; : MarshalByRefObject, IValueHandlerFactory, IAmAnInterface where T : IAmATypeConstraint {
+	public abstract class ValueHandlerFactoryBase&lt;T1, T2, in TClass1&gt; : MarshalByRefObject, IValueHandlerFactory, IAmAnInterface 
+		where TClass1Constraint : IAmATypeConstraint
+		where T2 : T1
+	{
 		[Obsolete] private Skank foo;
 		public const Stripper bar = "foo";
 		protected static readonly DirtyWhore baz = 0xffffff;
@@ -22,7 +25,7 @@ namespace My.Namespace {
 #endif
 
 		[AnAttribute(typeof(Exception), Message = "foo"]
-		protected internal class InternalClass&lt;T1, out T2&gt; : ICloneable where T1 : class, IAfterClassConstraint, ISecondConstraint { 
+		protected internal class InternalClass&lt;TClass2, out TClass3&gt; : ICloneable where TClass2Constraint : class, IAfterClassConstraint, ISecondConstraint { 
 			void Iterate(ICollection&lt;object&gt; foos) {
 				foreach (var foo in foos) {
 					this.SomeMethod(ref foo, out foo);
@@ -84,7 +87,7 @@ namespace My.Namespace {
 			return foo &lt; 1 || foo &gt; 2;
 		}
 		
-		public IEnumerable&lt;TGenericTest1&gt; GenericMethod&lt;TGenericTest2&gt;(GenericCollection1&lt;TGenericTest1&gt; shouldNotBeNamed, GenericCollection2&lt;TGenericTest4&gt; somethingElse) {
+		public IEnumerable&lt;TReturnValue&gt; GenericMethod&lt;TMethod&gt;(GenericCollection1&lt;TParameter&gt; shouldNotBeNamed, GenericCollection2&lt;TGenericTest4&gt; somethingElse) {
 			container.GenericMethodInvocation&lt;Foo&gt;();
 			expression.ArrayAccess[0].Name; //ArrayAccess should not be a named ident
 		}
@@ -94,7 +97,7 @@ namespace My.Namespace {
 			Fully1.Qualified1.FullyQualifiedClass1 fqc = new Fully2.Qualified2.FullyQualifiedClass2();
 		}
 
-		protected override sealed T NumbersTest&lt;T&gt;(ref Foo foo, out Bar @class, params ArrayOfSomething[] somethings) where T : event, IDisposable, IFoo {
+		protected override sealed TNotNamed NumbersTest&lt;T&gt;(ref Foo foo, out Bar @class, params ArrayOfSomething[] somethings) where T : event, IDisposable, IFoo {
 			//let's test out numbers
 			int i = 0;
 			double d = 1.5;
@@ -102,7 +105,7 @@ namespace My.Namespace {
 			decimal dec = 1.2d;
 			int hex = 0x1a; //ooh! hex!
 
-			return default(T);
+			return default(TAlsoNotNamed);
 		}
 
 		public virtual IValueHandler Create(string resourceName, string criterionFieldName) {
@@ -129,7 +132,7 @@ string";
 				case Empty:
 					return "foo";
 				default:
-					yield return new GarbanzoBean();
+					yield return new TanningBooth();
 			}
 		}
 	}
@@ -177,9 +180,10 @@ public class Foo { }</pre>
 		assertExists("named-ident", "SecondGeneric", "second generic argument");
 		assertExists("named-ident", "ArrayOfSomething", "class name before []");
 		assertExists("named-ident", "AnotherArrayOfSomething", "class name before []");
-		assertExists("named-ident", "GarbanzoBean", "class name");
 		assertExists("named-ident", "FullyQualifiedClass1", "fully qualified class naming");
 		assertExists("named-ident", "FullyQualifiedClass2", "fully qualified class naming");
+		assertExists("named-ident", "TanningBooth", "class that starts with T");
+		assertExists("named-ident", "InvalidOperationException", "new()'d class");
 		
 		assertExists("pragma", "#if NET_20", "#if pragma");
 		assertExists("pragma", "#endif", "#endif pragma");
@@ -192,8 +196,6 @@ public class Foo { }</pre>
 		assertExists("ident", "value", "non-keyword value");
 		assertExists("ident", "AttributeNamedParameter", "named parameter in attribute");
 		assertExists("ident", "Meh", "method name");
-		assertExists("ident", "T1", "type param 1");
-		assertExists("ident", "T2", "type param 2");
 		assertExists("ident", "DoStuff", "method name");
 		assertExists("ident", "DoOtherStuff", "method name");
 		assertExists("ident", "fooEnumerable", "parameter name after generic");
@@ -209,6 +211,18 @@ public class Foo { }</pre>
 		assertExists("ident", "PropertyAccessor", "property name");
 		assertExists("ident", "shouldNotBeNamed", "parameter in generic method");
 		assertExists("ident", "GenericMethod", "generic method name");
+		assertExists("ident", "TClass1", "type definition on class");
+		assertExists("ident", "TClass2", "type definition on class");
+		assertExists("ident", "TClass3", "type definition on class");
+		assertExists("ident", "TReturnValue", "generic return value definition");
+		assertExists("ident", "TMethod", "generic method definition");
+		assertExists("ident", "TParameter", "generic parameter definition");
+		assertExists("ident", "TClass1Constraint", "type constraint on class");
+		assertExists("ident", "TClass2Constraint", "type constraint on class");
+		assertExists("ident", "T", "type constraint T");
+		assertExists("ident", "T1", "type constraint T1");
+		assertExists("ident", "TNotNamed", "type definition as return value");
+		assertExists("ident", "TAlsoNotNamed", "type definition in default()");
 		
 		assertExists("comment", "/* multi\n\t\t\tline comment\n\t\t\t*/", "multi line comment");
 		assertExists("comment", "//neither foo below should be a named ident", "single line comment");
