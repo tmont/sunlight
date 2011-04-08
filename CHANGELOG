@@ -1,16 +1,20 @@
 1.1 2011-04-xx
 --------------
+- Enhancmenets
+	- CSS
+		- added vertical-align keyword
+		- added zoom keyword
+		
 - Bugfixes
 	- C#
-		- custom named ident rules in C# definition threw errors if the first token of the
-		  string was an ident
-		- attribute names weren't being recognized as named idents if it was the first
-		  token
+		- fixed false positive named ident detection for generics
+		- custom named ident rules in threw errors if the first token of the string was an ident
+		- attribute names weren't being recognized as named idents if it was the first  token
 		- don't highlight "Resolve" in "container.Resolve<Foo>()", i.e. a generic method invocation
 		- fixed named ident false positive for array access, e.g. foo.Bar[0].Name had "Bar" as a named ident
 		- fixed named ident detection for Fully.Qualified.ClassNames
 	- CSS
-		- fixed issues with element selectors not being highlighted
+		- fixed issues with element selectors not being highlighted correctly
 
 1.0 2011-04-04
 --------------

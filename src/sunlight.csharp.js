@@ -289,24 +289,40 @@
 					var index = context.index, token;
 					
 					//look for "<" preceded by an ident but not "class"
-					var foundGenericOpener = false, foundIdent = false;
+					//if we run into ">" before "," or "<" then it's a big fail
+					var foundIdent = false, bracketCountLeft = [0, 0], bracketCountRight = [0, 0];
 					while ((token = context.tokens[--index]) !== undefined) {
 						if (token.name === "keyword" && token.value === "class") {
 							//this must be a generic class type definition, e.g. Foo<T>, and we don't want to color the "T"
 							return false;
 						}
 						
-						if (
-							(token.name === "keyword" && sunlight.util.contains(acceptableKeywords, token.value))
-							|| (token.name === "operator" && (token.value === ">" || token.value === ">>"))
-							|| token.name === "default"
-							|| (token.name === "punctuation" && token.value === ",")
-						) {
+						if (token.name === "operator") {
+							switch (token.value) {
+								case "<":
+								case "<<":
+									bracketCountLeft[0] += token.value.length;
+									break;
+								case ">":
+								case ">>":
+									if (bracketCountLeft[0] === 0) {
+										return false;
+									}
+									
+									bracketCountLeft[1] += token.value.length;
+									break;
+								default:
+									return false;
+							}
+							
 							continue;
 						}
 						
-						if (token.name === "operator" && (token.value === "<" || token.value === "<<")) {
-							foundGenericOpener = true;
+						if (
+							(token.name === "keyword" && sunlight.util.contains(acceptableKeywords, token.value))
+							|| token.name === "default"
+							|| (token.name === "punctuation" && token.value === ",")
+						) {
 							continue;
 						}
 						
@@ -319,7 +335,8 @@
 						break;
 					}
 					
-					if (!foundGenericOpener || !foundIdent) {
+					if (!foundIdent || bracketCountLeft[0] === 0) {
+						//not inside a generic definition
 						return false;
 					}
 					
@@ -348,11 +365,10 @@
 				},
 				
 				//generic declarations and return values (ident preceding a generic definition)
+				//this finds "Foo" in "Foo<Bar> foo"
 				function(context) {
-					//this finds "Foo" in "Foo<Bar> foo"
-					
 					//if it's preceded by an ident or a primitive/alias keyword then it's no good (i.e. a generic method definition like "public void Foo<T>")
-					//also a big fail if it is preceded by a ., i.e. a generic method invocation like container.Resolve<Foo>()
+					//also a big fail if it is preceded by a ., i.e. a generic method invocation like container.Resolve()
 					var token = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
 					if (token !== undefined) {
 						if (
@@ -364,7 +380,11 @@
 						}
 					}
 					
-					//need to look ahead and verify that this ident precedes a generic definition, and then non-optional whitespace and then an ident
+					//needs to be immediately followed by <, then by idents, acceptable keywords and ",", and then closed by >, then immediately followed by an ident
+					token = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					if (token.name !== "operator" || token.value !== "<") {
+						return false;
+					}
 					
 					var index = context.index, bracketCount = [0, 0], token; //open (<), close (>)
 					while ((token = context.tokens[++index]) !== undefined) {
@@ -414,14 +434,13 @@
 					
 					//next token should be optional whitespace followed by an ident
 					token = context.tokens[++index];
-					if (token === undefined && token.name !== "default" && token.name !== "ident") {
-						console.log(token);
+					if (!token || (token.name !== "default" && token.name !== "ident")) {
 						return false;
 					}
 					
 					if (token.name === "default") {
 						token = context.tokens[++index];
-						if (token === undefined || token.name !== "ident") {
+						if (!token || token.name !== "ident") {
 							return false;
 						}
 					}
@@ -552,6 +571,7 @@
 					}
 					
 					//go backward and make sure that there are only idents and dots before the new keyword
+					//"previous" is used to make sure that method declarations like "public new Object Value()..." are treated correctly
 					var token, index = context.index, previous = context.tokens[index];
 					while ((token = context.tokens[--index]) !== undefined) {
 						if (token.name === "keyword" && token.value === "new") {
