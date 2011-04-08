@@ -9,8 +9,8 @@
 	background-color: #FFFFFF;
 	color: #000000;
 	font-family: Consolas, Inconsolata, Monaco, "Courier New";
-	font-size: 12px;
-	line-height: 15px;
+	font-size: 12px !important;
+	line-height: 15px !important;
 }
 .sunlight-container .sunlight-line-number-margin {
 	float: left;
@@ -24,10 +24,10 @@
 	color: #848484;
 }
 .sunlight-highlighted a {
-	border: none;
-	text-decoration: none;
-	font-weight: normal;
-	font-style: normal;
+	border: none !important;
+	text-decoration: none !important;
+	font-weight: normal !important;
+	font-style: normal !important;
 }
 
 .sunlight-string {
