@@ -43,7 +43,7 @@ namespace My.Namespace {
 		 * Gets or sets the value of an integer
 		 * and such. This is a useful comment.
 		 */
-		public new Object Value {
+		public new Object PropertyAccessor {
 			get { 
 				var get = foo > 0 ? new Integer[initialArrayLength] : new Integer[0];
 				return new List&lt;object&gt; {
@@ -51,7 +51,7 @@ namespace My.Namespace {
 				};
 			}
 			
-			set { 
+			private set { 
 				var set = value;
 				value = value;
 				value == value ? DoSomething() : DoSomethingElse();
@@ -206,6 +206,7 @@ public class Foo { }</pre>
 		assertExists("ident", "Fully2", "fully qualified class naming");
 		assertExists("ident", "Qualified1", "fully qualified class naming");
 		assertExists("ident", "Qualified2", "fully qualified class naming");
+		assertExists("ident", "PropertyAccessor", "property name");
 		
 		assertExists("comment", "/* multi\n\t\t\tline comment\n\t\t\t*/", "multi line comment");
 		assertExists("comment", "//neither foo below should be a named ident", "single line comment");

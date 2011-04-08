@@ -552,13 +552,31 @@
 					}
 					
 					//go backward and make sure that there are only idents and dots before the new keyword
-					var token, index = context.index;
+					var token, index = context.index, previous = context.tokens[index];
 					while ((token = context.tokens[--index]) !== undefined) {
 						if (token.name === "keyword" && token.value === "new") {
 							return true;
 						}
 						
-						if (token.name === "default" || token.name === "ident" || (token.name === "operator" && token.value === ".")) {
+						if (token.name === "default") {
+							continue;
+						}
+						
+						if (token.name === "ident") {
+							if (previous && previous.name === "ident") {
+								return false;
+							}
+							
+							previous = token;
+							continue;
+						}
+						
+						if (token.name === "operator" && token.value === ".") {
+							if (previous && previous.name !== "ident") {
+								return false;
+							}
+							
+							previous = token;
 							continue;
 						}
 						
