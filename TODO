@@ -8,10 +8,6 @@ TESTING
 BUGS
 - getNextNonWsToken() doesn't really work correctly: it needs to completely ignore whitespace tokens
   when incrementing/decrementing
-- PHP:
-	- fully qualified class names aren't colored correctly
-	- if heredoc/nowdoc isn't closed (e.g. EOF is reached) it will print "undefined"
-		- this might occur in other parse rules as well
 
 FUNCTIONALITY
 - customizable class prefix

@@ -132,19 +132,24 @@
 					peek = context.reader.peek();
 				}
 				
-				//read the newline
-				value += context.reader.read();
-				
-				//read until "\n{ident};"
-				while (!context.reader.isEof()) {
-					if (context.reader.peek(ident.length + 2) === "\n" + ident + ";") {
-						break;
+				if (peek !== context.reader.EOF) {
+					//read the newline
+					value += context.reader.read();
+					
+					//read until "\n{ident};"
+					while (context.reader.peek() !== context.reader.EOF) {
+						if (context.reader.peek(ident.length + 2) === "\n" + ident + ";") {
+							break;
+						}
+						
+						value += context.reader.read();
 					}
 					
-					value += context.reader.read();
+					if (context.reader.peek() !== context.reader.EOF) {
+						value += context.reader.read(ident.length + 1); //don't read the semicolon
+					}
 				}
 				
-				value += context.reader.read(ident.length + 1); //don't read the semicolon
 				return context.createToken(isNowdoc ? "nowdoc" : "heredoc", value, line, column);
 			}
 		],
