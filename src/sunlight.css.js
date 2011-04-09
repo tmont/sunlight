@@ -255,6 +255,11 @@
 					return null;
 				}
 				
+				var prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
+				if (prevToken && prevToken.name === "operator" && (prevToken.value === ":" || prevToken.value === "::")) {
+					return null;
+				}
+				
 				var tagName = peekSelectorToken(context);
 				if (tagName === null) {
 					return null;
@@ -321,7 +326,7 @@
 			id: [ ["#", { length: 1, regex: /[^-\w]/ }, null, true ] ]
 		},
 		
-		identFirstLetter: /[A-Za-z]/,
+		identFirstLetter: /[A-Za-z-]/,
 		identAfterFirstLetter: /[\w-]/,
 
 		operators: [

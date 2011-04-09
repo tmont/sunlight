@@ -8,7 +8,6 @@ TESTING
 BUGS
 - getNextNonWsToken() doesn't really work correctly: it needs to completely ignore whitespace tokens
   when incrementing/decrementing
-- fake pseudo classes are treated as elements
 
 FUNCTIONALITY
 - don't throw on unknown languages

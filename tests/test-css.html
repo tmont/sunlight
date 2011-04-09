@@ -3,7 +3,7 @@
 	<head>
 		<script type="text/javascript" src="../src/sunlight.js"></script>
 		<script type="text/javascript" src="../src/sunlight.css.js"></script>
-		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.dark.css" />
+		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.default.css" />
 	</head>
 
 	<body>
@@ -82,6 +82,10 @@ pseudotest1:before, pseudotest2:after {
 		assertExists("element", "pseudotest2", "element selector after pseudoclass+");
 		
 		assertExists("ident", "css", "css extension");
+		assertExists("ident", "fake-pseudo-class", "non existent pseudo class");
+		assertExists("ident", "-moz-initial", "property value -moz-initial");
+		assertExists("ident", "fixed", "property value fixed");
+		assertExists("ident", "solid", "property value solid");
 		
 		assertExists("class", "warning", "class selector");
 		assertExists("class", "myClass", "class selector");
