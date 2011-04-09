@@ -395,7 +395,7 @@
 					
 					//needs to be immediately followed by <, then by idents, acceptable keywords and ",", and then closed by >, then immediately followed by an ident
 					token = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-					if (token.name !== "operator" || token.value !== "<") {
+					if (!token || token.name !== "operator" || token.value !== "<") {
 						return false;
 					}
 					
@@ -465,12 +465,12 @@
 				createNamedIdentFunction(function(context) {
 					//previous non-ws token must be "using" and next non-ws token must be "="
 					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
-					if (prevToken === undefined || prevToken.name !== "keyword" || prevToken.value !== "using") {
+					if (!prevToken || prevToken.name !== "keyword" || prevToken.value !== "using") {
 						return false;
 					}
 					
 					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-					if (nextToken === undefined || nextToken.name !== "operator" || nextToken.value !== "=") {
+					if (!nextToken || nextToken.name !== "operator" || nextToken.value !== "=") {
 						return false;
 					}
 					
@@ -481,7 +481,7 @@
 				createNamedIdentFunction(function(context) {
 					//if the next token is an equals sign, this is a named parameter (or something else not inside of an attribute)
 					var token = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-					if (token !== undefined && token.name === "operator" && token.value === "=") {
+					if (token && token.name === "operator" && token.value === "=") {
 						return false;
 					}
 					
@@ -551,7 +551,7 @@
 					
 					//next token after the last closing bracket should be either a keyword or an ident
 					token = sunlight.util.getNextNonWsToken(context.tokens, indexOfLastBracket);
-					if (token !== undefined && (token.name === "keyword" || token.name === "ident")) {
+					if (token && (token.name === "keyword" || token.name === "ident")) {
 						return true;
 					}
 					

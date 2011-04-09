@@ -2,22 +2,18 @@ PARSING
 - PHP class name highlighting in use statements
 - C# class name highlighting in using aliases
 - CSS property values (none, solid, inset, etc.)
+- PHP class names after instanceof
 
 TESTING
 
 BUGS
-- getNextNonWsToken() doesn't really work correctly: it needs to completely ignore whitespace tokens
-  when incrementing/decrementing
+- get[Next|Previous]NonWsToken() doesn't work in loops
 
 FUNCTIONALITY
-- don't throw on unknown languages
 - customizable class prefix
-- customizable number parsing
 - code folding
-- line number permalinks
 - show/hide code block
-- "plain" language
-- line highlighting (?)
+- line highlighting
 - PHP constants like PREG_OFFSET_CAPTURE
 - moar php functions! (preg_match and friends...)
 
@@ -32,5 +28,7 @@ LANGUAGES
 - Perl
 - ASP.NET
 - Razor (ASP.NET MVC)
+- httpd
+- nginx
 
 WEB

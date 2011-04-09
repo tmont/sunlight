@@ -14,7 +14,10 @@
 	line-height: 15px !important;
 	margin: 0 !important;
 }
-.sunlight-container .sunlight-line-number-margin {
+.sunlight-container > .sunlight-highlighted {
+	overflow-x: auto;
+}
+.sunlight-line-number-margin {
 	float: left !important;
 	margin-right: 5px !important;
 	margin-top: 0 !important;
@@ -26,12 +29,15 @@
 	color: #9A9A9A !important;
 	text-align: right !important;
 }
-.sunlight-highlighted a {
+.sunlight-highlighted a, .sunlight-line-number-margin a {
 	border: none !important;
 	text-decoration: none !important;
 	font-weight: normal !important;
 	font-style: normal !important;
 	padding: 0 !important;
+}
+.sunlight-line-number-margin a {
+	color: inherit !important;
 }
 
 .sunlight-string, .sunlight-heredoc, .sunlight-nowdoc {

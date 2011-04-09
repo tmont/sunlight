@@ -1,4 +1,14 @@
-1.1 2011-04-xx
+1.2 2001-04-09
+--------------
+- Bugfixes
+	- fixed undefined bug that could occur when parsing C#
+- Enhancements
+	- added plaintext language
+	- unregistered languages will be rendered as plaintext rather than throwing an error
+	- horizontal scrolling enabled via css for browsers that aren't IE6
+	- added line number permalinks (no IE6, no quirks mode)
+
+1.1 2011-04-08
 --------------
 - Enhancmenets
 	- CSS

@@ -13,6 +13,9 @@
 	//http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
 	var isIe = !+"\v1"; //we have to sniff this because IE requires \r\n
 
+	var EMPTY = function() { return null; };
+	var HIGHLIGHTED_NODE_COUNT = 0;
+	
 	//http://javascript.crockford.com/prototypal.html
 	var create = function(o) {
         function F() {}
@@ -376,7 +379,7 @@
 			
 			var parsePunctuation = function() {
 				var current = context.reader.current();
-				if (/[^\w\s]/.test(regexEscape(current))) {
+				if (context.language.punctuation.test(regexEscape(current))) {
 					return context.createToken("punctuation", current, context.reader.getLine(), context.reader.getColumn());
 				}
 				
@@ -437,39 +440,7 @@
 			};
 			
 			var parseNumber = function() {
-				var current = context.reader.current(), number, line = context.reader.getLine(), column = context.reader.getColumn();
-				
-				if (!/\d/.test(current)) {
-					//is it a decimal followed by a number?
-					if (current !== "." || !/\d/.test(context.reader.peek())) {
-						return null;
-					}
-					
-					//decimal without leading zero
-					number = current + context.reader.read();
-				} else {
-					number = current;
-					//is it a decimal?
-					if (context.reader.peek() === ".") {
-						number += context.reader.read();
-					}
-				}
-				
-				//easy way out: read until it's not a number or letter
-				//this will work for hex (0xef), octal (012), decimal and scientific notation (1e3)
-				//anything else and you're on your own
-				
-				var peek = context.reader.peek();
-				while (peek !== context.reader.EOF) {
-					if (!/[A-Za-z0-9]/.test(peek)) {
-						break;
-					}
-					
-					number += context.reader.read();
-					peek = context.reader.peek();
-				}
-				
-				return context.createToken("number", number, line, column);
+				return context.language.numberParser(context);
 			};
 			
 			var parseCustomRules = function() {
@@ -550,6 +521,11 @@
 				context.reader.read();
 			}
 			
+			//append the last default token, if necessary
+			if (context.defaultData.text !== "") {
+				tokens.push(context.createToken("default", context.defaultData.text, context.defaultData.line, context.defaultData.column));
+			}
+			
 			return { tokens: tokens, continuation: context.continuation };
 		};
 		
@@ -589,7 +565,7 @@
 							return element["currentStyle"];
 						};
 					} else {
-						func = function() { return null; };
+						func = EMPTY;
 					}
 
 					return function(element, style) {
@@ -601,7 +577,7 @@
 			partialContext = partialContext || { };
 			var language = languages[languageId];
 			if (language === undefined) {
-				throw "Unregistered language: " + languageId;
+				language = languages["plaintext"]; //default language
 			}
 		
 			var analyzerContext = createAnalyzerContext(unhighlightedCode, language, partialContext, this.options);
@@ -630,6 +606,7 @@
 				}
 				
 				var languageId = match[1];
+				var currentNodeCount = 0;
 				for (var j = 0, span, nodes, k, partialContext; j < node.childNodes.length; j++) {
 					if (node.childNodes[j].nodeType === 3) {
 						//text nodes
@@ -637,6 +614,8 @@
 						
 						span.className = "sunlight-highlighted sunlight-" + languageId;
 						partialContext = highlightText.call(this, node.childNodes[j].nodeValue, languageId, partialContext);
+						HIGHLIGHTED_NODE_COUNT++;
+						currentNodeCount = currentNodeCount || HIGHLIGHTED_NODE_COUNT;
 						
 						nodes = partialContext.getNodes();
 						for (k = 0; k < nodes.length; k++) {
@@ -659,12 +638,16 @@
 					lineContainer.className = "sunlight-line-number-margin";
 					var lineCount = node.innerHTML.replace(/[^\n]/g, "").length;
 					
-					var numbers = [];
-					for (var i = this.options.lineNumberStart; i <= this.options.lineNumberStart + lineCount; i++) {
-						numbers.push(i);
+					var eol = document.createTextNode(isIe ? "\r" : "\n");
+					for (var i = this.options.lineNumberStart, link, name; i <= this.options.lineNumberStart + lineCount; i++) {
+						link = document.createElement("a");
+						name = (node.id ? node.id : currentNodeCount) + "-line-" + i;
+						link.setAttribute("name", name);
+						link.setAttribute("href", "#" + name);
+						link.appendChild(document.createTextNode(i));
+						lineContainer.appendChild(link);
+						lineContainer.appendChild(eol.cloneNode(false));
 					}
-					
-					lineContainer.appendChild(document.createTextNode(numbers.join(isIe ? "\r" : "\n")));
 					
 					container.appendChild(lineContainer);
 					node.parentNode.insertBefore(container, node);
@@ -713,16 +696,52 @@
 		return newMap;
 	};
 	
+	var defaultNumberParser = function(context) {
+		var current = context.reader.current(), number, line = context.reader.getLine(), column = context.reader.getColumn();
+		
+		if (!/\d/.test(current)) {
+			//is it a decimal followed by a number?
+			if (current !== "." || !/\d/.test(context.reader.peek())) {
+				return null;
+			}
+			
+			//decimal without leading zero
+			number = current + context.reader.read();
+		} else {
+			number = current;
+			//is it a decimal?
+			if (context.reader.peek() === ".") {
+				number += context.reader.read();
+			}
+		}
+		
+		//easy way out: read until it's not a number or letter
+		//this will work for hex (0xef), octal (012), decimal and scientific notation (1e3)
+		//anything else and you're on your own
+		
+		var peek = context.reader.peek();
+		while (peek !== context.reader.EOF) {
+			if (!/[A-Za-z0-9]/.test(peek)) {
+				break;
+			}
+			
+			number += context.reader.read();
+			peek = context.reader.peek();
+		}
+		
+		return context.createToken("number", number, line, column);
+	};
+	
 	var globalOptions = {
 		tabWidth: 4,
 		lineNumbers: "automatic", //true/false/"automatic"
 		lineNumberStart: 1
 	};
 	
-	var languages = { };
+	var languages = {};
 	
 	window.Sunlight = {
-		version: "1.1",
+		version: "1.2",
 		Highlighter: highlighterConstructor,
 		createAnalyzer: function() { return create(defaultAnalyzer); },
 		globalOptions: globalOptions,
@@ -744,6 +763,8 @@
 			languageData.customTokens = languageData.customTokens || { };
 			languageData.namedIdentRules = languageData.namedIdentRules || { };
 			languageData.name = languageId;
+			languageData.punctuation = languageData.punctuation || /[^\w\s]/;
+			languageData.numberParser = languageData.numberParser || defaultNumberParser;
 			
 			//transform keywords, operators and custom tokens into a regex map
 			languageData.keywords = createHashMap(languageData.keywords || [], "\\b", languageData.caseInsensitive);
@@ -771,5 +792,8 @@
 			whitespace: { token: "default", optional: true }
 		}
 	};
+	
+	//plaintext language is always registered
+	window.Sunlight.registerLanguage("plaintext", { punctuation: /(?!x)x/, numberParser: EMPTY });
 
 }(window, document));
