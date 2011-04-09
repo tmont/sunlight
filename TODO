@@ -34,5 +34,3 @@ LANGUAGES
 - Razor (ASP.NET MVC)
 
 WEB
-- change helpers to util in documentation
-- follows, precedes, between should be teletype, not em in documentation
