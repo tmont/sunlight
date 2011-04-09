@@ -39,12 +39,13 @@
 
 		<!-- non compressed files and test HTML files -->
 		<tar destfile="${build.dist}/${package.source}.tar.gz" compression="gzip">
-			<tarfileset dir="${basedir}" includes="src/**,tests/**" prefix="${package.source}"/>
+			<tarfileset dir="${basedir}" includes="src/**,tests/**,CHANGELOG,COPYING,README" prefix="${package.source}"/>
 		</tar>
 		
 		<!-- compressed files files -->
 		<tar destfile="${build.dist}/${package.release}.tar.gz" compression="gzip">
 			<tarfileset dir="${deploy.dir}" includes="*/**" prefix="${package.release}"/>
+			<tarfileset dir="${basedir}" includes="CHANGELOG,COPYING,README" prefix="${package.release}"/>
 		</tar>
 	</target>
 	
