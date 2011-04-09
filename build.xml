@@ -106,7 +106,8 @@
 	<target name="copy-uncompressed">
 		<mkdir dir="${temp.dir}"/>
 		<copy todir="${temp.dir}">
-			<fileset dir="${src.dir}" includes="*.js" excludes="sunlight.java.js"/>
+			<fileset dir="${src.dir}" includes="*.js"/>
+			<fileset dir="${src.dir}/lang" includes="*.js" excludes="sunlight.java.js"/>
 		</copy>
 	</target>
 	
