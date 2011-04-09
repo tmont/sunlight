@@ -4,7 +4,7 @@
 	
 	<property name="product.name" value="Sunlight"/>
 	<property name="product.shortname" value="sunlight"/>
-	<property name="product.version" value="1.0"/>
+	<property name="product.version" value="1.1"/>
 	
 	<property name="build.dir" value="${basedir}/build"/>
 	<property name="build.dist" value="${build.dir}/dist"/>
@@ -24,23 +24,28 @@
 		<classpath refid="task.classpath"/>
 	</taskdef>
 	
-	<target name="release" depends="archive, compress" description="Creates deployment packages">
+	<target name="release" depends="clean, compress, set-product-revision" description="Creates deployment packages">
+		<mkdir dir="${build.dist}"/>
+		
 		<copy file="${src.dir}/jquery.sunlight.js" todir="${deploy.dir}" />
 		
 		<!-- copy themes -->
 		<copy todir="${themes.dir}">
 			<fileset dir="${src.dir}/themes" />
 		</copy>
-	</target>
-
-	<target name="archive" depends="clean, set-product-revision" description="Creates a source code tarball">
-		<mkdir dir="${build.dist}"/>
-
+		
 		<property name="package.source" value="${product.shortname}-src-${product.version}.${product.revision}"/>
+		<property name="package.release" value="${product.shortname}-${product.version}.${product.revision}"/>
 
 		<!-- non compressed files and test HTML files -->
 		<tar destfile="${build.dist}/${package.source}.tar.gz" compression="gzip">
-			<tarfileset dir="${basedir}" includes="src/**,tests/**" prefix="${package.source}"/>
+			<tarfileset dir="${basedir}" includes="src/**,tests/**,CHANGELOG,COPYING,README" prefix="${package.source}"/>
+		</tar>
+		
+		<!-- compressed files files -->
+		<tar destfile="${build.dist}/${package.release}.tar.gz" compression="gzip">
+			<tarfileset dir="${deploy.dir}" includes="*/**" prefix="${package.release}"/>
+			<tarfileset dir="${basedir}" includes="CHANGELOG,COPYING,README" prefix="${package.release}"/>
 		</tar>
 	</target>
 	

@@ -21,9 +21,9 @@ Sunlight.highlightAll();
 console.log("highlighting time: " + (new Date().getTime() - start.getTime()) + "ms");
 
 //tests
-var tags = document.getElementById("code").getElementsByTagName("*");
+
 var nbsp = String.fromCharCode(0xa0);
-function exists(className, content) {
+function exists(className, content, tags) {
 	content = content.replace(/ /g, nbsp).replace(/\t/g, nbsp + nbsp + nbsp + nbsp);
 	if (!+"\v1") {
 		content = content.replace(/\n/g, "\r");
@@ -43,8 +43,9 @@ function exists(className, content) {
 	return { nodes: searched, passed: false };
 }
 
-function assertExists(className, content, description) {
-	var data = exists(className, content);
+var defaultTags = document.getElementById("code").getElementsByTagName("*");
+function assertExists(className, content, description, id) {
+	var data = exists(className, content, id ? document.getElementById(id).getElementsByTagName("*") : defaultTags);
 	description = description + " (found " + data.nodes + " matching nodes)";
 	if (data.passed) {
 		console.log("pass: " + description);

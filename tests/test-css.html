@@ -7,13 +7,14 @@
 	</head>
 
 	<body>
-<pre><code id="code" class="sunlight-highlight-css">@import "/my/style/sheet.css";
+<pre id="code" class="sunlight-highlight-css">@import "/my/style/sheet.css";
 @import url(/my/style/sheet.css) screen "Print style\"s";
 
 html div.myClass {
 	width: 100%;
 	min-height: 100%;
 	opacity: 0.0;
+	background: transparent url(foo.png) no-repeat;
 	background-color: #000000;
 	color: white;
 	font-family: "Courier New", 'Arialola\'s', sans-serif;
@@ -23,6 +24,10 @@ body > .warning {
 	color: #FF0000;
 	background-image: url(warning.png); /* ".png" should not be colored as a class */
 	border: 2px solid none;
+	border-image: url(warning.png);
+	border-radius: url(warning.png);
+	border-top: 1px dotted #FFFFFF;
+	border-top-color: magenta;
 	filter: progid:DXImageTransform.Microsoft.Alpha(opacity = 50);
 	filter: alpha(opacity=50);
 	opacity: 0.5;
@@ -42,8 +47,25 @@ a:fake-pseudo-class {
 	-o-device-pixel-ratio: meh;
 	-webkit-background-origin: lolwut;
 	-ms-accelerator: snoo-snoo;
+	zoom: 1; /* IE crap */
+	vertical-align: middle;
 }
-</code></pre>
+
+/* new clearfix */
+.clearfix:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+}
+* html .clearfix             { zoom: 1; } /* IE6 */
+*:first-child+shouldBeNamed .shouldBeNamed { zoom: 1; } /* IE7 */
+
+pseudotest1:before, pseudotest2:after {
+	/* stuff goes here */
+}</pre>
 	</body>
 
 	<script type="text/javascript"  src="test.js"></script>
@@ -55,15 +77,31 @@ a:fake-pseudo-class {
 		assertExists("string", "'Arialola\\'s'", "single quoted string with escaped quote");
 		
 		assertExists("element", "html", "html element selector");
+		assertExists("element", "shouldBeNamed", "element selector after :pseudoclass+");
+		assertExists("element", "pseudotest1", "element selector before pseudoclass+");
+		assertExists("element", "pseudotest2", "element selector after pseudoclass+");
 		
 		assertExists("ident", "css", "css extension");
+		assertExists("ident", "fake-pseudo-class", "non existent pseudo class");
+		assertExists("ident", "-moz-initial", "property value -moz-initial");
+		assertExists("ident", "fixed", "property value fixed");
+		assertExists("ident", "solid", "property value solid");
+		
+		assertExists("class", "warning", "class selector");
+		assertExists("class", "myClass", "class selector");
+		assertExists("class", "shouldBeNamed", "class selector");
+		
 		
 		assertExists("number", "0.0", "decimal number");
 		assertExists("hexColor", "#FF0000", "hex color");
 		assertExists("id", "#wrapper", "id selector");
-		assertExists("class", ".warning", "class selector");
-		assertExists("class", ".myClass", "class selector");
+		
 		assertExists("operator", "~=", "attribute operator");
+		assertExists("operator", ".", "dot operator");
+		assertExists("operator", ">", "child operator");
+		assertExists("operator", "*", "catchall operator");
+		assertExists("operator", "+", "sibling operator");
+		
 		assertExists("pseudoElement", "before", "pseudo element");
 		assertExists("pseudoClass", "first-child", "pseudo class");
 		
@@ -73,6 +111,11 @@ a:fake-pseudo-class {
 		assertExists("function", "Alpha", "capitalized alpha function");
 		
 		assertExists("keyword", "background-color", "background-color property");
+		assertExists("keyword", "background", "background property");
+		assertExists("keyword", "border", "border property");
+		assertExists("keyword", "border-top", "border-top property");
+		assertExists("keyword", "border-top-color", "border-top-color property");
+		assertExists("keyword", "vertical-align", "vertical-align property");
 		assertExists("keyword", "width", "width property");
 		assertExists("keyword", "position", "position property");
 		assertExists("keyword", "color", "color property");

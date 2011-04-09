@@ -132,19 +132,24 @@
 					peek = context.reader.peek();
 				}
 				
-				//read the newline
-				value += context.reader.read();
-				
-				//read until "\n{ident};"
-				while (!context.reader.isEof()) {
-					if (context.reader.peek(ident.length + 2) === "\n" + ident + ";") {
-						break;
+				if (peek !== context.reader.EOF) {
+					//read the newline
+					value += context.reader.read();
+					
+					//read until "\n{ident};"
+					while (context.reader.peek() !== context.reader.EOF) {
+						if (context.reader.peek(ident.length + 2) === "\n" + ident + ";") {
+							break;
+						}
+						
+						value += context.reader.read();
 					}
 					
-					value += context.reader.read();
+					if (context.reader.peek() !== context.reader.EOF) {
+						value += context.reader.read(ident.length + 1); //don't read the semicolon
+					}
 				}
 				
-				value += context.reader.read(ident.length + 1); //don't read the semicolon
 				return context.createToken(isNowdoc ? "nowdoc" : "heredoc", value, line, column);
 			}
 		],
@@ -153,11 +158,72 @@
 		identAfterFirstLetter: /\w/,
 
 		namedIdentRules: {
+			custom: [
+				function(context) {
+					//must be preceded by "new"
+					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
+					if (!prevToken || prevToken.name !== "keyword" || prevToken.value !== "new") {
+						return false;
+					}
+					
+					//if the next token is "\" then don't color it (fully qualified type name)
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					if (nextToken && nextToken.name === "operator" && nextToken.value === "\\") {
+						return false;
+					}
+					
+					return true;
+				},
+				
+				function(context) {
+					//next token is not the namespace delimiter
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					if (nextToken && nextToken.name === "operator" && nextToken.value === "\\") {
+						return false;
+					}
+					
+					//go backward and make sure that there are only idents and dots before the new keyword
+					//"previous" is used to make sure that method declarations like "public new Object Value()..." are treated correctly
+					var token, index = context.index, previous = context.tokens[index];
+					while ((token = context.tokens[--index]) !== undefined) {
+						if (token.name === "keyword" && token.value === "new") {
+							return true;
+						}
+						
+						if (token.name === "default") {
+							continue;
+						}
+						
+						if (token.name === "ident") {
+							if (previous && previous.name === "ident") {
+								return false;
+							}
+							
+							previous = token;
+							continue;
+						}
+						
+						if (token.name === "operator" && token.value === "\\") {
+							if (previous && previous.name !== "ident") {
+								return false;
+							}
+							
+							previous = token;
+							continue;
+						}
+						
+						break;
+					}
+					
+					return false;
+				}
+			],
+			
 			follows: [
 				//extends/implements class names
 				[{ token: "ident" }, sunlight.util.whitespace, { token: "keyword", values: ["extends", "implements"] }, sunlight.util.whitespace],
 
-				[{ token: "keyword", values: ["class", "interface", "abstract", "final", "new"] }, sunlight.util.whitespace]
+				[{ token: "keyword", values: ["class", "interface", "abstract", "final"] }, sunlight.util.whitespace]
 			],
 			
 			precedes: [
@@ -205,7 +271,7 @@
 			"!", "~",
 
 			//other
-			"?:", "?", ":", ".=", ".", "=>", "="
+			"?:", "?", ":", ".=", ".", "=>", "=", "\\"
 		],
 		
 		analyzer: phpAnalyzer

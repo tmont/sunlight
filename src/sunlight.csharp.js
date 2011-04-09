@@ -8,6 +8,13 @@
 	//things that are allowed inside a generic type definition
 	var acceptableKeywords = primitives.concat(["in", "out", "string", "object"]);
 	
+	var createNamedIdentFunction = function(func) {
+		var typeDefinitionRegex = /^T([A-Z0-9]\w*)?$/;
+		return function(context) {
+			return !typeDefinitionRegex.test(context.tokens[context.index].value) && func(context);
+		};
+	};
+	
 	sunlight.registerLanguage("csharp", {
 		keywords: primitives.concat([
 			//this is also contextual (must be first thing in the file or something), but it's never used so i don't really care
@@ -243,7 +250,7 @@
 		namedIdentRules: {
 			custom: [
 				//extends/implements/type constraints
-				function(context) {
+				createNamedIdentFunction(function(context) {
 					//between ":" and "{" but not case statements
 					
 					//look backward for a ":" not preceded by a "case"
@@ -281,32 +288,51 @@
 					}
 					
 					return true;
-				},
+				}),
 				
 				//generic definitions/params between "<" and ">"
-				function(context) {
+				createNamedIdentFunction(function(context) {
 					//between < and > and preceded by an ident and not preceded by "class"
 					var index = context.index, token;
 					
 					//look for "<" preceded by an ident but not "class"
-					var foundGenericOpener = false, foundIdent = false;
+					//if we run into ">" before "," or "<" then it's a big fail
+					var foundIdent = false, bracketCountLeft = [0, 0], bracketCountRight = [0, 0];
 					while ((token = context.tokens[--index]) !== undefined) {
 						if (token.name === "keyword" && token.value === "class") {
 							//this must be a generic class type definition, e.g. Foo<T>, and we don't want to color the "T"
 							return false;
 						}
 						
-						if (
-							(token.name === "keyword" && sunlight.util.contains(acceptableKeywords, token.value))
-							|| (token.name === "operator" && (token.value === ">" || token.value === ">>"))
-							|| token.name === "default"
-							|| (token.name === "punctuation" && token.value === ",")
-						) {
+						if (token.name === "operator") {
+							switch (token.value) {
+								case "<":
+								case "<<":
+									bracketCountLeft[0] += token.value.length;
+									break;
+								case ">":
+								case ">>":
+									if (bracketCountLeft[0] === 0) {
+										return false;
+									}
+									
+									bracketCountLeft[1] += token.value.length;
+									break;
+								case ".":
+									//allows generic method invocations, like "Foo" in "foo.Resolve<Foo>()"
+									break;
+								default:
+									return false;
+							}
+							
 							continue;
 						}
 						
-						if (token.name === "operator" && (token.value === "<" || token.value === "<<")) {
-							foundGenericOpener = true;
+						if (
+							(token.name === "keyword" && sunlight.util.contains(acceptableKeywords, token.value))
+							|| token.name === "default"
+							|| (token.name === "punctuation" && token.value === ",")
+						) {
 							continue;
 						}
 						
@@ -319,7 +345,11 @@
 						break;
 					}
 					
-					if (!foundGenericOpener || !foundIdent) {
+					
+					
+					if (!foundIdent || bracketCountLeft[0] === 0) {
+						
+						//not inside a generic definition
 						return false;
 					}
 					
@@ -345,19 +375,29 @@
 					}
 					
 					return false;
-				},
+				}),
 				
-				//generic declarations and return values (generic preceding an ident)
-				function(context) {
-					//this finds "Foo" in "Foo<Bar> foo"
-					
+				//generic declarations and return values (ident preceding a generic definition)
+				//this finds "Foo" in "Foo<Bar> foo"
+				createNamedIdentFunction(function(context) {
 					//if it's preceded by an ident or a primitive/alias keyword then it's no good (i.e. a generic method definition like "public void Foo<T>")
+					//also a big fail if it is preceded by a ., i.e. a generic method invocation like container.Resolve()
 					var token = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
-					if (token.name === "ident" || (token.name === "keyword" && sunlight.util.contains(primitives.concat(["string", "object", "void"]), token.value))) {
-						return false;
+					if (token !== undefined) {
+						if (
+							token.name === "ident" 
+							|| (token.name === "keyword" && sunlight.util.contains(primitives.concat(["string", "object", "void"]), token.value))
+							|| (token.name === "operator" && token.value === ".")
+						) {
+							return false;
+						}
 					}
 					
-					//need to look ahead and verify that this ident precedes a generic definition, and then non-optional whitespace and then an ident
+					//needs to be immediately followed by <, then by idents, acceptable keywords and ",", and then closed by >, then immediately followed by an ident
+					token = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					if (token.name !== "operator" || token.value !== "<") {
+						return false;
+					}
 					
 					var index = context.index, bracketCount = [0, 0], token; //open (<), close (>)
 					while ((token = context.tokens[++index]) !== undefined) {
@@ -407,42 +447,41 @@
 					
 					//next token should be optional whitespace followed by an ident
 					token = context.tokens[++index];
-					if (token === undefined && token.name !== "default" && token.name !== "ident") {
-						console.log(token);
+					if (!token || (token.name !== "default" && token.name !== "ident")) {
 						return false;
 					}
 					
 					if (token.name === "default") {
 						token = context.tokens[++index];
-						if (token === undefined || token.name !== "ident") {
+						if (!token || token.name !== "ident") {
 							return false;
 						}
 					}
 					
 					return true;
-				},
+				}),
 				
 				//using aliases, e.g. "Foo" in "using Foo = System.Linq.Enumerable;"
-				function(context) {
+				createNamedIdentFunction(function(context) {
 					//previous non-ws token must be "using" and next non-ws token must be "="
 					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
-					if (prevToken.name !== "keyword" || prevToken.value !== "using") {
+					if (prevToken === undefined || prevToken.name !== "keyword" || prevToken.value !== "using") {
 						return false;
 					}
 					
 					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-					if (nextToken.name !== "operator" || nextToken.value !== "=") {
+					if (nextToken === undefined || nextToken.name !== "operator" || nextToken.value !== "=") {
 						return false;
 					}
 					
 					return true;
-				},
+				}),
 				
 				//attributes (friggin' attributes...)
-				function(context) {
+				createNamedIdentFunction(function(context) {
 					//if the next token is an equals sign, this is a named parameter (or something else not inside of an attribute)
 					var token = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-					if (token.name === "operator" && token.value === "=") {
+					if (token !== undefined && token.name === "operator" && token.value === "=") {
 						return false;
 					}
 					
@@ -486,7 +525,7 @@
 					
 					//next, verify we're inside a closing bracket
 					index = context.index;
-					var foundCloser = false;
+					var indexOfLastBracket = -1;
 					while ((token = context.tokens[++index]) !== undefined) {
 						if (token.name === "punctuation") {
 							if (token.value === "[") {
@@ -494,7 +533,7 @@
 								continue;
 							}
 							if (token.value === "]") {
-								foundCloser = true;
+								indexOfLastBracket = index;
 								bracketCount[1]++;
 								continue;
 							}
@@ -506,47 +545,123 @@
 						}
 					}
 					
-					if (!foundCloser || bracketCount[0] !== bracketCount[1]) {
+					if (indexOfLastBracket < 0 || bracketCount[0] !== bracketCount[1]) {
 						return false;
 					}
 					
-					//next token should be either a keyword or an ident
-					token = sunlight.util.getNextNonWsToken(context.tokens, index);
+					//next token after the last closing bracket should be either a keyword or an ident
+					token = sunlight.util.getNextNonWsToken(context.tokens, indexOfLastBracket);
 					if (token !== undefined && (token.name === "keyword" || token.name === "ident")) {
 						return true;
 					}
 					
 					return false;
-				}
-			],
+				}),
+				
+				//after the new keyword "new Foo.Bar.Baz()"
+				createNamedIdentFunction(function(context) {
+					//must be preceded by "new"
+					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
+					if (!prevToken || prevToken.name !== "keyword" || prevToken.value !== "new") {
+						return false;
+					}
+					
+					//if the next token is "." then don't color it (fully qualified type name)
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
+						return false;
+					}
+					
+					return true;
+				}),
+				
+				//fully qualified type names
+				createNamedIdentFunction(function(context) {
+					//next token is not "."
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
+						return false;
+					}
+					
+					//go backward and make sure that there are only idents and dots before the new keyword
+					//"previous" is used to make sure that method declarations like "public new Object Value()..." are treated correctly
+					var token, index = context.index, previous = context.tokens[index];
+					while ((token = context.tokens[--index]) !== undefined) {
+						if (token.name === "keyword" && token.value === "new") {
+							return true;
+						}
+						
+						if (token.name === "default") {
+							continue;
+						}
+						
+						if (token.name === "ident") {
+							if (previous && previous.name === "ident") {
+								return false;
+							}
+							
+							previous = token;
+							continue;
+						}
+						
+						if (token.name === "operator" && token.value === ".") {
+							if (previous && previous.name !== "ident") {
+								return false;
+							}
+							
+							previous = token;
+							continue;
+						}
+						
+						break;
+					}
+					
+					return false;
+				}),
 			
-			follows: [
-				//method/property return values
-				//special method parameters
-				//new: public new Foo Method() { } and new Foo();
-				//class/interface/event/struct/delegate names
-				[{ token: "keyword", values: ["class", "interface", "event", "struct", "enum", "delegate", "public", "private", "protected", "internal", "static", "virtual", "sealed", "new", "params"] }, sunlight.util.whitespace],
+				//can't use the follows/precedes utilities since we need to verify that it doesn't match the type definition naming convention
+				createNamedIdentFunction(function(context) {
+					var follows = [
+						//method/property return values
+						//special method parameters
+						//new: public new Foo Method() { } and new Foo();
+						//class/interface/event/struct/delegate names
+						[{ token: "keyword", values: ["class", "interface", "event", "struct", "enum", "delegate", "public", "private", "protected", "internal", "static", "virtual", "sealed", "params"] }, sunlight.util.whitespace],
 
-				//typeof/default
-				[{ token: "keyword", values: ["typeof", "default"] }, sunlight.util.whitespace, { token: "punctuation", values: ["("] }, sunlight.util.whitespace ],
-				
-				//casting using "as"
-				[{ token: "keyword", values: ["as"] }, sunlight.util.whitespace ]
-			],
+						//typeof/default
+						[{ token: "keyword", values: ["typeof", "default"] }, sunlight.util.whitespace, { token: "punctuation", values: ["("] }, sunlight.util.whitespace ],
+						
+						//casting using "as"
+						[{ token: "keyword", values: ["as"] }, sunlight.util.whitespace ]
+					];
+					
+					var precedes = [
+						//casting
+						[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "ident" }],
+						[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "keyword", values: ["this"] }],
+						
+						//arrays
+						[sunlight.util.whitespace, { token: "punctuation", values: ["["] }, sunlight.util.whitespace, { token: "punctuation", values: ["]"] }], //in method parameters
 
-			precedes: [
-				//casting
-				[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "ident" }],
-				[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "keyword", values: ["this"] }],
-				
-				//arrays
-				[sunlight.util.whitespace, { token: "punctuation", values: ["["] }, sunlight.util.whitespace, { token: "punctuation", values: ["]"] }], //in method parameters
-				[sunlight.util.whitespace, { token: "punctuation", values: ["["] }, sunlight.util.whitespace, { token: "number" }, sunlight.util.whitespace, { token: "punctuation", values: ["]"] }], //declaration with integer
-				[sunlight.util.whitespace, { token: "punctuation", values: ["["] }, sunlight.util.whitespace, { token: "ident" }, sunlight.util.whitespace, { token: "punctuation", values: ["]"] }], //declaration with variable
-
-				//assignment: Object o = new object();
-				//method parameters: public int Foo(Foo foo, Bar b, Object o) { }
-				[{ token: "default" }, { token: "ident" }]
+						//assignment: Object o = new object();
+						//method parameters: public int Foo(Foo foo, Bar b, Object o) { }
+						[{ token: "default" }, { token: "ident" }]
+					];
+					
+					for (var i = 0; i < follows.length; i++) {
+						if (sunlight.util.createProceduralRule(context.index - 1, -1, follows[i], false)(context.tokens)) {
+							return true;
+						}
+					}
+					
+					for (i = 0; i < precedes.length; i++) {
+						if (sunlight.util.createProceduralRule(context.index + 1, 1, precedes[i], false)(context.tokens)) {
+							return true;
+						}
+					}
+					
+					return false;
+				})
 			]
 		},
 

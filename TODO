@@ -10,10 +10,20 @@ BUGS
   when incrementing/decrementing
 
 FUNCTIONALITY
+- don't throw on unknown languages
 - customizable class prefix
+- customizable number parsing
+- code folding
+- line number permalinks
+- show/hide code block
+- "plain" language
+- line highlighting (?)
+- PHP constants like PREG_OFFSET_CAPTURE
+- moar php functions! (preg_match and friends...)
 
 LANGUAGES
 - Java
+- bash
 - T-SQL
 - PostgreSQL
 - Oracle

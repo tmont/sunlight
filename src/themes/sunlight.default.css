@@ -1,162 +1,135 @@
 /* global styles */
 .sunlight-container {
 	clear: both;
+	border: 1px solid #969696 !important;
 }
 .sunlight-container * {
 	white-space: pre;
 }
 .sunlight-highlighted, .sunlight-container {
-	background-color: #FFFFFF;
-	color: #000000;
-	font-family: Consolas, Inconsolata, Monaco, "Courier New";
-	font-size: 12px;
-	line-height: 15px;
+	background-color: #FFFFFF !important;
+	color: #000000 !important;
+	font-family: Consolas, Inconsolata, Monaco, "Courier New" !important;
+	font-size: 12px !important;
+	line-height: 15px !important;
+	margin: 0 !important;
 }
 .sunlight-container .sunlight-line-number-margin {
-	float: left;
-	margin-right: 5px;
-	margin-top: 0;
-	padding: 0;
-	padding-right: 2px !important;
-	padding-left: 2px !important;
-	border-right: 1px solid #CCCCCC;
-	background-color: #EEEEEE;
-	color: #848484;
+	float: left !important;
+	margin-right: 5px !important;
+	margin-top: 0 !important;
+	padding: 0 !important;
+	padding-right: 4px !important;
+	padding-left: 4px !important;
+	border-right: 1px solid #CCCCCC !important;
+	background-color: #EEEEEE !important;
+	color: #848484 !important;
+	text-align: right !important;
 }
 .sunlight-highlighted a {
-	border: none;
-	text-decoration: none;
-	font-weight: normal;
-	font-style: normal;
+	border: none !important;
+	text-decoration: none !important;
+	font-weight: normal !important;
+	font-style: normal !important;
+	padding: 0 !important;
 }
 
-.sunlight-string {
-	color: #990000;
+.sunlight-string, .sunlight-heredoc, .sunlight-nowdoc {
+	color: #990000 !important;
 }
 .sunlight-ident, .sunlight-operator, .sunlight-punctuation {
-	color: #000000;
+	color: #000000 !important;
 }
-.sunlight-comment {
-	color: #009900;
+.sunlight-comment, .sunlight-xmlDocCommentContent {
+	color: #009900 !important;
 }
 .sunlight-number {
-	color: #CC6600;
+	color: #CC6600 !important;
 }
-.sunlight-named-ident {
-	color: #2B91AF;
+.sunlight-named-ident, .sunlight-constant, .sunlight-globalVariable, .sunlight-globalObject {
+	color: #2B91AF !important;
 }
-.sunlight-keyword {
-	color: #0000FF;
+.sunlight-keyword, .sunlight-languageConstruct, .sunlight-css .sunlight-element {
+	color: #0000FF !important;
 }
-
-/* multi language stuff */
 .sunlight-shortOpenTag, .sunlight-openTag, .sunlight-closeTag, .sunlight-xmlOpenTag, .sunlight-xmlCloseTag {
-	background-color: #FFFF99;
-	color: #000000;
+	background-color: #FFFF99 !important;
+	color: #000000 !important;
 }
 .sunlight-content {
-	color: #000000;
+	color: #000000 !important;
 }
-.sunlight-function {
-	color: #B069AF;
+.sunlight-function, .sunlight-globalFunction {
+	color: #B069AF !important;
 }
 
 /* html/xml */
 .sunlight-html .sunlight-string, .sunlight-xml .sunlight-string {
-	color: #990099;
+	color: #990099 !important;
 }
 .sunlight-cdata {
-	color: #CC6600;
+	color: #CC6600 !important;
 }
 .sunlight-html .sunlight-ident, .sunlight-html .sunlight-operator, .sunlight-xml .sunlight-ident, .sunlight-xml .sunlight-operator {
-	color: #0000FF;
+	color: #0000FF !important;
 }
 .sunlight-html .sunlight-named-ident, .sunlight-xml .sunlight-named-ident {
-	color: #FF0000;
+	color: #FF0000 !important;
 }
 .sunlight-html .sunlight-entity, .sunlight-xml .sunlight-entity {
-	background-color: #EEEEEE;
-	color: #000000;
-	border: 1px solid #000000;
+	background-color: #EEEEEE !important;
+	color: #000000 !important;
+	border: 1px solid #000000 !important;
 }
 
 /* html */
 .sunlight-html .sunlight-doctype {
-	color: #2B91AF;
+	color: #2B91AF !important;
 }
-
 
 /* php */
-.sunlight-php .sunlight-languageConstruct {
-	color: #0000CC;
-}
-.sunlight-php .sunlight-heredoc, .sunlight-php .sunlight-nowdoc {
-	color: #990000;
-}
-.sunlight-php .sunlight-constant {
-	color: #2B91AF;
-}
 .sunlight-php .sunlight-variable {
-	color: #663366;
-}
-.sunlight-php .sunlight-function {
-	text-decoration: none;
+	color: #663366 !important;
 }
 
 /* c# */
-.sunlight-csharp .sunlight-xmlDocCommentContent {
-	color: #009900;
-}
 .sunlight-csharp .sunlight-pragma {
-	color: #999999;
-	font-style: italic;
+	color: #999999 !important;
+	font-style: italic !important;
 }
 .sunlight-csharp .sunlight-xmlDocCommentMeta {
-	color: #808080;
+	color: #808080 !important;
 }
-
 
 /* javascript */
-.sunlight-javascript .sunlight-globalVariable, .sunlight-javascript .sunlight-globalObject {
-	color: #2B91AF;
-}
 .sunlight-javascript .sunlight-reservedWord {
-	font-style: italic;
-}
-.sunlight-javascript .sunlight-globalFunction {
-	color: #B069AF;
+	font-style: italic !important;
 }
 .sunlight-javascript .sunlight-regexLiteral {
-	color: #FF00B2;
+	color: #FF00B2 !important;
 }
 
 /* mysql */
 .sunlight-mysql .sunlight-quotedIdent {
-	color: #999900;
+	color: #999900 !important;
 }
 
 /* css */
 .sunlight-css .sunlight-microsoftFilterPrefix {
-	color: magenta;
-}
-.sunlight-css .sunlight-element {
-	color: #0000FF;
-}
-.sunlight-css .sunlight-named-ident {
-	color: #000099;
+	color: #FF00FF !important;
 }
 .sunlight-css .sunlight-rule {
-	color: #0099FF;
+	color: #0099FF !important;
 }
 .sunlight-css .sunlight-keyword {
-	color: #4E65B8;
+	color: #4E65B8 !important;
 }
 .sunlight-css .sunlight-class {
-	color: #FF0000;
+	color: #FF0000 !important;
 }
 .sunlight-css .sunlight-id {
-	color: #8A8E13;
+	color: #8A8E13 !important;
 }
 .sunlight-css .sunlight-pseudoClass, .sunlight-css .sunlight-pseudoElement {
-	color: #368B87;
+	color: #368B87 !important;
 }
