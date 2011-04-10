@@ -32,3 +32,4 @@ LANGUAGES
 
 WEB
 - document alternate scope closer definition using regex
+- add bash to demo
