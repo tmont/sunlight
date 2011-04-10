@@ -712,14 +712,13 @@
 		//this will work for hex (0xef), octal (012), decimal and scientific notation (1e3)
 		//anything else and you're on your own
 
-		var peek = context.reader.peek();
-		while (peek !== context.reader.EOF) {
+		var peek;
+		while ((peek = context.reader.peek()) !== context.reader.EOF) {
 			if (!/[A-Za-z0-9]/.test(peek)) {
 				break;
 			}
 
 			number += context.reader.read();
-			peek = context.reader.peek();
 		}
 
 		return context.createToken("number", number, line, column);

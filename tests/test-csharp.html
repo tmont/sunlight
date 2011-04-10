@@ -232,6 +232,14 @@ public class Foo { }</pre>
 		assertExists("string", "\"this is \\\"a\\\" string\"", "string with escaped quote");
 		assertExists("string", "@\"this is \"\"another\"\"\nmulti line\nstring\"", "verbatim string with escaped quote");
 		
+		assertExists("number", "0", "number 0");
+		assertExists("number", "1.5", "number 1.5");
+		assertExists("number", "0x1a", "number 0x1a");
+		assertExists("number", "1.7f", "number 1.7f");
+		assertExists("number", "1.2d", "number 1.2d");
+		assertExists("number", "12", "number 12");
+		assertExists("number", "0xffffff", "number 0xffffff");
+		
 		assertExists("xmlDocCommentMeta", "///", "xml doc comment ///");
 		assertExists("xmlDocCommentMeta", "<summary>", "xml doc comment <summary>");
 		assertExists("xmlDocCommentMeta", "</summary>", "xml doc comment </summary>");
