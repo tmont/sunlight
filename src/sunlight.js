@@ -659,12 +659,7 @@
 	}();
 	
 	var highlighterConstructor = function(options) {
-		var merged = merge({}, globalOptions);
-		if (options) {
-			merged = merge(merged, options);
-		}
-		
-		this.options = merged;
+		this.options = merge(merge({}, globalOptions), options);
 	};
 	
 	highlighterConstructor.prototype = highlighter;
