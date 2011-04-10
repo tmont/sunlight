@@ -64,6 +64,7 @@
 			<fileset dir="${temp.dir}" includes="sunlight.xml.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.html.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.css.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight.bash.js"/>
 		</concat>
 	
 		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${deploy.dir}">
@@ -79,6 +80,7 @@
 			<include name="sunlight.xml.js"/>
 			<include name="sunlight.html.js"/>
 			<include name="sunlight.css.js"/>
+			<include name="sunlight.bash.js"/>
 		</yui-compressor>
 		
 		<!-- delete uncompressed files except for sunlight.js -->

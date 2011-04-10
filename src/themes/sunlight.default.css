@@ -55,7 +55,7 @@
 .sunlight-named-ident, .sunlight-constant, .sunlight-globalVariable, .sunlight-globalObject {
 	color: #2B91AF !important;
 }
-.sunlight-keyword, .sunlight-languageConstruct, .sunlight-css .sunlight-element {
+.sunlight-keyword, .sunlight-languageConstruct, .sunlight-css .sunlight-element, .sunlight-bash .sunlight-command {
 	color: #0000FF !important;
 }
 .sunlight-shortOpenTag, .sunlight-openTag, .sunlight-closeTag, .sunlight-xmlOpenTag, .sunlight-xmlCloseTag {
@@ -138,4 +138,19 @@
 }
 .sunlight-css .sunlight-pseudoClass, .sunlight-css .sunlight-pseudoElement {
 	color: #368B87 !important;
+}
+
+/* bash */
+.sunlight-bash .sunlight-hashBang {
+	color: #3D97F5 !important;
+}
+.sunlight-bash .sunlight-specialVariable {
+	font-style: italic !important;
+	font-weight: bold !important;
+}
+.sunlight-bash .sunlight-verbatimCommand {
+	color: #999900 !important;
+}
+.sunlight-bash .sunlight-variable, .sunlight-bash .sunlight-specialVariable {
+	color: #FF0000 !important;
 }
