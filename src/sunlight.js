@@ -630,14 +630,11 @@
 				node.className += " sunlight-highlighted";
 
 				if (this.options.lineNumbers === true || (this.options.lineNumbers === "automatic" && getComputedStyle(node, "display") === "block")) {
-					var container = document.createElement("div");
+					var container = document.createElement("div"), lineContainer = document.createElement("pre"), lineCount = node.innerHTML.replace(/[^\n]/g, "").length;
 					container.className = "sunlight-container";
-					var lineContainer = document.createElement("pre");
 					lineContainer.className = "sunlight-line-number-margin";
-					var lineCount = node.innerHTML.replace(/[^\n]/g, "").length;
 
-					var eol = document.createTextNode(isIe ? "\r" : "\n");
-					for (var i = this.options.lineNumberStart, link, name; i <= this.options.lineNumberStart + lineCount; i++) {
+					for (var i = this.options.lineNumberStart, eol = document.createTextNode(isIe ? "\r" : "\n"), link, name; i <= this.options.lineNumberStart + lineCount; i++) {
 						link = document.createElement("a");
 						name = (node.id ? node.id : "sunlight-" + currentNodeCount) + "-line-" + i;
 						link.setAttribute("name", name);
@@ -672,7 +669,7 @@
 		return token;
 	};
 
-	//this is crucial for efficiency and speed
+	//this is crucial for performance
 	var createHashMap = function(wordMap, boundary, caseInsensitive) {
 		//creates a hash table where the hash is the first character of the word
 		var newMap = { };
