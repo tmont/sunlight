@@ -3,6 +3,7 @@
 - Enhancements
 	- PHP class names after instanceof are highlighted as named idents
 	- added bash lang file
+	- added t-sql lang file
 
 1.2 2001-04-09
 --------------
