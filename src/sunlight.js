@@ -639,7 +639,7 @@
 					var eol = document.createTextNode(isIe ? "\r" : "\n");
 					for (var i = this.options.lineNumberStart, link, name; i <= this.options.lineNumberStart + lineCount; i++) {
 						link = document.createElement("a");
-						name = (node.id ? node.id : currentNodeCount) + "-line-" + i;
+						name = (node.id ? node.id : "sunlight-" + currentNodeCount) + "-line-" + i;
 						link.setAttribute("name", name);
 						link.setAttribute("href", "#" + name);
 						link.appendChild(document.createTextNode(i));
