@@ -739,6 +739,14 @@
 	};
 	
 	var languages = {};
+	var languageDefaults = {
+		analyzer: create(defaultAnalyzer),
+		customTokens: [],
+		namedIdentRules: {},
+		punctuation: /[^\w\s]/,
+		numberParser: defaultNumberParser,
+		caseInsensitive: false
+	};
 	
 	window.Sunlight = {
 		version: "1.3",
@@ -759,14 +767,10 @@
 				throw "Languages must be registered with an identifier, e.g. \"php\" for PHP";
 			}
 			
-			languageData.analyzer = languageData.analyzer || create(defaultAnalyzer);
-			languageData.customTokens = languageData.customTokens || { };
-			languageData.namedIdentRules = languageData.namedIdentRules || { };
+			languageData = merge(merge({}, languageDefaults), languageData);
 			languageData.name = languageId;
-			languageData.punctuation = languageData.punctuation || /[^\w\s]/;
-			languageData.numberParser = languageData.numberParser || defaultNumberParser;
 			
-			//transform keywords, operators and custom tokens into a regex map
+			//transform keywords, operators and custom tokens into a hash map
 			languageData.keywords = createHashMap(languageData.keywords || [], "\\b", languageData.caseInsensitive);
 			languageData.operators = createHashMap(languageData.operators || [], "", languageData.caseInsensitive);
 			for (var tokenName in languageData.customTokens) {
