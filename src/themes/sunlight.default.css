@@ -2,12 +2,10 @@
 .sunlight-container {
 	clear: both;
 	border: 1px solid #969696 !important;
-}
-.sunlight-container * {
-	white-space: pre;
+	position: relative;
+	background-color: #FFFFFF !important;
 }
 .sunlight-highlighted, .sunlight-container {
-	background-color: #FFFFFF !important;
 	color: #000000 !important;
 	font-family: Consolas, Inconsolata, Monaco, "Courier New" !important;
 	font-size: 12px !important;
@@ -15,7 +13,15 @@
 	margin: 0 !important;
 }
 .sunlight-container > .sunlight-highlighted {
+	white-space: pre;
 	overflow-x: auto;
+}
+span.sunlight-highlighted {
+	z-index: 1;
+	position: relative;
+}
+span.sunlight-highlighted * {
+	background: transparent;
 }
 .sunlight-line-number-margin {
 	float: left !important;
@@ -28,6 +34,8 @@
 	background-color: #EEEEEE !important;
 	color: #848484 !important;
 	text-align: right !important;
+	position: relative;
+	z-index: 3;
 }
 .sunlight-highlighted a, .sunlight-line-number-margin a  {
 	border: none !important;
@@ -38,6 +46,22 @@
 }
 .sunlight-line-number-margin a {
 	color: inherit !important;
+}
+.sunlight-line-highlight-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: 0;
+	opacity: 0.1;
+	filter: alpha(opacity=10);
+}
+.sunlight-line-highlight-overlay div {
+	height: 15px;
+	width: 100%;
+}
+.sunlight-line-highlight-overlay .sunlight-line-highlight-active {
+	background-color: #000000;
 }
 
 .sunlight-string, .sunlight-heredoc, .sunlight-nowdoc {

@@ -4,6 +4,7 @@ PARSING
 - CSS property values (none, solid, inset, etc.)
 
 TESTING
+- test line highlighting in IE6
 
 BUGS
 - get[Next|Previous]NonWsToken() doesn't work in loops
@@ -13,7 +14,6 @@ FUNCTIONALITY
 - customizable class prefix
 - code folding
 - show/hide code block
-- line highlighting
 - PHP constants like PREG_OFFSET_CAPTURE
 - moar php functions! (preg_match and friends...)
 
@@ -31,5 +31,6 @@ LANGUAGES
 
 WEB
 - document alternate scope closer definition using regex
+- document lineHighlight option
 - add bash to demo
 - add t-sql to demo

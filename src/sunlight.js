@@ -631,23 +631,42 @@
 
 				if (this.options.lineNumbers === true || (this.options.lineNumbers === "automatic" && getComputedStyle(node, "display") === "block")) {
 					var container = document.createElement("div"), lineContainer = document.createElement("pre"), lineCount = node.innerHTML.replace(/[^\n]/g, "").length;
+					var lineHighlightOverlay, currentLineOverlay, lineHighlightingEnabled = this.options.lineHighlight.length > 0;
+					if (lineHighlightingEnabled) {
+						lineHighlightOverlay = document.createElement("div");
+						lineHighlightOverlay.className = "sunlight-line-highlight-overlay";
+					}
+					
 					container.className = "sunlight-container";
 					lineContainer.className = "sunlight-line-number-margin";
 
 					for (var i = this.options.lineNumberStart, eol = document.createTextNode(isIe ? "\r" : "\n"), link, name; i <= this.options.lineNumberStart + lineCount; i++) {
 						link = document.createElement("a");
 						name = (node.id ? node.id : "sunlight-" + currentNodeCount) + "-line-" + i;
+						
 						link.setAttribute("name", name);
 						link.setAttribute("href", "#" + name);
+						
 						link.appendChild(document.createTextNode(i));
 						lineContainer.appendChild(link);
 						lineContainer.appendChild(eol.cloneNode(false));
+						
+						if (lineHighlightingEnabled) {
+							currentLineOverlay = document.createElement("div");
+							if (contains(this.options.lineHighlight, i)) {
+								currentLineOverlay.className = "sunlight-line-highlight-active";
+							}
+							lineHighlightOverlay.appendChild(currentLineOverlay);
+						}
 					}
 
 					container.appendChild(lineContainer);
 					node.parentNode.insertBefore(container, node);
 					node.parentNode.removeChild(node);
 					container.appendChild(node);
+					if (lineHighlightingEnabled) {
+						container.appendChild(lineHighlightOverlay);
+					}
 				}
 			}
 		};
@@ -724,7 +743,8 @@
 	var globalOptions = {
 		tabWidth: 4,
 		lineNumbers: "automatic", //true/false/"automatic"
-		lineNumberStart: 1
+		lineNumberStart: 1,
+		lineHighlight: []
 	};
 
 	var languages = {};
