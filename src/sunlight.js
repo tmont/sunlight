@@ -629,7 +629,7 @@
 				//indicate that this node has been highlighted
 				node.className += " sunlight-highlighted";
 
-				if (this.options.lineNumbers === true || (this.options.lineNumbers === "automatic" && getComputedStyle(node, "display") === "block")) {
+				if (this.options.lineNumbers === true || (getComputedStyle && this.options.lineNumbers === "automatic" && getComputedStyle(node, "display") === "block")) {
 					var container = document.createElement("div"), lineContainer = document.createElement("pre"), lineCount = node.innerHTML.replace(/[^\n]/g, "").length;
 					var lineHighlightOverlay, currentLineOverlay, lineHighlightingEnabled = this.options.lineHighlight.length > 0;
 					if (lineHighlightingEnabled) {
