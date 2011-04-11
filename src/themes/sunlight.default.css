@@ -64,19 +64,27 @@ span.sunlight-highlighted * {
 	background-color: #000000;
 }
 
-.sunlight-string, .sunlight-heredoc, .sunlight-nowdoc {
+
+
+
+.sunlight-string, .sunlight-heredoc, .sunlight-nowdoc, .sunlight-longString, .sunlight-rawString, .sunlight-binaryString, .sunlight-rawLongString, .sunlight-binaryLongString {
 	color: #990000 !important;
 }
-.sunlight-ident, .sunlight-operator, .sunlight-punctuation {
+.sunlight-ident, .sunlight-operator, .sunlight-punctuation, .sunlight-delimiter {
 	color: #000000 !important;
 }
+
+
+
+
 .sunlight-comment, .sunlight-xmlDocCommentContent {
 	color: #009900 !important;
 }
 .sunlight-number {
 	color: #CC6600 !important;
 }
-.sunlight-named-ident, .sunlight-constant, .sunlight-globalVariable, .sunlight-globalObject {
+
+.sunlight-named-ident, .sunlight-constant, .sunlight-globalVariable, .sunlight-globalObject, .sunlight-python .sunlight-attribute {
 	color: #2B91AF !important;
 }
 .sunlight-keyword, .sunlight-languageConstruct, .sunlight-css .sunlight-element, .sunlight-bash .sunlight-command {
@@ -177,4 +185,10 @@ span.sunlight-highlighted * {
 }
 .sunlight-bash .sunlight-variable, .sunlight-bash .sunlight-specialVariable {
 	color: #FF0000 !important;
+}
+
+/* python */
+.sunlight-python .sunlight-specialMethod {
+	font-weight: bold !important;
+	color: #A07DD3;
 }

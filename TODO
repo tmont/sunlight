@@ -2,26 +2,26 @@ PARSING
 - PHP class name highlighting in use statements
 - C# class name highlighting in using aliases
 - CSS property values (none, solid, inset, etc.)
+- Python exponents: 1e3-10
+- PHP constants like PREG_OFFSET_CAPTURE
+- moar php functions! (preg_match and friends...)
 
 TESTING
 - test line highlighting in IE6
 
 BUGS
 - get[Next|Previous]NonWsToken() doesn't work in loops
-- trailing newlines are not being rendered
+- last newline is not being rendered
 
 FUNCTIONALITY
 - customizable class prefix
 - code folding
 - show/hide code block
-- PHP constants like PREG_OFFSET_CAPTURE
-- moar php functions! (preg_match and friends...)
 
 LANGUAGES
 - Java
 - PostgreSQL
 - Oracle
-- Python
 - Ruby
 - Perl
 - ASP.NET
@@ -34,3 +34,4 @@ WEB
 - document lineHighlight option
 - add bash to demo
 - add t-sql to demo
+- add python to demo
