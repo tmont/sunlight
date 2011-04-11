@@ -718,19 +718,21 @@
 			number = current + context.reader.read();
 		} else {
 			number = current;
-			//is it a decimal?
-			if (context.reader.peek() === ".") {
-				number += context.reader.read();
-			}
 		}
 
 		//easy way out: read until it's not a number or letter
 		//this will work for hex (0xef), octal (012), decimal and scientific notation (1e3)
 		//anything else and you're on your own
 
-		var peek;
+		var peek, foundDecimal = false;
 		while ((peek = context.reader.peek()) !== context.reader.EOF) {
 			if (!/[A-Za-z0-9]/.test(peek)) {
+				if (peek === "." && !foundDecimal) {
+					number += context.reader.read();
+					foundDecimal = true;
+					continue;
+				}
+				
 				break;
 			}
 
