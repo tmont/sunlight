@@ -67,45 +67,86 @@ span.sunlight-highlighted * {
 
 
 
-.sunlight-string, .sunlight-heredoc, .sunlight-nowdoc, .sunlight-longString, .sunlight-rawString, .sunlight-binaryString, .sunlight-rawLongString, .sunlight-binaryLongString {
+.sunlight-string, 
+.sunlight-heredoc, 
+.sunlight-heredocDeclaration, 
+.sunlight-nowdoc, 
+.sunlight-longString, 
+.sunlight-rawString, 
+.sunlight-binaryString, 
+.sunlight-rawLongString, 
+.sunlight-binaryLongString {
 	color: #55EB54 !important;
 }
-.sunlight-operator, .sunlight-punctuation, .sunlight-delimiter {
+.sunlight-operator, 
+.sunlight-punctuation, 
+.sunlight-delimiter {
 	color: #B1EDEC !important;
 }
 .sunlight-ident {
 	color: #E0E0E0 !important;
 	font-weight: bold !important;
 }
-.sunlight-comment, .sunlight-xmlDocCommentContent {
+.sunlight-comment, 
+.sunlight-xmlDocCommentContent {
 	color: #787D31 !important;
 }
-.sunlight-number, .sunlight-cdata {
+.sunlight-number, 
+.sunlight-cdata {
 	color: #F7BA7E !important;
 	font-weight: bold !important;
 }
-.sunlight-named-ident, .sunlight-constant, .sunlight-globalVariable, .sunlight-globalObject, .sunlight-css .sunlight-id, .sunlight-python .sunlight-attribute {
+.sunlight-named-ident, 
+.sunlight-constant, 
+.sunlight-javascript .sunlight-globalVariable, 
+.sunlight-globalObject, 
+.sunlight-css .sunlight-id, 
+.sunlight-python .sunlight-attribute {
 	color: #FBBDEE !important;
 	font-weight: bold !important;
 }
-.sunlight-keyword, .sunlight-languageConstruct, .sunlight-html .sunlight-ident, .sunlight-html .sunlight-operator, .sunlight-xml .sunlight-ident, .sunlight-xml .sunlight-operator, .sunlight-bash .sunlight-command {
+.sunlight-keyword, 
+.sunlight-languageConstruct, 
+.sunlight-html .sunlight-ident, 
+.sunlight-html .sunlight-operator, 
+.sunlight-xml .sunlight-ident, 
+.sunlight-xml .sunlight-operator, 
+.sunlight-bash .sunlight-command,
+.sunlight-ruby .sunlight-specialOperator {
 	color: #A3CCF7 !important;
 	font-weight: bold !important;
 }
-.sunlight-shortOpenTag, .sunlight-openTag, .sunlight-closeTag, .sunlight-xmlOpenTag, .sunlight-xmlCloseTag {
+.sunlight-shortOpenTag, 
+.sunlight-openTag, 
+.sunlight-closeTag, 
+.sunlight-xmlOpenTag, 
+.sunlight-xmlCloseTag {
 	background-color: #7373C1 !important;
 }
 .sunlight-content {
 	color: #FFFFFF !important;
 	font-weight: bold !important;
 }
-.sunlight-function, .sunlight-globalFunction {
+.sunlight-function, 
+.sunlight-globalFunction,
+.sunlight-ruby .sunlight-specialFunction {
 	color: #D3A690 !important;
+	font-weight: bold !important;
+}
+.sunlight-php .sunlight-variable,
+.sunlight-ruby .sunlight-globalVariable,
+.sunlight-ruby .sunlight-instanceVariable {
+	color: #FCF89A !important;
 	font-weight: bold !important;
 }
 
 /* html/xml */
-.sunlight-html .sunlight-ident, .sunlight-xml .sunlight-ident, .sunlight-xml .sunlight-operator, .sunlight-html .sunlight-operator, .sunlight-html .sunlight-named-ident, .sunlight-xml .sunlight-named-ident {
+.sunlight-html .sunlight-ident, 
+.sunlight-xml .sunlight-ident, 
+.sunlight-xml .sunlight-operator, 
+.sunlight-html .sunlight-operator, 
+.sunlight-html .sunlight-named-ident, 
+.sunlight-xml .sunlight-named-ident {
 	font-weight: normal !important;
 }
 .sunlight-doctype {
@@ -117,18 +158,13 @@ span.sunlight-highlighted * {
 	color: #000000 !important;
 }
 
-/* php */
-.sunlight-php .sunlight-variable {
-	color: #FFFFFF !important;
-	font-weight: bold !important;
-}
-
 /* c# */
 .sunlight-csharp .sunlight-pragma {
 	color: #666363 !important;
 	font-style: italic !important;
 }
-.sunlight-csharp .sunlight-xmlDocCommentMeta {
+.sunlight-csharp .sunlight-xmlDocCommentMeta,
+.sunlight-ruby .sunlight-docComment {
 	color: #666363 !important;
 }
 
@@ -182,4 +218,9 @@ span.sunlight-highlighted * {
 .sunlight-python .sunlight-specialMethod {
 	font-weight: bold !important;
 	color: #B0A3C2;
+}
+
+/* ruby */
+.sunlight-ruby .sunlight-subshellCommand {
+	color: #999900 !important;
 }

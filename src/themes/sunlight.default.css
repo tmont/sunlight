@@ -67,54 +67,92 @@ span.sunlight-highlighted * {
 
 
 
-.sunlight-string, .sunlight-heredoc, .sunlight-nowdoc, .sunlight-longString, .sunlight-rawString, .sunlight-binaryString, .sunlight-rawLongString, .sunlight-binaryLongString {
+.sunlight-string, 
+.sunlight-heredoc, 
+.sunlight-heredocDeclaration, 
+.sunlight-nowdoc, 
+.sunlight-longString, 
+.sunlight-rawString, 
+.sunlight-binaryString, 
+.sunlight-rawLongString, 
+.sunlight-binaryLongString {
 	color: #990000 !important;
 }
-.sunlight-ident, .sunlight-operator, .sunlight-punctuation, .sunlight-delimiter {
+
+.sunlight-ident, 
+.sunlight-operator, 
+.sunlight-punctuation, 
+.sunlight-delimiter {
 	color: #000000 !important;
 }
 
-
-
-
-.sunlight-comment, .sunlight-xmlDocCommentContent {
+.sunlight-comment, 
+.sunlight-xmlDocCommentContent {
 	color: #009900 !important;
 }
 .sunlight-number {
 	color: #CC6600 !important;
 }
 
-.sunlight-named-ident, .sunlight-constant, .sunlight-globalVariable, .sunlight-globalObject, .sunlight-python .sunlight-attribute {
+.sunlight-named-ident, 
+.sunlight-constant, 
+.sunlight-javascript .sunlight-globalVariable, 
+.sunlight-globalObject, 
+.sunlight-python .sunlight-attribute {
 	color: #2B91AF !important;
 }
-.sunlight-keyword, .sunlight-languageConstruct, .sunlight-css .sunlight-element, .sunlight-bash .sunlight-command {
+.sunlight-keyword, 
+.sunlight-languageConstruct, 
+.sunlight-css 
+.sunlight-element, 
+.sunlight-bash .sunlight-command,
+.sunlight-ruby .sunlight-specialOperator {
 	color: #0000FF !important;
 }
-.sunlight-shortOpenTag, .sunlight-openTag, .sunlight-closeTag, .sunlight-xmlOpenTag, .sunlight-xmlCloseTag {
+.sunlight-shortOpenTag, 
+.sunlight-openTag, 
+.sunlight-closeTag, 
+.sunlight-xmlOpenTag, 
+.sunlight-xmlCloseTag {
 	background-color: #FFFF99 !important;
 	color: #000000 !important;
 }
 .sunlight-content {
 	color: #000000 !important;
 }
-.sunlight-function, .sunlight-globalFunction {
+.sunlight-function, 
+.sunlight-globalFunction,
+.sunlight-ruby .sunlight-specialFunction {
 	color: #B069AF !important;
 }
 
+.sunlight-php .sunlight-variable,
+.sunlight-ruby .sunlight-globalVariable,
+.sunlight-ruby .sunlight-instanceVariable {
+	color: #663366 !important;
+}
+
+
+
 /* html/xml */
-.sunlight-html .sunlight-string, .sunlight-xml .sunlight-string {
+.sunlight-html .sunlight-string, 
+.sunlight-xml .sunlight-string {
 	color: #990099 !important;
 }
 .sunlight-cdata {
 	color: #CC6600 !important;
 }
-.sunlight-html .sunlight-ident, .sunlight-html .sunlight-operator, .sunlight-xml .sunlight-ident, .sunlight-xml .sunlight-operator {
+.sunlight-html .sunlight-ident, 
+.sunlight-html .sunlight-operator, 
+.sunlight-xml .sunlight-ident, 
+.sunlight-xml .sunlight-operator {
 	color: #0000FF !important;
 }
 .sunlight-html .sunlight-named-ident, .sunlight-xml .sunlight-named-ident {
 	color: #FF0000 !important;
 }
-.sunlight-html .sunlight-entity, .sunlight-xml .sunlight-entity {
+.sunlight-html .sunlight-entity, 
+.sunlight-xml .sunlight-entity {
 	background-color: #EEEEEE !important;
 	color: #000000 !important;
 	border: 1px solid #000000 !important;
@@ -125,17 +163,13 @@ span.sunlight-highlighted * {
 	color: #2B91AF !important;
 }
 
-/* php */
-.sunlight-php .sunlight-variable {
-	color: #663366 !important;
-}
-
 /* c# */
 .sunlight-csharp .sunlight-pragma {
 	color: #999999 !important;
 	font-style: italic !important;
 }
-.sunlight-csharp .sunlight-xmlDocCommentMeta {
+.sunlight-csharp .sunlight-xmlDocCommentMeta, 
+.sunlight-ruby .sunlight-docComment {
 	color: #808080 !important;
 }
 
@@ -168,7 +202,8 @@ span.sunlight-highlighted * {
 .sunlight-css .sunlight-id {
 	color: #8A8E13 !important;
 }
-.sunlight-css .sunlight-pseudoClass, .sunlight-css .sunlight-pseudoElement {
+.sunlight-css .sunlight-pseudoClass, 
+.sunlight-css .sunlight-pseudoElement {
 	color: #368B87 !important;
 }
 
@@ -183,7 +218,8 @@ span.sunlight-highlighted * {
 .sunlight-bash .sunlight-verbatimCommand {
 	color: #999900 !important;
 }
-.sunlight-bash .sunlight-variable, .sunlight-bash .sunlight-specialVariable {
+.sunlight-bash .sunlight-variable, 
+.sunlight-bash .sunlight-specialVariable {
 	color: #FF0000 !important;
 }
 
@@ -191,4 +227,9 @@ span.sunlight-highlighted * {
 .sunlight-python .sunlight-specialMethod {
 	font-weight: bold !important;
 	color: #A07DD3;
+}
+
+/* ruby */
+.sunlight-ruby .sunlight-subshellCommand {
+	color: #999900 !important;
 }
