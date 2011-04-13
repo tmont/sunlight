@@ -23,7 +23,7 @@
 					"chomp!","chomp","eval","exec","exit!","exit","fail","fork","format","gets","global_variables",
 					"gsub!","gsub","iterator?","lambda","load","local_variables","loop","open","p","print","printf","proc",
 					"putc","puts","raise","rand","readline","readlines","require","select","sleep","split","sprintf","srand",
-					"sub!","sub","syscall","system","test","trace_var","trap","untrace_var "
+					"sub!","sub","syscall","system","test","trace_var","trap","untrace_var"
 				],
 				boundary: "\\W"
 			},

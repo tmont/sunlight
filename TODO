@@ -27,7 +27,7 @@ LANGUAGES
 - Razor (ASP.NET MVC)
 - httpd
 - nginx
-- (6502) assembler
+- assembler
 - Lisp
 - Haskell
 - VB.NET
@@ -39,8 +39,3 @@ WEB
 - document lineHighlight option
 - document line numbers with trailing newlines in quirks mode
 	- and how it doesn't work at all in IE6
-- add bash to demo
-- add t-sql to demo
-- add python to demo
-- add ruby to demo
-- add java to demo

@@ -52,15 +52,13 @@ span.sunlight-highlighted * {
 	left: 0;
 	width: 100%;
 	z-index: 0;
-	opacity: .1;
-	filter: alpha(opacity=10);
 }
 .sunlight-line-highlight-overlay div {
 	height: 15px;
 	width: 100%;
 }
 .sunlight-line-highlight-overlay .sunlight-line-highlight-active {
-	background-color: #CCFFCC;
+	background-color: #4B4B4B;
 }
 
 
