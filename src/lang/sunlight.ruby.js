@@ -35,6 +35,79 @@
 		},
 		
 		customParseRules: [
+			//regex literal, same as javascript
+			function(context) {
+				var peek = context.reader.peek();
+				if (context.reader.current() !== "/" || peek === "/" || peek === "*") {
+					//doesn't start with a / or starts with // (comment) or /* (multi line comment)
+					return null;
+				}
+				
+				var isValid = function() {
+					var previousNonWsToken = context.token(context.count() - 1);
+					var previousToken = null;
+					if (context.defaultData.text !== "") {
+						previousToken = context.createToken("default", context.defaultData.text); 
+					}
+					
+					if (!previousToken) {
+						previousToken = previousNonWsToken;
+					}
+					
+					//first token of the string
+					if (previousToken === undefined) {
+						return true;
+					}
+					
+					//since Ruby doesn't have statement terminators, if the previous token was whitespace and contained a newline, then we're good
+					if (previousToken.name === "default" && previousToken.value.indexOf("\n") > -1) {
+						return true;
+					}
+					
+					if (previousNonWsToken.name === "keyword" || previousNonWsToken.name === "ident" || previousNonWsToken.name === "number") {
+						return false;
+					}
+					
+					return true;
+				}();
+				
+				if (!isValid) {
+					return null;
+				}
+				
+				//read the regex literal
+				var regexLiteral = "/";
+				var line = context.reader.getLine();
+				var column = context.reader.getColumn();
+				var peek2, next;
+				
+				while (context.reader.peek() !== context.reader.EOF) {
+					peek2 = context.reader.peek(2);
+					if (peek2 === "\\/" || peek2 === "\\\\") {
+						//escaped backslash or escaped forward slash
+						regexLiteral += context.reader.read(2);
+						continue;
+					}
+					
+					regexLiteral += (next = context.reader.read());
+					if (next === "/") {
+						break;
+					}
+				}
+				
+				//read the regex modifiers
+				//only "x", "i", "o" and "m" are allowed, but for the sake of simplicity we'll just say any alphabetical character is valid
+				while (context.reader.peek() !== context.reader.EOF) {
+					if (!/[A-Za-z]/.test(context.reader.peek())) {
+						break;
+					}
+					
+					regexLiteral += context.reader.read();
+				}
+				
+				return context.createToken("regexLiteral", regexLiteral, line, column);
+			},
+			
 			//heredoc declaration
 			//heredocs can be stacked and delimited, so this is a bit complicated
 			//we keep track of the heredoc declarations in heredocQueue, and then use them later in the heredoc custom parse rule below
@@ -137,22 +210,26 @@
 				return tokens.length > 0 ? tokens : null;
 			},
 			
-			//raw string
+			//raw string/regex
 			//http://www.ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/syntax.html#string
+			//http://www.ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/syntax.html#regexp
 			function(context) {
 				//begin with % or %q or %Q with a non-alphanumeric delimiter (opening bracket/paren are closed by corresponding closing bracket/paren)
 				if (context.reader.current() !== "%") {
 					return null;
 				}
 				
-				var value = "%", readCount = 1;
+				var value = "%", readCount = 1, isRegex = false;
 				var peek = context.reader.peek();
-				if (peek === "q" || peek === "Q") {
+				if (peek === "q" || peek === "Q" || peek === "r") {
 					readCount++;
+					if (peek === "r") {
+						isRegex = true;
+					}
 				}
 				
 				if (/[A-Za-z0-9=]$/.test(context.reader.peek(readCount))) {
-					//potential % or %= operator (how does ruby differentiate between %= and %=string=?)
+					//potential % or %= operator (how does ruby differentiate between "%=" and "%=string="?)
 					return null;
 				}
 				
@@ -186,7 +263,18 @@
 					}
 				}
 				
-				return context.createToken("rawString", value, line, column);
+				if (isRegex) {
+					//read potential regex modifiers
+					while (context.reader.peek() !== context.reader.EOF) {
+						if (!/[A-Za-z]/.test(context.reader.peek())) {
+							break;
+						}
+						
+						value += context.reader.read();
+					}
+				}
+				
+				return context.createToken(isRegex ? "regexLiteral" : "rawString", value, line, column);
 			},
 			
 			//doc comments

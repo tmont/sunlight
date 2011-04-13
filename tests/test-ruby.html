@@ -3,7 +3,7 @@
 	<head>
 		<script type="text/javascript" src="../src/sunlight.js"></script>
 		<script type="text/javascript" src="../src/lang/sunlight.ruby.js"></script>
-		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.default.css" />
+		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.dark.css" />
 	</head>
 
 	<body>
@@ -37,6 +37,14 @@ foo = %q(raw string 1)
 foo = %Q[raw string 2]
 foo = %{raw string 3}
 foo = %!raw string\\\! 4!
+
+#regex stuff
+print /regextest1/ =~ 'regextest'
+print /regextest2/i =~ 'regextest'
+print 5 /regextest3/i #not a regex
+print %r[regextest4]xm =~ 'regextest' #dear god why does ruby have so many different syntaxes for the same thing?
+print %r|regextest5| =~ 'regextest'
+print /\/\\/ #escape test
 
 StaticVariableAccess::Bar
 
@@ -155,6 +163,13 @@ print "we're still good"
 		assertExists("keyword", "ensure", "ensure keyword");
 		assertExists("keyword", "BEGIN", "BEGIN keyword");
 		assertExists("keyword", "END", "END keyword");
+		
+		assertExists("regexLiteral", "/regextest1/", "regex literal");
+		assertExists("regexLiteral", "/regextest2/i", "regex literal with modifiers");
+		assertExists("ident", "regextest3", "not a regex literal");
+		assertExists("regexLiteral", "%r[regextest4]xm", "raw regex literal with modifiers");
+		assertExists("regexLiteral", "%r|regextest5|", "raw regex literal");
+		assertExists("regexLiteral", "/\\/\\\\/", "regex literal with escaped backslash and forward slash");
 		
 		assertExists("operator", "%=", "%= operator");
 		assertExists("operator", "&&", "&& operator");

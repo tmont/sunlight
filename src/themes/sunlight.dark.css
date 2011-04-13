@@ -130,15 +130,22 @@ span.sunlight-highlighted * {
 .sunlight-function, 
 .sunlight-globalFunction,
 .sunlight-ruby .sunlight-specialFunction {
-	color: #D3A690 !important;
+	color: #C8BBF1 !important;
 	font-weight: bold !important;
 }
 .sunlight-php .sunlight-variable,
 .sunlight-ruby .sunlight-globalVariable,
 .sunlight-ruby .sunlight-instanceVariable {
-	color: #FCF89A !important;
+	color: #F5E5B0 !important;
 	font-weight: bold !important;
 }
+.sunlight-regexLiteral {
+	color: #E0F16A !important;
+}
+
+
+
+
 
 /* html/xml */
 .sunlight-html .sunlight-ident, 
@@ -174,9 +181,6 @@ span.sunlight-highlighted * {
 /* javascript */
 .sunlight-javascript .sunlight-reservedWord {
 	font-style: italic !important;
-}
-.sunlight-javascript .sunlight-regexLiteral {
-	color: #E0F16A !important;
 }
 
 /* mysql */

@@ -129,7 +129,10 @@ span.sunlight-highlighted * {
 .sunlight-php .sunlight-variable,
 .sunlight-ruby .sunlight-globalVariable,
 .sunlight-ruby .sunlight-instanceVariable {
-	color: #663366 !important;
+	color: #8F41AA !important;
+}
+.sunlight-regexLiteral {
+	color: #FF00B2 !important;
 }
 
 
@@ -177,9 +180,6 @@ span.sunlight-highlighted * {
 /* javascript */
 .sunlight-javascript .sunlight-reservedWord {
 	font-style: italic !important;
-}
-.sunlight-javascript .sunlight-regexLiteral {
-	color: #FF00B2 !important;
 }
 
 /* sql */
