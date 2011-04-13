@@ -232,3 +232,30 @@ span.sunlight-highlighted * {
 .sunlight-ruby .sunlight-subshellCommand {
 	color: #999900 !important;
 }
+
+/* brainfuck */
+.sunlight-brainfuck {
+	font-weight: bold !important;
+	color: #000000 !important;
+}
+.sunlight-brainfuck .sunlight-increment {
+	background-color: #FF9900 !important;
+}
+.sunlight-brainfuck .sunlight-decrement {
+	background-color: #FF99FF !important;
+}
+.sunlight-brainfuck .sunlight-incrementPointer {
+	background-color: #FFFF99 !important;
+}
+.sunlight-brainfuck .sunlight-decrementPointer {
+	background-color: #66CCFF !important;
+}
+.sunlight-brainfuck .sunlight-read {
+	background-color: #FFFFFF !important;
+}
+.sunlight-brainfuck .sunlight-write {
+	background-color: #99FF99 !important;
+}
+.sunlight-brainfuck .sunlight-openLoop, .sunlight-brainfuck .sunlight-closeLoop {
+	background-color: #FFFFFF !important;
+}

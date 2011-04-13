@@ -8,7 +8,6 @@ PARSING
 - ruby indented heredocs
 
 TESTING
-- test line highlighting in IE6
 
 BUGS
 - get[Next|Previous]NonWsToken() doesn't work in loops
@@ -35,3 +34,4 @@ LANGUAGES
 - C++
 
 WEB
+- document brainfuck
