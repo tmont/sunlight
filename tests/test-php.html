@@ -2,7 +2,7 @@
 
 	<head>
 		<script type="text/javascript" src="../src/sunlight.js"></script>
-		<script type="text/javascript" src="../src/sunlight.php.js"></script>
+		<script type="text/javascript" src="../src/lang/sunlight.php.js"></script>
 		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.dark.css" />
 	</head>
 
@@ -34,6 +34,9 @@
 			foreach ($kiss as $key =&gt; $value) {
 				//unset stuff
 				unset($this[$key]);
+				if ($value instanceof \My\Namespace\InstanceOfClassName1):
+					$value = $value instanceof InstanceOfClassName2;
+				endif;
 				$this[$key] = is_int($value) ? (int)$value : (string)$value;
 			}
 		}
@@ -112,6 +115,8 @@ unclosed heredoc</pre>
 		assertExists("keyword", "function", "function keyword");
 		assertExists("keyword", "parent", "parent keyword");
 		assertExists("keyword", "self", "self keyword");
+		assertExists("keyword", "endif", "endif keyword");
+		assertExists("keyword", "if", "if keyword");
 		
 		assertExists("ident", "KISS", "const ident");
 		assertExists("ident", "Fully1", "namespace name in fully qualified new() 1");
@@ -129,6 +134,8 @@ unclosed heredoc</pre>
 		assertExists("named-ident", "FullyQualifiedClassName2", "fully qualified class name 2");
 		assertExists("named-ident", "NotFullyQualified", "not fully qualified class name");
 		assertExists("named-ident", "OutOfBoundsException", "class name after new");
+		assertExists("named-ident", "InstanceOfClassName1", "class name after instanceof fully qualified");
+		assertExists("named-ident", "InstanceOfClassName2", "class name after instanceof not fully qualified");
 		
 		assertExists("comment", "#Perl-style comments are stupid", "Perl-style comment");
 		assertExists("comment", "//unset stuff", "Single line comment");

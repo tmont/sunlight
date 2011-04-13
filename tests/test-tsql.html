@@ -1,15 +1,16 @@
-<!doctype html >
 <html>
 
 	<head>
 		<script type="text/javascript" src="../src/sunlight.js"></script>
-		<script type="text/javascript" src="../src/lang/sunlight.mysql.js"></script>
+		<script type="text/javascript" src="../src/lang/sunlight.tsql.js"></script>
 		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.default.css" />
 	</head>
 
 	<body>
-<pre id="code" class="sunlight-highlight-mysql">--comment 1
-select * from db.my_table where myTable.id &gt; 10;
+<pre id="code" class="sunlight-highlight-tsql">--comment 1
+select * from db.my_table where myTable.id &gt; 10
+
+select @@IDENTITY
 
 /* multi
 line comment */
@@ -17,12 +18,12 @@ line comment */
 select "escaped\\\"";
 select 'escaped\\\'';
 
-#comment 2
-SELECT
-    f.foo `foo`,
+SELECT TOP 1000
+    f.foo [foo],
     f.bar,
-    f.name AS `foo.name`,
-    b.baz
+    f.name [foo.name],
+    b.baz,
+	@@ROWCOUNT
 FROM foo f
 INNER JOIN bar b
     ON b.id = f.bar_id
@@ -31,18 +32,17 @@ LEFT OUTER JOIN baz
     AND baz.id IS NOT NULL
 GROUP BY f.name
 HAVING COUNT(f.name) &lt; 10
-WHERE LENGTH(f.foo) &lt; 5
+WHERE LEN(f.foo) &lt; 5
 AND LEFT(f.foo) = 'f'</pre>
 	</body>
 
 	<script type="text/javascript"  src="test.js"></script>
 	<script type="text/javascript">//<![CDATA[
 		assertExists("comment", "--comment 1", "-- comment");
-		assertExists("comment", "#comment 2", "# comment");
 		assertExists("comment", "/* multi\nline comment */", "multi line comment");
 		
-		assertExists("quotedIdent", "`foo`", "quoted ident");
-		assertExists("quotedIdent", "`foo.name`", "quoted ident");
+		assertExists("quotedIdent", "[foo]", "quoted ident");
+		assertExists("quotedIdent", "[foo.name]", "quoted ident");
 		
 		assertExists("keyword", "select", "select keyword");
 		assertExists("keyword", "SELECT", "SELECT keyword");
@@ -54,13 +54,16 @@ AND LEFT(f.foo) = 'f'</pre>
 		assertExists("keyword", "BY", "BY keyword");
 		assertExists("keyword", "HAVING", "HAVING keyword");
 		assertExists("keyword", "AND", "AND keyword");
-		assertExists("keyword", "AS", "AS keyword");
+		assertExists("keyword", "TOP", "TOP keyword");
 		assertExists("keyword", "OUTER", "OUTER keyword");
 		assertExists("keyword", "INNER", "INNER keyword");
 		
 		assertExists("function", "LEFT", "LEFT function");
-		assertExists("function", "LENGTH", "LENGTH function");
+		assertExists("function", "LEN", "LEN function");
 		assertExists("function", "COUNT", "COUNT function");
+		
+		assertExists("constant", "@@IDENTITY", "@@IDENTITY constant");
+		assertExists("constant", "@@ROWCOUNT", "@@ROWCOUNT constant");
 		
 		assertExists("operator", ">", "> operator");
 		assertExists("named-ident", "my_table", "table name named ident");

@@ -345,8 +345,6 @@
 						break;
 					}
 					
-					
-					
 					if (!foundIdent || bracketCountLeft[0] === 0) {
 						
 						//not inside a generic definition
@@ -556,23 +554,6 @@
 					}
 					
 					return false;
-				}),
-				
-				//after the new keyword "new Foo.Bar.Baz()"
-				createNamedIdentFunction(function(context) {
-					//must be preceded by "new"
-					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
-					if (!prevToken || prevToken.name !== "keyword" || prevToken.value !== "new") {
-						return false;
-					}
-					
-					//if the next token is "." then don't color it (fully qualified type name)
-					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-					if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
-						return false;
-					}
-					
-					return true;
 				}),
 				
 				//fully qualified type names

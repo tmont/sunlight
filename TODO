@@ -2,9 +2,13 @@ PARSING
 - PHP class name highlighting in use statements
 - C# class name highlighting in using aliases
 - CSS property values (none, solid, inset, etc.)
-- PHP class names after instanceof
+- Python/Java exponents: 1e3-10
+- PHP constants like PREG_OFFSET_CAPTURE
+- moar php functions! (preg_match and friends...)
+- ruby indented heredocs
 
 TESTING
+- test line highlighting in IE6
 
 BUGS
 - get[Next|Previous]NonWsToken() doesn't work in loops
@@ -13,22 +17,21 @@ FUNCTIONALITY
 - customizable class prefix
 - code folding
 - show/hide code block
-- line highlighting
-- PHP constants like PREG_OFFSET_CAPTURE
-- moar php functions! (preg_match and friends...)
+- show whitespace option
 
 LANGUAGES
-- Java
-- bash
-- T-SQL
 - PostgreSQL
 - Oracle
-- Python
-- Ruby
 - Perl
 - ASP.NET
 - Razor (ASP.NET MVC)
 - httpd
 - nginx
+- assembler
+- Lisp
+- Haskell
+- VB.NET
+- C
+- C++
 
 WEB

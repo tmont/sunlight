@@ -4,7 +4,7 @@
 	
 	<property name="product.name" value="Sunlight"/>
 	<property name="product.shortname" value="sunlight"/>
-	<property name="product.version" value="1.2"/>
+	<property name="product.version" value="1.3"/>
 	
 	<property name="build.dir" value="${basedir}/build"/>
 	<property name="build.dist" value="${build.dir}/dist"/>
@@ -64,6 +64,11 @@
 			<fileset dir="${temp.dir}" includes="sunlight.xml.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.html.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.css.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight.bash.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight.tsql.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight.python.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight.ruby.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight.java.js"/>
 		</concat>
 	
 		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${deploy.dir}">
@@ -79,6 +84,11 @@
 			<include name="sunlight.xml.js"/>
 			<include name="sunlight.html.js"/>
 			<include name="sunlight.css.js"/>
+			<include name="sunlight.bash.js"/>
+			<include name="sunlight.tsql.js"/>
+			<include name="sunlight.python.js"/>
+			<include name="sunlight.ruby.js"/>
+			<include name="sunlight.java.js"/>
 		</yui-compressor>
 		
 		<!-- delete uncompressed files except for sunlight.js -->
@@ -106,7 +116,8 @@
 	<target name="copy-uncompressed">
 		<mkdir dir="${temp.dir}"/>
 		<copy todir="${temp.dir}">
-			<fileset dir="${src.dir}" includes="*.js" excludes="sunlight.java.js"/>
+			<fileset dir="${src.dir}" includes="*.js"/>
+			<fileset dir="${src.dir}/lang" includes="*.js"/>
 		</copy>
 	</target>
 	

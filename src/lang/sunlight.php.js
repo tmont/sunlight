@@ -186,7 +186,7 @@
 					//"previous" is used to make sure that method declarations like "public new Object Value()..." are treated correctly
 					var token, index = context.index, previous = context.tokens[index];
 					while ((token = context.tokens[--index]) !== undefined) {
-						if (token.name === "keyword" && token.value === "new") {
+						if (token.name === "keyword" && (token.value === "new" || token.value === "instanceof")) {
 							return true;
 						}
 						
