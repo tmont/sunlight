@@ -765,7 +765,7 @@
 	};
 
 	window.Sunlight = {
-		version: "1.3",
+		version: "1.4",
 		Highlighter: highlighterConstructor,
 		createAnalyzer: function() { return create(defaultAnalyzer); },
 		globalOptions: globalOptions,
