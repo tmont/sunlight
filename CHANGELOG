@@ -7,10 +7,7 @@
 	  don't render the last trailing newline, so neither will we), doesn't work in IE6, too bad
 - Enhancements
 	- PHP class names after instanceof are highlighted as named idents
-	- added bash lang file
-	- added t-sql lang file
-	- added python lang file
-	- added ruby lang file
+	- new languages: bash, tsql, python, ruby, java
 	- added line highlighting via linHighlight option
 
 1.2 2001-04-09

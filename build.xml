@@ -68,6 +68,7 @@
 			<fileset dir="${temp.dir}" includes="sunlight.tsql.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.python.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.ruby.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight.java.js"/>
 		</concat>
 	
 		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${deploy.dir}">
@@ -87,6 +88,7 @@
 			<include name="sunlight.tsql.js"/>
 			<include name="sunlight.python.js"/>
 			<include name="sunlight.ruby.js"/>
+			<include name="sunlight.java.js"/>
 		</yui-compressor>
 		
 		<!-- delete uncompressed files except for sunlight.js -->
@@ -115,7 +117,7 @@
 		<mkdir dir="${temp.dir}"/>
 		<copy todir="${temp.dir}">
 			<fileset dir="${src.dir}" includes="*.js"/>
-			<fileset dir="${src.dir}/lang" includes="*.js" excludes="sunlight.java.js"/>
+			<fileset dir="${src.dir}/lang" includes="*.js"/>
 		</copy>
 	</target>
 	

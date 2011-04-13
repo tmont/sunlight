@@ -153,7 +153,8 @@ span.sunlight-highlighted * {
 	color: #DEB9B2 !important;
 	font-style: italic !important;
 }
-.sunlight-html .sunlight-entity, .sunlight-xml .sunlight-entity {
+.sunlight-html .sunlight-entity, 
+.sunlight-xml .sunlight-entity {
 	background-color: #E6E585 !important;
 	color: #000000 !important;
 }
@@ -164,6 +165,7 @@ span.sunlight-highlighted * {
 	font-style: italic !important;
 }
 .sunlight-csharp .sunlight-xmlDocCommentMeta,
+.sunlight-java .sunlight-annotation,
 .sunlight-ruby .sunlight-docComment {
 	color: #666363 !important;
 }

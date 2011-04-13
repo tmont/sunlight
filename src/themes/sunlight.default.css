@@ -168,7 +168,8 @@ span.sunlight-highlighted * {
 	color: #999999 !important;
 	font-style: italic !important;
 }
-.sunlight-csharp .sunlight-xmlDocCommentMeta, 
+.sunlight-csharp .sunlight-xmlDocCommentMeta,
+.sunlight-java .sunlight-annotation,
 .sunlight-ruby .sunlight-docComment {
 	color: #808080 !important;
 }

@@ -2,7 +2,7 @@ PARSING
 - PHP class name highlighting in use statements
 - C# class name highlighting in using aliases
 - CSS property values (none, solid, inset, etc.)
-- Python exponents: 1e3-10
+- Python/Java exponents: 1e3-10
 - PHP constants like PREG_OFFSET_CAPTURE
 - moar php functions! (preg_match and friends...)
 - ruby indented heredocs
@@ -20,7 +20,6 @@ FUNCTIONALITY
 - show whitespace option
 
 LANGUAGES
-- Java
 - PostgreSQL
 - Oracle
 - Perl
@@ -28,6 +27,12 @@ LANGUAGES
 - Razor (ASP.NET MVC)
 - httpd
 - nginx
+- (6502) assembler
+- Lisp
+- Haskell
+- VB.NET
+- C
+- C++
 
 WEB
 - document alternate scope closer definition using regex
@@ -38,3 +43,4 @@ WEB
 - add t-sql to demo
 - add python to demo
 - add ruby to demo
+- add java to demo
