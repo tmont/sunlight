@@ -630,7 +630,13 @@
 				node.className += " sunlight-highlighted";
 
 				if (this.options.lineNumbers === true || (getComputedStyle && this.options.lineNumbers === "automatic" && getComputedStyle(node, "display") === "block")) {
-					var container = document.createElement("div"), lineContainer = document.createElement("pre"), lineCount = node.innerHTML.replace(/[^\n]/g, "").length;
+					var container = document.createElement("div"), lineContainer = document.createElement("pre");
+					
+					//browsers don't render the last trailing newline, so we make sure that the line numbers reflect that
+					//by disregarding the last trailing newline
+					var innerHtml =  node.getElementsByTagName("span")[0].innerHTML;
+					var lineCount = innerHtml.replace(/[^\n]/g, "").length - /\n$/.test(innerHtml);
+					
 					var lineHighlightOverlay, currentLineOverlay, lineHighlightingEnabled = this.options.lineHighlight.length > 0;
 					if (lineHighlightingEnabled) {
 						lineHighlightOverlay = document.createElement("div");

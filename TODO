@@ -12,12 +12,12 @@ TESTING
 
 BUGS
 - get[Next|Previous]NonWsToken() doesn't work in loops
-- last newline is not being rendered
 
 FUNCTIONALITY
 - customizable class prefix
 - code folding
 - show/hide code block
+- show whitespace option
 
 LANGUAGES
 - Java
@@ -32,6 +32,8 @@ LANGUAGES
 WEB
 - document alternate scope closer definition using regex
 - document lineHighlight option
+- document line numbers with trailing newlines in quirks mode
+	- and how it doesn't work at all in IE6
 - add bash to demo
 - add t-sql to demo
 - add python to demo

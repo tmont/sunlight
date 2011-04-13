@@ -3,6 +3,8 @@
 - Bugfixes
 	- fixed bug in number parsing where decimals with more than one digit to the right of the decimal
 	  point were not being parsed as numbers (oops)
+	- fixed bug where code with trailing newlines had too many line numbers (more specifically, browsers
+	  don't render the last trailing newline, so neither will we), doesn't work in IE6, too bad
 - Enhancements
 	- PHP class names after instanceof are highlighted as named idents
 	- added bash lang file
