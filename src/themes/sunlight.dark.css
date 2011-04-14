@@ -86,7 +86,8 @@ span.sunlight-highlighted * {
 	font-weight: bold !important;
 }
 .sunlight-comment, 
-.sunlight-xmlDocCommentContent {
+.sunlight-xmlDocCommentContent,
+.sunlight-nginx .sunlight-ssiCommand {
 	color: #787D31 !important;
 }
 .sunlight-number, 
@@ -99,7 +100,8 @@ span.sunlight-highlighted * {
 .sunlight-javascript .sunlight-globalVariable, 
 .sunlight-globalObject, 
 .sunlight-css .sunlight-id, 
-.sunlight-python .sunlight-attribute {
+.sunlight-python .sunlight-attribute,
+.sunlight-nginx .sunlight-context {
 	color: #FBBDEE !important;
 	font-weight: bold !important;
 }
@@ -118,7 +120,8 @@ span.sunlight-highlighted * {
 .sunlight-openTag, 
 .sunlight-closeTag, 
 .sunlight-xmlOpenTag, 
-.sunlight-xmlCloseTag {
+.sunlight-xmlCloseTag,
+.sunlight-nginx .sunlight-label {
 	background-color: #7373C1 !important;
 }
 .sunlight-content {
@@ -131,7 +134,7 @@ span.sunlight-highlighted * {
 	color: #C8BBF1 !important;
 	font-weight: bold !important;
 }
-.sunlight-php .sunlight-variable,
+.sunlight-variable,
 .sunlight-ruby .sunlight-globalVariable,
 .sunlight-ruby .sunlight-instanceVariable {
 	color: #F5E5B0 !important;

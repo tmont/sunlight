@@ -6,6 +6,7 @@ PARSING
 - PHP constants like PREG_OFFSET_CAPTURE
 - moar php functions! (preg_match and friends...)
 - ruby indented heredocs
+- nginx 3rd party modules: http://wiki.nginx.org/3rdPartyModules#Known_modules
 
 TESTING
 
@@ -17,6 +18,7 @@ FUNCTIONALITY
 - code folding
 - show/hide code block
 - show whitespace option
+- plugin system (externalize all options)
 
 LANGUAGES
 - PostgreSQL
@@ -25,7 +27,6 @@ LANGUAGES
 - ASP.NET
 - Razor (ASP.NET MVC)
 - httpd
-- nginx
 - assembler
 - Lisp
 - Haskell
@@ -34,4 +35,7 @@ LANGUAGES
 - C++
 
 WEB
-- document brainfuck
+- add brainfuck to demo
+- add nginx to demo
+- make demo highlight on demand so it doesn't take forever
+- document additional utility getNextWhile/getPreviousWhile

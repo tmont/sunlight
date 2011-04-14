@@ -683,14 +683,17 @@
 
 	highlighterConstructor.prototype = highlighter;
 
-	var getNextNonWsToken = function(tokens, index, direction) {
+	//gets the next token in the specified direction that while matcher matches the current token
+	var getNextWhile = function(tokens, index, direction, matcher) {
 		direction = direction || 1;
-		var token = tokens[index + direction];
-		if (token !== undefined && token.name === "default") {
-			token = tokens[index + (direction * 2)];
+		var count = 1, token;
+		while (token = tokens[index + (direction * count++)]) {
+			if (!matcher(token)) {
+				return token;
+			}
 		}
-
-		return token;
+		
+		return undefined;
 	};
 
 	//this is crucial for performance
@@ -764,6 +767,7 @@
 		caseInsensitive: false
 	};
 
+	//public facing object
 	window.Sunlight = {
 		version: "1.4",
 		Highlighter: highlighterConstructor,
@@ -807,8 +811,10 @@
 			createHashMap: createHashMap,
 			createBetweenRule: createBetweenRule,
 			createProceduralRule: createProceduralRule,
-			getNextNonWsToken: function(tokens, index) { return getNextNonWsToken(tokens, index, 1); },
-			getPreviousNonWsToken: function(tokens, index) { return getNextNonWsToken(tokens, index, -1); },
+			getNextNonWsToken: function(tokens, index) { return getNextWhile(tokens, index, 1, function(token) { return token.name === "default"; }); },
+			getPreviousNonWsToken: function(tokens, index) { return getNextWhile(tokens, index, -1, function(index) { return token.name === "default"; }); },
+			getNextWhile: function(tokens, index, matcher) { return getNextWhile(tokens, index, 1, matcher); },
+			getPreviousWhile: function(tokens, index, matcher) { return getNextWhile(tokens, index, -1, matcher); },
 			whitespace: { token: "default", optional: true }
 		}
 	};

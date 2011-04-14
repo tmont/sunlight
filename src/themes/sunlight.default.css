@@ -15,6 +15,7 @@
 .sunlight-container > .sunlight-highlighted {
 	white-space: pre;
 	overflow-x: auto;
+	overflow-y: hidden; /* ie requires this wtf? */
 }
 span.sunlight-highlighted {
 	z-index: 1;
@@ -85,7 +86,8 @@ span.sunlight-highlighted * {
 }
 
 .sunlight-comment, 
-.sunlight-xmlDocCommentContent {
+.sunlight-xmlDocCommentContent,
+.sunlight-nginx .sunlight-ssiCommand {
 	color: #009900 !important;
 }
 .sunlight-number {
@@ -96,7 +98,8 @@ span.sunlight-highlighted * {
 .sunlight-constant, 
 .sunlight-javascript .sunlight-globalVariable, 
 .sunlight-globalObject, 
-.sunlight-python .sunlight-attribute {
+.sunlight-python .sunlight-attribute,
+.sunlight-nginx .sunlight-context {
 	color: #2B91AF !important;
 }
 .sunlight-keyword, 
@@ -111,7 +114,8 @@ span.sunlight-highlighted * {
 .sunlight-openTag, 
 .sunlight-closeTag, 
 .sunlight-xmlOpenTag, 
-.sunlight-xmlCloseTag {
+.sunlight-xmlCloseTag,
+.sunlight-nginx .sunlight-label {
 	background-color: #FFFF99 !important;
 	color: #000000 !important;
 }
@@ -124,7 +128,7 @@ span.sunlight-highlighted * {
 	color: #B069AF !important;
 }
 
-.sunlight-php .sunlight-variable,
+.sunlight-variable,
 .sunlight-ruby .sunlight-globalVariable,
 .sunlight-ruby .sunlight-instanceVariable {
 	color: #8F41AA !important;

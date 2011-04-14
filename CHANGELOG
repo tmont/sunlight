@@ -1,7 +1,8 @@
 1.4 2011-04-xx
 --------------
 - Enhancments
-	- new languages: brainfuck (awwwwwwww yeeeeeeeeeah)
+	- new languages: brainfuck (awwwwwwww yeeeeeeeeeah), nginx
+	- added getNextWhile/getPreviousWhile utility functions
 
 1.3 2011-04-13
 --------------
@@ -13,7 +14,7 @@
 - Enhancements
 	- PHP class names after instanceof are highlighted as named idents
 	- new languages: bash, tsql, python, ruby, java
-	- added line highlighting via linHighlight option
+	- added line highlighting via lineHighlight option
 
 1.2 2011-04-09
 --------------
