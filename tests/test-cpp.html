@@ -1,0 +1,132 @@
+<html>
+
+	<head>
+		<script type="text/javascript" src="../src/sunlight.js"></script>
+		<script type="text/javascript" src="../src/lang/sunlight.cpp.js"></script>
+		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.default.css" />
+	</head>
+
+	<body>
+<pre id="code" class="sunlight-highlight-cpp">#include &lt;iostream&gt;
+using namespace std;
+
+float Perimeter(float l, float w) {
+    double p;
+
+    p = 2 * (l + w);
+    return p;
+}
+
+//http://hg.mozilla.org/tracemonkey/file/dc6ce44bedd4/chrome/src/nsChromeRegistry.cpp
+void
+nsChromeRegistry::LogMessageWithContext(nsIURI* aURL, PRUint32 aLineNumber, PRUint32 flags,
+                                        const char* aMsg, ...)
+{
+  nsresult rv;
+
+  nsCOMPtr&lt;nsIConsoleService&gt; console 
+    (do_GetService(NS_CONSOLESERVICE_CONTRACTID));
+
+  nsCOMPtr&lt;nsIScriptError&gt; error
+    (do_CreateInstance(NS_SCRIPTERROR_CONTRACTID));
+  if (!console || !error)
+    return;
+
+  va_list args;
+  va_start(args, aMsg);
+  char* formatted = PR_vsmprintf(aMsg, args);
+  va_end(args);
+  if (!formatted)
+    return;
+
+  nsCString spec;
+  if (aURL)
+    aURL-&gt;GetSpec(spec);
+
+  rv = error-&gt;Init(NS_ConvertUTF8toUTF16(formatted).get(),
+                   NS_ConvertUTF8toUTF16(spec).get(),
+                   nsnull,
+                   aLineNumber, 0, flags, "chrome registration");
+  PR_smprintf_free(formatted);
+
+  if (NS_FAILED(rv))
+    return;
+
+  console-&gt;LogMessage(error);
+}
+
+int regexStuff() {
+	std::regex phoneRegex(R"(\d{3}-\d{4})");
+	std::string input = "Jenny: 867-5309";
+
+	auto cur = input.begin(), end = input.end();
+	std::smatch phoneMatch;
+	while (std::regex_search(cur, end, phoneMatch, phoneRegex) {
+		std::cout &lt;&lt; "I got it: " &lt;&lt; phoneMatch.str() &lt;&lt; std::endl;
+		cur = phoneMatch[0].second;
+	}
+}
+
+class IntList {
+	public:
+		IntList();
+		void AddToEnd(int k);
+		void Print(ostream &amp;output) const;
+
+	private:
+		static const int SIZE = 10;
+		int *Items;
+		int numItems;
+		int arraySize;
+};
+
+class CRectangle {
+	int width, height;
+	public:
+		int area() {
+			return width * height;
+		}
+
+		void convert(CSquare a);
+};
+
+class CSquare {
+	private:
+		int side;
+	public:
+		void set_side(int a) {
+			side = a;
+		}
+
+		friend class CRectangle;
+};
+
+void CRectangle::convert(CSquare a) {
+	width = a.side;
+	height = a.side;
+}
+
+template &lt;typename T&gt;
+inline T const&amp; max(T const&amp; a, T const&amp; b) {
+    // if a &lt; b then use b else use a
+    return  a &lt; b ? b : a;
+}
+
+template &lt;class T, int N&gt;
+void mysequence&lt;T, N&gt;::setmember(int x, T value) {
+	memblock[x] = value;
+}
+
+template &lt;class T, int N&gt;
+T mysequence&lt;T, N&gt;::getmember(int x) {
+	return memblock[x];
+}
+</pre>
+	</body>
+
+	<script type="text/javascript"  src="test.js"></script>
+	<script type="text/javascript">//<![CDATA[
+		//assertExists("rule", "@import", "css rule declaration");
+
+	//]]></script>
+</html>

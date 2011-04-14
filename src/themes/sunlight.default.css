@@ -165,7 +165,8 @@ span.sunlight-highlighted * {
 }
 
 /* c# */
-.sunlight-csharp .sunlight-pragma {
+.sunlight-csharp .sunlight-pragma,
+.sunlight-cpp .sunlight-preprocessorDirective {
 	color: #999999 !important;
 	font-style: italic !important;
 }
