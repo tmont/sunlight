@@ -61,6 +61,7 @@
 	};
 
 	var createProceduralRule = function(startIndex, direction, tokenRequirements, caseInsensitive) {
+		tokenRequirements = tokenRequirements.slice(0);
 		return function(tokens) {
 			var tokenIndexStart = startIndex;
 			if (direction === 1) {
@@ -175,8 +176,8 @@
 				};
 
 				return evaluate(context.language.namedIdentRules.custom)
-					|| evaluate(context.language.namedIdentRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData.slice(0), context.language.caseInsensitive); })
-					|| evaluate(context.language.namedIdentRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData.slice(0), context.language.caseInsensitive); })
+					|| evaluate(context.language.namedIdentRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData, context.language.caseInsensitive); })
+					|| evaluate(context.language.namedIdentRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData, context.language.caseInsensitive); })
 					|| evaluate(context.language.namedIdentRules.between, function(ruleData) { return createBetweenRule(context.index, ruleData.opener, ruleData.closer, context.language.caseInsensitive); })
 					|| defaultHandleToken("ident")(context);
 			}
@@ -812,7 +813,7 @@
 			createBetweenRule: createBetweenRule,
 			createProceduralRule: createProceduralRule,
 			getNextNonWsToken: function(tokens, index) { return getNextWhile(tokens, index, 1, function(token) { return token.name === "default"; }); },
-			getPreviousNonWsToken: function(tokens, index) { return getNextWhile(tokens, index, -1, function(index) { return token.name === "default"; }); },
+			getPreviousNonWsToken: function(tokens, index) { return getNextWhile(tokens, index, -1, function(token) { return token.name === "default"; }); },
 			getNextWhile: function(tokens, index, matcher) { return getNextWhile(tokens, index, 1, matcher); },
 			getPreviousWhile: function(tokens, index, matcher) { return getNextWhile(tokens, index, -1, matcher); },
 			whitespace: { token: "default", optional: true }

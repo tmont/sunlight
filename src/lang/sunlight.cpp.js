@@ -31,6 +31,11 @@
 			basicType: {
 				values: ["ptrdiff_t", "size_t", "nullptr_t", "max_align_t"],
 				boundary: "\\b"
+			},
+			
+			ellipsis: {
+				values: ["..."],
+				boundary: ""
 			}
 		},
 
@@ -42,34 +47,121 @@
 		},
 		
 		customParseRules: [	
-			//preprocessor directive
-			//http://www.cppreference.com/wiki/preprocessor/start
-			// function() {
-				// var directives = sunlight.util.createHashMap(["define", "undef", "include", "if", "ifdef", "ifndef", "else", "elif", "line", "error", "pragma", "warning"], "\\b", false);
-				// return function(context) {
-					// var current = context.reader.current();
-					// if (current !== "#") {
-						// return null;
-					// }
-					
-					// return null;
-				// };
-			// }()
 		],
 
 		identFirstLetter: /[A-Za-z_]/,
 		identAfterFirstLetter: /\w/,
 
 		namedIdentRules: {
+			custom: [
+				//pointer default declarations, e.g. pointer* myPointer;
+				function() {
+					var precedes = [[
+							sunlight.util.whitespace, 
+							{ token: "operator", values: ["*", "**"] }, 
+							{ token: "default" },
+							{ token: "ident" }, 
+							sunlight.util.whitespace, 
+							{ token: "punctuation", values: [";"] }
+						], [
+							//function parameters
+							{ token: "default" },
+							{ token: "operator", values: ["&"] },
+							sunlight.util.whitespace,
+							{ token: "ident" }
+							
+						]
+					];
+					
+					return function(context) {
+						//basically, can't be on the right hand side of an equals sign
+						//so we traverse the tokens backward, and if we run into a "=" before a ";" or a "{", it's no good
+						
+						var precedesIsSatisfied = function(tokens) {
+							for (var i = 0; i < precedes.length; i++) {
+								if (sunlight.util.createProceduralRule(context.index + 1, 1, precedes[i], false)(tokens)) {
+									return true;
+								}
+							}
+							
+							return false;
+						}(context.tokens);
+						
+						if (!precedesIsSatisfied) {
+							return false;
+						}
+						
+						//make sure we're not on the left side of the equals sign
+						var token, index = context.index;
+						while (token = context.tokens[--index]) {
+							if (token.name === "punctuation" && (token.value === ";" || token.value === "{")) {
+								return true;
+							}
+							
+							if (token.name === "operator" && token.value === "=") {
+								return false;
+							}
+						}
+						
+						return false;
+					};
+				}(),
+				
+				//casting
+				function() {
+					var precedes = [
+						[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "ident" }],
+						[{ token: "operator", values: ["*", "**"] }, sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "operator", values: ["&"], optional: true }, { token: "ident" }]
+					];
+				
+					return function(context) {
+						var precedesIsSatisfied = function(tokens) {
+							for (var i = 0; i < precedes.length; i++) {
+								if (sunlight.util.createProceduralRule(context.index + 1, 1, precedes[i], false)(tokens)) {
+									return true;
+								}
+							}
+							
+							return false;
+						}(context.tokens);
+						
+						if (!precedesIsSatisfied) {
+							return false;
+						}
+						
+						//make sure the previous tokens are "(" and then not a keyword
+						//this'll make sure that things like "if (foo) doSomething();" won't color "foo"
+						
+						var token, index = context.index;
+						while (token = context.tokens[--index]) {
+							if (token.name === "punctuation" && token.value === "(") {
+								var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, index);
+								if (prevToken && prevToken.name === "keyword") {
+									return false;
+								}
+								
+								return true;
+							}
+						}
+						
+						return false;
+					};
+				}()
+			],
+			
 			follows: [
 				[{ token: "keyword", values: ["enum", "struct", "union", "class"] }, sunlight.util.whitespace],
 			],
 			
 			precedes: [
+				//normal parameters/declarations
 				[{ token: "default" }, { token: "ident" }],
 				
+				[sunlight.util.whitespace, { token: "operator", values: ["*", "**"] }, { token: "default" }, { token: "ident" }, sunlight.util.whitespace, { token: "operator", values: ["=", ","] }],
+				[sunlight.util.whitespace, { token: "operator", values: ["*", "**"] }, { token: "default" }, { token: "operator", values: ["&"] }, sunlight.util.whitespace, { token: "ident" }, sunlight.util.whitespace, { token: "operator", values: ["=", ","] }],
+				
 				//e.g. "std" in "std::char_traits<CharT>"
-				[sunlight.util.whitespace, { token: "operator", values: ["::"] }],
+				[sunlight.util.whitespace, { token: "operator", values: ["::"] }]
 			]
 		},
 		
@@ -78,7 +170,7 @@
 			"==", "=",
 			"+=", "++", "+",
 			"->*", "->", "-=", "--", "-",
-			"*=", "*",
+			"**", "*=", "*", //added ** for double pointer convenience
 			"/=", "/",
 			"%=", "%",
 			"!=", "!",

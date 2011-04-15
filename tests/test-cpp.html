@@ -84,7 +84,14 @@ class CRectangle {
 	int width, height;
 	public:
 		int area() {
-			return width * height;
+			lolPointer * myPointer = (pointerCast*)cast;
+			lolPointer2** anotherPointer;
+			other myPointer = (regularCast)cast;
+			padd = (ReferenceCast*)&amp;d;
+			int result = firstIdent1 * secondIdent1;
+			result = (firstIdent2 * secondIdent2);
+			result = firstIdent3 & secondIdent3;
+			result = (firstIdent4 & secondIdent4);
 		}
 
 		void convert(CSquare a);
@@ -126,7 +133,48 @@ T mysequence&lt;T, N&gt;::getmember(int x) {
 
 	<script type="text/javascript"  src="test.js"></script>
 	<script type="text/javascript">//<![CDATA[
-		//assertExists("rule", "@import", "css rule declaration");
+		assertExists("preprocessorDirective", "#include <iostream>", "preprocessor");
+		
+		assertExists("comment", "// if a < b then use b else use a", "single line comment");
+		
+		assertExists("keyword", "using", "using keyword");
+		assertExists("keyword", "namespace", "namespace keyword");
+		assertExists("keyword", "float", "float keyword");
+		assertExists("keyword", "double", "double keyword");
+		assertExists("keyword", "return", "return keyword");
+		assertExists("keyword", "void", "void keyword");
+		assertExists("keyword", "const", "const keyword");
+		assertExists("keyword", "char", "char keyword");
+		assertExists("keyword", "if", "if keyword");
+		assertExists("keyword", "friend", "friend keyword");
+		assertExists("keyword", "class", "class keyword");
+		assertExists("keyword", "template", "template keyword");
+		assertExists("keyword", "typename", "typename keyword");
+		
+		assertExists("string", "\"chrome registration\"", "double quoted string");
+		
+		assertExists("named-ident", "nsIURI", "class name with pointer in parameter list");
+		assertExists("named-ident", "PRUint32", "class name in parameter list");
+		assertExists("named-ident", "PRUint32", "class name in parameter list");
+		assertExists("named-ident", "nsresult", "class name in default declaration");
+		assertExists("named-ident", "std", "namespace name before ::");
+		assertExists("named-ident", "regex", "class name after ::");
+		assertExists("named-ident", "IntList", "class name");
+		assertExists("named-ident", "ostream", "class name in parameter list with reference");
+		assertExists("named-ident", "lolPointer", "class name with pointer in declaration");
+		assertExists("named-ident", "lolPointer2", "class name with double pointer in declaration");
+		assertExists("named-ident", "regularCast", "cast");
+		assertExists("named-ident", "pointerCast", "cast with pointer");
+		assertExists("named-ident", "ReferenceCast", "cast with reference and pointer");
+		
+		assertExists("ident", "firstIdent1", "ident before *");
+		assertExists("ident", "secondIdent1", "ident after *");
+		assertExists("ident", "firstIdent2", "ident before * in parens");
+		assertExists("ident", "secondIdent2", "ident after * in parens");
+		assertExists("ident", "firstIdent3", "ident before &");
+		assertExists("ident", "secondIdent3", "ident after &");
+		assertExists("ident", "firstIdent4", "ident before & in parens");
+		assertExists("ident", "secondIdent4", "ident after & in parens");
 
 	//]]></script>
 </html>

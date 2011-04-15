@@ -7,6 +7,7 @@ PARSING
 - moar php functions! (preg_match and friends...)
 - ruby indented heredocs
 - nginx 3rd party modules: http://wiki.nginx.org/3rdPartyModules#Known_modules
+- perl generic strings: http://perldoc.perl.org/perlop.html#Quote-and-Quote-like-Operators
 
 TESTING
 
