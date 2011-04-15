@@ -20,6 +20,7 @@ FUNCTIONALITY
 - show/hide code block
 - show whitespace option
 - plugin system (externalize all options)
+- remove hideous code duplication (e.g. between c#, java and c++)
 
 LANGUAGES
 - PostgreSQL
@@ -32,8 +33,6 @@ LANGUAGES
 - Lisp
 - Haskell
 - VB.NET
-- C
-- C++
 
 WEB
 - add brainfuck to demo
