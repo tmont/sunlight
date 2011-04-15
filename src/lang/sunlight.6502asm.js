@@ -1,0 +1,121 @@
+(function(sunlight, undefined){
+
+    if (sunlight === undefined || sunlight["registerLanguage"] === undefined) {
+        throw "Include sunlight.js before including language files";
+    }
+   
+    sunlight.registerLanguage("6502asm", {
+		keywords: [
+			//conditional branch ops
+			"BCC", "BCS", "BEQ", "BMI", "BNE", "BPL", "BVC", "BVS",
+			//comparison ops
+			"CMP", "CPX", "CPY",
+			//flag ops
+			"CLC", "CLD", "CLI", "CLV", "SEC", "SED", "SEI",
+			//register ops
+			"DEX", "DEY", "INX", "INY", "TAX", "TAY", "TXA", "TYA",
+			//regular ops
+			"BRK", "NOP", "RTI", "RTS", "ASL", "LSR", "ROL", "ROR", "ADC", "AND", "BIT", "DEC", "EOR", "INC", "JMP", "JSR", "LDA", "LDX", "LDY", "ORA", "SBC", "STA", "STX", "STY",
+			//stack ops
+			"PHA", "PHP", "PLA", "PLP", "TSX", "TXS",
+			
+			//pre-processor pseudo-ops (not a complete list!)
+			"BYTE", "WORD", "DS", "ORG", "RORG", "ALIGN", "MAC", "ENDM", "SUBROUTINE"
+		],
+		
+		scopes: {
+			string: [["\"", "\""]],
+			comment: [[";", "\n", null, true]],
+			constant: [["#", { regex: /\s/, length: 1 }, null, true]]
+		},
+		
+		operators: [
+			">>","<<",">=","<=","==","!=","&&","||","~","-","<",">","*","/","%","+","-","=","&","^","|","?"
+		],
+		
+		identFirstLetter: /[A-Za-z]/, //must be alpha
+		identAfterFirstLetter: /\w/, //alphanumeric and underscore
+		
+		customTokens: {
+			illegalOpcode: {
+				values: [
+					//illegal ops
+					"SLO", "RLA", "SRE", "RRA", "SAX", "LAX", "DCP", "ISC", "ANC", "ALR", "ARR", "XAA", "AXS", "AHX", "SHY", "SHX", "TAS", "LAS"	
+				],
+				boundary: "\\b"
+			}
+		},
+		
+		customParseRules: [
+			//labels
+			function() {
+				var validLabelOps = ["BCC", "BCS", "BEQ", "BMI", "BNE", "BPL", "BVC", "BVS", "JMP", "JSR"]
+				
+				return function(context) {
+					if (!/[A-Za-z]/.test(context.reader.current())) {
+						return null;
+					}
+					
+					var prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
+					if (!prevToken || prevToken.name !== "keyword" || !sunlight.util.contains(validLabelOps, prevToken.value, true)) {
+						if (context.count() > 0 && !/\n$/.test(context.defaultData.text)) {
+							//just a regular ident
+							return null;
+						}
+					}
+					
+					//read until the end of the ident
+					var label = context.reader.current();
+					var peek, line = context.reader.getLine(), column = context.reader.getColumn();
+					while ((peek = context.reader.peek()) !== context.reader.EOF) {
+						if (!/\w/.test(peek)) {
+							break;
+						}
+						
+						label += context.reader.read();
+					}
+					
+					return context.createToken("label", label, line, column);
+				}	
+			}()
+		],
+		
+		caseInsensitive: true,
+		
+		numberParser: function(context) {
+			var current = context.reader.current(), number, line = context.reader.getLine(), column = context.reader.getColumn();
+		    
+			//is first char a digit?
+			if (!/\d/.test(current)) {
+				//does it start with "$" (hex) or "%" (binary)?
+				if (current !== "$" && current !== "%") {
+					return null;
+				}
+		        
+				//hex/binary number
+				number = current + context.reader.read();
+			} else {
+				number = current;
+				//is it a decimal?
+				if (context.reader.peek() === ".") {
+					number += context.reader.read();
+				}
+			}
+		    
+			//easy way out: read until it's not a number or letter a-f
+			//this will work for hex ($FF), octal (012), decimal and binary
+		    
+			var peek;
+			while ((peek = context.reader.peek()) !== context.reader.EOF) {
+				if (!/[A-Fa-f0-9]/.test(peek)) {
+					break;
+				}
+		        
+				number += context.reader.read();
+			}
+		    
+			return context.createToken("number", number, line, column);
+		}
+    });
+	
+}(window["Sunlight"]));

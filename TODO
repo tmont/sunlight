@@ -39,3 +39,4 @@ WEB
 - add nginx to demo
 - make demo highlight on demand so it doesn't take forever
 - document additional utility getNextWhile/getPreviousWhile
+- update number parser example

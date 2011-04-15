@@ -130,7 +130,8 @@ span.sunlight-highlighted * {
 }
 .sunlight-function, 
 .sunlight-globalFunction,
-.sunlight-ruby .sunlight-specialFunction {
+.sunlight-ruby .sunlight-specialFunction,
+.sunlight-6502asm .sunlight-illegalOpcode {
 	color: #C8BBF1 !important;
 	font-weight: bold !important;
 }
