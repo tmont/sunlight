@@ -124,7 +124,7 @@ void mysequence&lt;T, N&gt;::setmember(int x, T value) {
 	memblock[x] = value;
 }
 
-template &lt;class T, int N&gt;
+template &lt;class MyTemplateClass, int N&gt;
 T mysequence&lt;T, N&gt;::getmember(int x) {
 	return memblock[x];
 }
@@ -166,6 +166,7 @@ T mysequence&lt;T, N&gt;::getmember(int x) {
 		assertExists("named-ident", "regularCast", "cast");
 		assertExists("named-ident", "pointerCast", "cast with pointer");
 		assertExists("named-ident", "ReferenceCast", "cast with reference and pointer");
+		assertExists("named-ident", "nsIConsoleService", "class name inside <>");
 		
 		assertExists("ident", "firstIdent1", "ident before *");
 		assertExists("ident", "secondIdent1", "ident after *");
@@ -175,6 +176,7 @@ T mysequence&lt;T, N&gt;::getmember(int x) {
 		assertExists("ident", "secondIdent3", "ident after &");
 		assertExists("ident", "firstIdent4", "ident before & in parens");
 		assertExists("ident", "secondIdent4", "ident after & in parens");
+		assertExists("ident", "MyTemplateClass", "ident after class in <>");
 
 	//]]></script>
 </html>

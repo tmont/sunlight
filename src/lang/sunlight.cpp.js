@@ -3,6 +3,9 @@
 	if (sunlight === undefined || sunlight["registerLanguage"] === undefined) {
 		throw "Include sunlight.js before including language files";
 	}
+	
+	var primitives = ["int", "char", "void", "long", "signed", "unsigned", "double", "bool", "typename", "class", "short", "wchar_t", "struct"];
+	var acceptableKeywords = ["int", "char", "void", "long", "signed", "unsigned", "double", "bool", "typename", "class", "short", "wchar_t"];
 
 	sunlight.registerLanguage("cpp", {
 		//http://www.cppreference.com/wiki/keywords/start
@@ -146,11 +149,208 @@
 						
 						return false;
 					};
-				}()
+				}(),
+			
+				//generic definitions/params between "<" and ">"
+				function(context) {
+					//between < and > and preceded by an ident and not preceded by "class"
+					var index = context.index, token;
+					
+					//if the previous token is a keyword, then we don't care about it
+					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
+					if (!prevToken || prevToken.name === "keyword") {
+						return false;
+					}
+					
+					//look for "<" preceded by an ident but not "class"
+					//if we run into ">" before "," or "<" then it's a big fail
+					var foundIdent = false, bracketCountLeft = [0, 0], bracketCountRight = [0, 0];
+					while ((token = context.tokens[--index]) !== undefined) {
+						if (token.name === "keyword" && token.value === "class") {
+							//this must be a generic class type definition, e.g. Foo<T>, and we don't want to color the "T"
+							return false;
+						}
+						
+						if (token.name === "operator") {
+							switch (token.value) {
+								case "<":
+								case "<<":
+									bracketCountLeft[0] += token.value.length;
+									break;
+								case ">":
+								case ">>":
+									if (bracketCountLeft[0] === 0) {
+										return false;
+									}
+									
+									bracketCountLeft[1] += token.value.length;
+									break;
+								case ".":
+									//allows generic method invocations, like "Foo" in "foo.Resolve<Foo>()"
+									break;
+								default:
+									return false;
+							}
+							
+							continue;
+						}
+						
+						if (
+							(token.name === "keyword" && sunlight.util.contains(acceptableKeywords, token.value))
+							|| token.name === "default"
+							|| (token.name === "punctuation" && token.value === ",")
+						) {
+							continue;
+						}
+						
+						if (token.name === "ident") {
+							foundIdent = true;
+							continue;
+						}
+						
+						//anything else means we're no longer in a generic definition
+						break;
+					}
+					
+					if (!foundIdent || bracketCountLeft[0] === 0) {
+						
+						//not inside a generic definition
+						return false;
+					}
+					
+					//now look forward to make sure the generic definition is closed
+					//this avoids false positives like "foo < bar"
+					index = context.index;
+					while ((token = context.tokens[++index]) !== undefined) {
+						if (token.name === "operator" && (token.value === ">" || token.value === ">>")) {
+							return true;
+						}
+						
+						if (
+							(token.name === "keyword" && sunlight.util.contains(acceptableKeywords, token.value))
+							|| (token.name === "operator" && sunlight.util.contains(["<", "<<", ">", ">>"], token.value))
+							|| (token.name === "punctuation" && token.value === ",")
+							|| token.name === "ident"
+							|| token.name === "default"
+						) {
+							continue;
+						}
+						
+						return false;
+					}
+					
+					return false;
+				},
+				
+				//ident before generic definitions, e.g. "foo" in "foo<bar>"
+				function(context) {
+					//if it's preceded by an ident or a primitive/alias keyword then it's no good (i.e. a generic method definition like "public void Foo<T>")
+					//also a big fail if it is preceded by a ., i.e. a generic method invocation like container.Resolve()
+					var token = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
+					if (token !== undefined) {
+						if (
+							token.name === "ident" 
+							|| (token.name === "keyword" && sunlight.util.contains(primitives.concat(["string", "object", "void"]), token.value))
+							|| (token.name === "operator" && token.value === ".")
+						) {
+							return false;
+						}
+					}
+					
+					//needs to be immediately followed by <, then by idents, acceptable keywords and ",", and then closed by >, then immediately followed by an ident
+					token = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					if (!token || token.name !== "operator" || token.value !== "<") {
+						return false;
+					}
+					
+					var index = context.index, bracketCount = [0, 0], token; //open (<), close (>)
+					while ((token = context.tokens[++index]) !== undefined) {
+						if (token.name === "operator") {
+							switch (token.value) {
+								case "<":
+									bracketCount[0]++;
+									break;
+								case "<<":
+									bracketCount[0] += 2;
+									break;
+								case ">":
+									bracketCount[1]++;
+									break;
+								case ">>":
+									bracketCount[1] += 2;
+									break;
+								default:
+									return false;
+							}
+							
+							//if bracket counts match, get the f out
+							if (bracketCount[0] === bracketCount[1]) {
+								break;
+							}
+							
+							continue;
+						}
+						
+						if (
+							token.name === "default"
+							|| token.name === "ident"
+							|| (token.name === "keyword" && sunlight.util.contains(acceptableKeywords, token.value))
+							|| (token.name === "punctuation" && token.value === ",")
+						) {
+							continue;
+						}
+						
+						return false;
+					}
+					
+					//verify bracket count
+					if (bracketCount[0] !== bracketCount[1]) {
+						//mismatched generics, could be something scary
+						return false;
+					}
+					
+					//next token should be optional whitespace followed by an ident
+					token = context.tokens[++index];
+					if (!token || (token.name !== "default" && token.name !== "ident")) {
+						return false;
+					}
+					
+					if (token.name === "default") {
+						token = context.tokens[++index];
+						if (!token || token.name !== "ident") {
+							return false;
+						}
+					}
+					
+					return true;
+				},
+				
+				//after class keyword but inside <>
+				function(context) {
+					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
+					if (!prevToken || prevToken.name !== "keyword" || prevToken.value !== "class") {
+						return false;
+					}
+					
+					//make sure we're not inside <>
+					//easiest way is to go forward and verify that we hit a "{" before a ">"
+					var token, index = context.index;
+					while (token = context.tokens[++index]) {
+						if (token.name === "punctuation" && token.value === "{") {
+							return true;
+						}
+						
+						if (token.name === "operator" && sunlight.util.contains([">", ">>"], token.value)) {
+							return false;
+						}
+					}
+					
+					return false;
+				}
 			],
 			
 			follows: [
-				[{ token: "keyword", values: ["enum", "struct", "union", "class"] }, sunlight.util.whitespace],
+				[{ token: "keyword", values: ["enum", "struct", "union"] }, sunlight.util.whitespace],
 			],
 			
 			precedes: [
