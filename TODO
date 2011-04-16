@@ -16,12 +16,16 @@ BUGS
 
 FUNCTIONALITY
 - customizable class prefix
-- code folding
 - show/hide code block
 - show whitespace option
 - plugin system (externalize all options)
 - remove hideous code duplication (e.g. between c#, java and c++)
 - handle continuations in custom parse rules (preferrably in some uniform way)
+
+FUNCTIONALITY - 2.0
+- code folding
+- autoformat code
+- scope stacking
 
 LANGUAGES
 - PostgreSQL
