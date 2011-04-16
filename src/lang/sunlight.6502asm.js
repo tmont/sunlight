@@ -17,16 +17,12 @@
 			//regular ops
 			"BRK", "NOP", "RTI", "RTS", "ASL", "LSR", "ROL", "ROR", "ADC", "AND", "BIT", "DEC", "EOR", "INC", "JMP", "JSR", "LDA", "LDX", "LDY", "ORA", "SBC", "STA", "STX", "STY",
 			//stack ops
-			"PHA", "PHP", "PLA", "PLP", "TSX", "TXS",
-			
-			//pre-processor pseudo-ops (not a complete list!)
-			"BYTE", "WORD", "DS", "ORG", "RORG", "ALIGN", "MAC", "ENDM", "SUBROUTINE"
+			"PHA", "PHP", "PLA", "PLP", "TSX", "TXS"
 		],
 		
 		scopes: {
 			string: [["\"", "\""]],
-			comment: [[";", "\n", null, true]],
-			constant: [["#", { regex: /\s/, length: 1 }, null, true]]
+			comment: [[";", "\n", null, true]]
 		},
 		
 		operators: [
@@ -43,10 +39,52 @@
 					"SLO", "RLA", "SRE", "RRA", "SAX", "LAX", "DCP", "ISC", "ANC", "ALR", "ARR", "XAA", "AXS", "AHX", "SHY", "SHX", "TAS", "LAS"	
 				],
 				boundary: "\\b"
+			},
+			
+			pseudoOp: {
+				values: [
+					//pre-processor pseudo-ops (not a complete list!)
+					"BYTE", "WORD", "DS", "ORG", "RORG", "ALIGN", "MAC", "ENDM", "SUBROUTINE"
+				],
+				boundary: "\\b"
 			}
 		},
 		
 		customParseRules: [
+			function(context) {
+				var current = context.reader.current(), line = context.reader.getLine(), column = context.reader.getColumn();
+				if (current !== "#") {
+					return null;
+				}
+				
+				//quick and dirty: everything between "#" (inclusive) and whitespace (exclusive) is a constant
+                //too dirty.  Need to account for parens and square brackets, whitespace can appear inside them.
+                //New routine: once inside () or [], anything goes, but once outside, terminate with whitespace
+                var parenCount = 0;
+                var bracketCount = 0;
+				var peek = context.reader.peek();
+				value = current;
+                while (parenCount > 0 || bracketCount > 0 || !/\s/.test(peek)) {
+                    if (peek === ")" && parenCount > 0) {
+						parenCount--;
+					}
+                    if (peek === "]" && bracketCount > 0) {
+						bracketCount--;
+					}
+                    if (peek === "(") {
+						parenCount++;
+					}
+                    if (peek === "[") {
+						bracketCount++;
+					}
+					
+                    value += context.reader.read();   
+					peek = context.reader.peek();
+                }
+				
+				return context.createToken("constant", value, line, column);
+			},
+			
 			//labels
 			function() {
 				var validLabelOps = ["BCC", "BCS", "BEQ", "BMI", "BNE", "BPL", "BVC", "BVS", "JMP", "JSR"]

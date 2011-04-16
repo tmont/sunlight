@@ -134,7 +134,8 @@ span.sunlight-highlighted * {
 .sunlight-ruby .sunlight-instanceVariable {
 	color: #8F41AA !important;
 }
-.sunlight-regexLiteral {
+.sunlight-regexLiteral,
+.sunlight-6502asm .sunlight-pseudoOp {
 	color: #FF00B2 !important;
 }
 
@@ -265,4 +266,11 @@ span.sunlight-highlighted * {
 }
 .sunlight-brainfuck .sunlight-openLoop, .sunlight-brainfuck .sunlight-closeLoop {
 	background-color: #FFFFFF !important;
+}
+
+/* 6502 asm */
+.sunlight-6502asm .sunlight-label {
+	font-weight: bold !important;
+	color: #000000 !important;
+	background: none !important;
 }

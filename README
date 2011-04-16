@@ -33,8 +33,17 @@ Included language files
 - Brainfuck
 - nginx
 - C/C++
+- 6502 assembler
 
 Included themes
 ---------------
 - sunlight.default.css
 - sunlight.dark.css
+
+Authors
+-------
+Tommy Montgomery <http://tommymontgomery.com/>
+
+Contributors
+------------
+Bob Montgomery

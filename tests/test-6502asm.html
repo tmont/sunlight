@@ -65,7 +65,8 @@ BackFromSwitchDraw1
    lda (HeroGfx1Ptrb),Y
    sta GRP0                    ;+10     24		too late?  No.
 
-   lda #0
+   lda #&lt;[3.14 * 100]
+   sta pi
    sta PF1                     ;+5      29      too late?  Maybe.
 BackFromNoDraw1
 
@@ -114,10 +115,12 @@ BackFromSwitchDraw3            ;+11     61
 		assertExists("keyword", "bne", "bne keyword");
 		assertExists("keyword", "nop", "nop keyword");
 		assertExists("keyword", "ldy", "ldy keyword");
-		assertExists("keyword", "byte", "byte keyword");
+		
+		assertExists("pseudoOp", "byte", "byte pseudo op");
 		
 		assertExists("constant", "#MAID_HEIGHT", "constant");
-		assertExists("constant", "#0", "constant");
+		//assertExists("constant", "#0", "constant");
+		assertExists("constant", "#<[3.14 * 100]", "constant with brackets and whitespace");
 		
 		assertExists("comment", ";+2      72", "comment");
 		

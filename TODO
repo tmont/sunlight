@@ -21,6 +21,7 @@ FUNCTIONALITY
 - show whitespace option
 - plugin system (externalize all options)
 - remove hideous code duplication (e.g. between c#, java and c++)
+- handle continuations in custom parse rules (preferrably in some uniform way)
 
 LANGUAGES
 - PostgreSQL
@@ -29,7 +30,6 @@ LANGUAGES
 - ASP.NET
 - Razor (ASP.NET MVC)
 - httpd
-- assembler
 - Lisp
 - Haskell
 - VB.NET
@@ -37,6 +37,9 @@ LANGUAGES
 WEB
 - add brainfuck to demo
 - add nginx to demo
+- add 6502 asm to demo
 - make demo highlight on demand so it doesn't take forever
 - document additional utility getNextWhile/getPreviousWhile
-- update number parser example
+- document optional caseInsensitive parameter to contains()
+- document continuations for incomplete parses on custom rules
+- update number parser example with one that actually parses numbers correctly

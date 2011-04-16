@@ -1,7 +1,7 @@
 1.4 2011-04-xx
 --------------
 - Enhancments
-	- new languages: brainfuck (awwwwwwww yeeeeeeeeeah), nginx, c/c++
+	- new languages: brainfuck (awwwwwwww yeeeeeeeeeah), nginx, c/c++, 6502 assembler
 	- added getNextWhile/getPreviousWhile utility functions
 
 1.3 2011-04-13

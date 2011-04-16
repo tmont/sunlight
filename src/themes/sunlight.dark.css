@@ -121,7 +121,7 @@ span.sunlight-highlighted * {
 .sunlight-closeTag, 
 .sunlight-xmlOpenTag, 
 .sunlight-xmlCloseTag,
-.sunlight-nginx .sunlight-label {
+.sunlight-label {
 	background-color: #7373C1 !important;
 }
 .sunlight-content {
@@ -141,7 +141,8 @@ span.sunlight-highlighted * {
 	color: #F5E5B0 !important;
 	font-weight: bold !important;
 }
-.sunlight-regexLiteral {
+.sunlight-regexLiteral,
+.sunlight-6502asm .sunlight-pseudoOp {
 	color: #E0F16A !important;
 }
 
@@ -258,4 +259,11 @@ span.sunlight-highlighted * {
 }
 .sunlight-brainfuck .sunlight-openLoop, .sunlight-brainfuck .sunlight-closeLoop {
 	background-color: #FFFFFF !important;
+}
+
+/* 6502 asm */
+.sunlight-6502asm .sunlight-label {
+	background: none !important;
+	color: #FFFFFF !important;
+	text-decoration: underline !important;
 }
