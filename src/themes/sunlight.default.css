@@ -185,7 +185,7 @@ span.sunlight-highlighted * {
 }
 .sunlight-csharp .sunlight-xmlDocCommentMeta,
 .sunlight-java .sunlight-annotation,
-.sunlight-ruby .sunlight-docComment {
+.sunlight-docComment {
 	color: #808080 !important;
 }
 

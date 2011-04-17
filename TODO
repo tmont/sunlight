@@ -7,7 +7,6 @@ PARSING
 - moar php functions! (preg_match and friends...)
 - ruby indented heredocs
 - nginx 3rd party modules: http://wiki.nginx.org/3rdPartyModules#Known_modules
-- perl pods: http://perldoc.perl.org/perlsyn.html#PODs:-Embedded-Documentation
 - perl heredocs don't allow spaces before identifiers
 
 TESTING
@@ -32,7 +31,6 @@ FUNCTIONALITY - 2.0
 LANGUAGES
 - PostgreSQL
 - Oracle
-- Perl
 - ASP.NET
 - Razor (ASP.NET MVC)
 - httpd
@@ -48,4 +46,5 @@ WEB
 - document additional utility getNextWhile/getPreviousWhile
 - document optional caseInsensitive parameter to contains()
 - document continuations for incomplete parses on custom rules
+- document reader.isSol and reader.isEol
 - update number parser example with one that actually parses numbers correctly

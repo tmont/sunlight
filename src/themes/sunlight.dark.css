@@ -145,6 +145,10 @@ span.sunlight-highlighted * {
 .sunlight-6502asm .sunlight-pseudoOp {
 	color: #E0F16A !important;
 }
+.sunlight-specialVariable {
+	font-style: italic !important;
+	font-weight: bold !important;
+}
 
 
 
@@ -176,7 +180,7 @@ span.sunlight-highlighted * {
 }
 .sunlight-csharp .sunlight-xmlDocCommentMeta,
 .sunlight-java .sunlight-annotation,
-.sunlight-ruby .sunlight-docComment {
+.sunlight-docComment {
 	color: #666363 !important;
 }
 
@@ -212,10 +216,7 @@ span.sunlight-highlighted * {
 .sunlight-bash .sunlight-hashBang {
 	color: #FFFF00 !important;
 }
-.sunlight-bash .sunlight-specialVariable {
-	font-style: italic !important;
-	font-weight: bold !important;
-}
+
 .sunlight-bash .sunlight-verbatimCommand {
 	color: #BBA4EE !important;
 }

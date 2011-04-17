@@ -255,6 +255,8 @@
 			getLine: function() { return line; },
 			getColumn: function() { return column; },
 			isEof: function() { return index >= length; },
+			isSol: function() { return column === 1; },
+			isEol: function() { return nextReadBeginsLine; },
 			EOF: EOF,
 			current: function() { return currentChar; }
 		};

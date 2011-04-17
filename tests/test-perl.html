@@ -142,6 +142,12 @@ stacked2
 	down from the door where it began.
 FINIS
 
+#doc comments
+=pod
+=head1 Heading Text
+=cut this should not be parsed
+sub { say "yay!"; }
+
 </pre>
 
 	</body>
@@ -215,6 +221,21 @@ FINIS
 		assertExists("operator", "=>", "=> operator");
 		assertExists("operator", "=~", "=~ operator");
 		
+		assertExists("docComment", "=pod\n=head1 Heading Text\n=cut this should not be parsed", "pod");
+		
+		assertExists("heredocDeclaration", "<<HEREDOC", "default heredoc declaration");
+		assertExists("heredocDeclaration", "<<\"QUOTEDHEREDOC\"", "double quoted heredoc declaration");
+		assertExists("heredocDeclaration", "<<`BACKQUOTEDHEREDOC`", "back quoted heredoc declaration");
+		assertExists("heredocDeclaration", "<<'SINGLEQUOTEDHEREDOC'", "single quoted heredoc declaration");
+		assertExists("heredocDeclaration", "<<\"stacked1\"", "stacked heredoc declaration");
+		assertExists("heredocDeclaration", "<<\"stacked2\"", "stacked heredoc declaration");
+		
+		assertExists("heredoc", "Default heredoc body\nHEREDOC\n", "default heredoc body");
+		assertExists("heredoc", "Quoted heredoc body\nQUOTEDHEREDOC\n", "double quoted heredoc body");
+		assertExists("heredoc", "echo back quoted heredoc body\nBACKQUOTEDHEREDOC\n", "back quoted heredoc body");
+		assertExists("heredoc", "single quoted heredoc body\nSINGLEQUOTEDHEREDOC\n", "single quoted heredoc body");
+		assertExists("heredoc", "stacked heredoc #1\nstacked1\n", "stacked heredoc body");
+		assertExists("heredoc", "stacked heredoc #2\nstacked2\n", "stacked heredoc body");
 		
 		assertExists("regexLiteral", "?^$?", "regex literal delimited by ?");
 		assertExists("regexLiteral", "//", "empty regex literal //");
@@ -227,7 +248,6 @@ FINIS
 		assertExists("regexLiteral", "tr [\\200-\\377]\n\t[\\000-\\177]", "regex literal prepended by tr delimited by [ with whitespace");
 		assertExists("regexLiteral", "tr/A-Z/a-z/", "regex literal prepended by tr delimited by / with no modifiers");
 		assertExists("regexLiteral", "tr/0-9//", "regex literal prepended by tr delimited by / with no modifiers and empty replacement");
-		
 		
 	//]]></script>
 </html>

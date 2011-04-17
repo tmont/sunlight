@@ -281,13 +281,7 @@
 				//these begin on with a line that starts with "=begin" and end with a line that starts with "=end"
 				//apparently stuff on the same line as "=end" is also part of the comment
 				
-				if (context.reader.current() !== "=" || context.reader.peek(5) !== "begin") {
-					return null;
-				}
-				
-				//previous token must be whitespace with a linebreak as the last character
-				//or =begin must be the very first thing in the string
-				if ((context.count() === 0 && context.defaultData.text === "") || context.defaultData.text.charAt(context.defaultData.text.length - 1) !== "\n") {
+				if (!context.reader.isSol() || context.reader.current() !== "=" || context.reader.peek(5) !== "begin") {
 					return null;
 				}
 				

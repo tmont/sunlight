@@ -382,6 +382,39 @@
 				
 				return tokens.length > 0 ? tokens : null;
 			},
+			
+			//pod: http://perldoc.perl.org/perlpod.html
+			//stolen from ruby
+			function(context) {
+				//these begin on with a line that starts with "=begin" and end with a line that starts with "=end"
+				//apparently stuff on the same line as "=end" is also part of the comment
+				
+				if (context.reader.current() !== "=" || !context.reader.isSol()) {
+					return null;
+				}
+				
+				var value = "=";
+				var line = context.reader.getLine();
+				var column = context.reader.getColumn();
+				
+				//read until "\n=cut" and then everything until the end of that line
+				var foundEnd = false, peek;
+				while ((peek = context.reader.peek()) !== context.reader.EOF) {
+					if (!foundEnd && context.reader.peek(5) === "\n=cut") {
+						foundEnd = true;
+						value += context.reader.read(5);
+						continue;
+					}
+					
+					if (foundEnd && peek === "\n") {
+						break;
+					}
+					
+					value += context.reader.read();
+				}
+				
+				return context.createToken("docComment", value, line, column);
+			}
 		],
 
 		identFirstLetter: /[A-Za-z_]/,
