@@ -258,7 +258,6 @@
 				return context.createToken("regexLiteral", value, line, column);
 			},
 			
-			//stolen from ruby lang file
 			//raw strings
 			function(context) {
 				//begin with q, qw, qx, or qq  with a non-alphanumeric delimiter (opening bracket/paren are closed by corresponding closing bracket/paren)
@@ -278,40 +277,7 @@
 				}
 				
 				var line = context.reader.getLine(), column = context.reader.getColumn();
-				value += context.reader.read(readCount);
-				var opener = closer = value.charAt(value.length - 1);
-				switch (closer) {
-					case "(":
-						closer = ")";
-						break;
-					case "[":
-						closer = "]";
-						break;
-					case "{":
-						closer = "}";
-						break;
-				}
-				
-				//read until the closer (these can be nested)
-				var closerCount = 1;
-				while ((peek = context.reader.peek()) !== context.reader.EOF) {
-					if (peek === "\\" && sunlight.util.contains(["\\" + closer, "\\\\"], context.reader.peek(2))) {
-						//escape sequence
-						value += context.reader.read(2);
-						continue;
-					}
-					
-					value += context.reader.read();
-					
-					if (peek === opener && sunlight.util.contains(["(", "[", "{"], opener)) {
-						closerCount++;
-					}
-					
-					if (peek === closer && --closerCount <= 0) {
-						break;
-					}
-				}
-				
+				value += context.reader.read(readCount - 1) + readBetweenDelimiters(context, context.reader.read(), true);
 				return context.createToken("rawString", value, line, column);
 			}
 		],
