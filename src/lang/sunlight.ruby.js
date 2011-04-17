@@ -37,9 +37,7 @@
 		customParseRules: [
 			//regex literal, same as javascript
 			function(context) {
-				var peek = context.reader.peek();
-				if (context.reader.current() !== "/" || peek === "/" || peek === "*") {
-					//doesn't start with a / or starts with // (comment) or /* (multi line comment)
+				if (context.reader.current() !== "/") {
 					return null;
 				}
 				
