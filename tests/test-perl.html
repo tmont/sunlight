@@ -113,6 +113,35 @@ $program =~ s {
 	.*? # Match a minimal number of characters.
 	\*/ # Match the closing delimiter.
 } []gsx;
+
+#friggin' heredocs...
+print &lt;&lt;HEREDOC;
+Default heredoc body
+HEREDOC
+
+print &lt;&lt;"QUOTEDHEREDOC";
+Quoted heredoc body
+QUOTEDHEREDOC
+
+print &lt;&lt;`BACKQUOTEDHEREDOC`;
+echo back quoted heredoc body
+BACKQUOTEDHEREDOC
+
+print &lt;&lt;'SINGLEQUOTEDHEREDOC';
+single quoted heredoc body
+SINGLEQUOTEDHEREDOC
+
+print &lt;&lt;"stacked1", &lt;&lt;"stacked2";
+stacked heredoc #1
+stacked1
+stacked heredoc #2
+stacked2
+
+($quote = &lt;&lt;'FINIS') =~ s/^\s+//gm;
+	The Road goes ever on and on,
+	down from the door where it began.
+FINIS
+
 </pre>
 
 	</body>

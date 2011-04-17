@@ -4,6 +4,8 @@
 		throw "Include sunlight.js before including language files";
 	}
 	
+	var heredocQueue = [];
+	
 	var isValidForRegexLiteral = function(context) {
 		var previousNonWsToken = context.token(context.count() - 1);
 		var previousToken = null;
@@ -279,7 +281,107 @@
 				var line = context.reader.getLine(), column = context.reader.getColumn();
 				value += context.reader.read(readCount - 1) + readBetweenDelimiters(context, context.reader.read(), true);
 				return context.createToken("rawString", value, line, column);
-			}
+			},
+			
+			//heredoc declaration (stolen from ruby)
+			function(context) {
+				if (context.reader.current() !== "<" || context.reader.peek() !== "<") {
+					return null;
+				}
+				
+				//cannot be preceded by an ident or a number or a string
+				var prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count() - 1);
+				if (prevToken && (prevToken.name === "ident" || prevToken.name === "number" || prevToken.name === "string")) {
+					return null;
+				}
+				
+				//can be between quotes (double, single or back) or not, or preceded by a hyphen
+				
+				var line = context.reader.getLine(), column = context.reader.getColumn();
+				var value = "<<", ident = "";
+				context.reader.read(2);
+				
+				var current = context.reader.current();
+				var delimiter = "";
+				if (current === "-") {
+					context.reader.read();
+					value += current;
+					current = context.reader.current();
+				}
+				
+				if (sunlight.util.contains(["\"", "'", "`"], current)) {
+					delimiter = current;
+				} else {
+					ident = current;
+				}
+				
+				value += current;
+				
+				var peek;
+				while ((peek = context.reader.peek()) !== context.reader.EOF) {
+					if (peek === "\n" || (delimiter === "" && /\W/.test(peek))) {
+						break;
+					}
+					
+					if (peek === "\\") {
+						var peek2 = context.reader.peek(2);
+						if (delimiter !== "" && sunlight.util.contains(["\\" + delimiter, "\\\\"], peek2)) {
+							value += peek2;
+							ident += context.reader.read(2);
+							continue;
+						}
+					}
+					
+					value += context.reader.read();
+					
+					if (delimiter !== "" && peek === delimiter) {
+						break;
+					}
+					
+					ident += peek;
+				}
+				
+				heredocQueue.push(ident);
+				
+				var token = context.createToken("heredocDeclaration", value, line, column);
+				return token;
+			},
+			
+			//heredoc
+			function(context) {
+				if (heredocQueue.length === 0) {
+					return null;
+				}
+				
+				//there must have been at least one line break since the heredoc declaration(s)
+				if (context.defaultData.text.replace(/[^\n]/g, "").length === 0) {
+					return null;
+				}
+				
+				//we're confirmed to be in the heredoc body, so read until all of the heredoc declarations have been satisfied
+				
+				var tokens = [], declaration, line, column, value = context.reader.current();
+				while (heredocQueue.length > 0 && context.reader.peek() !== context.reader.EOF) {
+					declaration = heredocQueue.shift();
+					line = context.reader.getLine(), column = context.reader.getColumn();
+					
+					//read until "\n{declaration}\n"
+					while (context.reader.peek() !== context.reader.EOF) {
+						var peekIdent = context.reader.peek(declaration.length + 2);
+						if (peekIdent === "\n" + declaration || peekIdent === "\n" + declaration + "\n") {
+							value += context.reader.read(declaration.length + 2);
+							break;
+						}
+						
+						value += context.reader.read();
+					}
+					
+					tokens.push(context.createToken("heredoc", value, line, column));
+					value = "";
+				}
+				
+				return tokens.length > 0 ? tokens : null;
+			},
 		],
 
 		identFirstLetter: /[A-Za-z_]/,

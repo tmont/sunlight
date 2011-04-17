@@ -8,14 +8,13 @@ PARSING
 - ruby indented heredocs
 - nginx 3rd party modules: http://wiki.nginx.org/3rdPartyModules#Known_modules
 - perl pods: http://perldoc.perl.org/perlsyn.html#PODs:-Embedded-Documentation
-- perl heredocs
+- perl heredocs don't allow spaces before identifiers
 
 TESTING
 
 BUGS
 - get[Next|Previous]NonWsToken() doesn't work in loops
-- if the last scope of a code block doesn't close, then trailing newlines aren't
-  treated correctly
+- if the last scope eats the trailing newline it's not rendered correctly
 - casting probably doesn't work in c#/java
   
 FUNCTIONALITY
