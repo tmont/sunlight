@@ -736,7 +736,7 @@
 		var peek, foundDecimal = false;
 		while ((peek = context.reader.peek()) !== context.reader.EOF) {
 			if (!/[A-Za-z0-9]/.test(peek)) {
-				if (peek === "." && !foundDecimal) {
+				if (peek === "." && !foundDecimal && /\d$/.test(context.reader.peek(2))) {
 					number += context.reader.read();
 					foundDecimal = true;
 					continue;

@@ -1,5 +1,8 @@
 1.4 2011-04-xx
 --------------
+- Bugfixes
+	- fixed bug in number parsing where it would incorrectly parse 1. as the number "1." rather
+	  that the number "1" followed by a "."
 - Enhancments
 	- new languages: brainfuck (awwwwwwww yeeeeeeeeeah), nginx, c/c++, 6502 assembler
 	- added getNextWhile/getPreviousWhile utility functions
