@@ -42,6 +42,7 @@ WEB
 - add brainfuck to demo
 - add nginx to demo
 - add 6502 asm to demo
+- add perl to demo
 - make demo highlight on demand so it doesn't take forever
 - document additional utility getNextWhile/getPreviousWhile
 - document optional caseInsensitive parameter to contains()
