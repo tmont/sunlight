@@ -16,7 +16,8 @@ BUGS
 - get[Next|Previous]NonWsToken() doesn't work in loops
 - if the last scope of a code block doesn't close, then trailing newlines aren't
   treated correctly
-
+- casting probably doesn't work in c#/java
+  
 FUNCTIONALITY
 - customizable class prefix
 - show/hide code block
