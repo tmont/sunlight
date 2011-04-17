@@ -423,7 +423,7 @@
 		namedIdentRules: {
 			follows: [
 				[{ token: "keyword", values: ["sub"] }, { token: "default" }],
-				[{ token: "operator", values: ["\\&"] }, sunlight.util.whitespace],
+				[{ token: "operator", values: ["\\&"] }, sunlight.util.whitespace]
 			]
 		},
 		
