@@ -130,13 +130,18 @@ span.sunlight-highlighted * {
 }
 
 .sunlight-variable,
+.sunlight-specialVariable,
 .sunlight-ruby .sunlight-globalVariable,
 .sunlight-ruby .sunlight-instanceVariable {
-	color: #8F41AA !important;
+	color: #325484 !important;
 }
 .sunlight-regexLiteral,
 .sunlight-6502asm .sunlight-pseudoOp {
 	color: #FF00B2 !important;
+}
+.sunlight-specialVariable {
+	font-style: italic !important;
+	font-weight: bold !important;
 }
 
 
@@ -165,6 +170,7 @@ span.sunlight-highlighted * {
 	color: #000000 !important;
 	border: 1px solid #000000 !important;
 }
+
 
 /* html */
 .sunlight-html .sunlight-doctype {
@@ -217,10 +223,6 @@ span.sunlight-highlighted * {
 /* bash */
 .sunlight-bash .sunlight-hashBang {
 	color: #3D97F5 !important;
-}
-.sunlight-bash .sunlight-specialVariable {
-	font-style: italic !important;
-	font-weight: bold !important;
 }
 .sunlight-bash .sunlight-verbatimCommand {
 	color: #999900 !important;

@@ -7,12 +7,15 @@ PARSING
 - moar php functions! (preg_match and friends...)
 - ruby indented heredocs
 - nginx 3rd party modules: http://wiki.nginx.org/3rdPartyModules#Known_modules
-- perl generic strings: http://perldoc.perl.org/perlop.html#Quote-and-Quote-like-Operators
+- perl pods: http://perldoc.perl.org/perlsyn.html#PODs:-Embedded-Documentation
+- perl heredocs
 
 TESTING
 
 BUGS
 - get[Next|Previous]NonWsToken() doesn't work in loops
+- if the last scope of a code block doesn't close, then trailing newlines aren't
+  treated correctly
 
 FUNCTIONALITY
 - customizable class prefix

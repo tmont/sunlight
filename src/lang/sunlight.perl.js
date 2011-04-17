@@ -3,14 +3,109 @@
 	if (sunlight === undefined || sunlight["registerLanguage"] === undefined) {
 		throw "Include sunlight.js before including language files";
 	}
+	
+	var isValidForRegexLiteral = function(context) {
+		var previousNonWsToken = context.token(context.count() - 1);
+		var previousToken = null;
+		if (context.defaultData.text !== "") {
+			previousToken = context.createToken("default", context.defaultData.text); 
+		}
+		
+		if (!previousToken) {
+			previousToken = previousNonWsToken;
+		}
+		
+		//first token of the string
+		if (previousToken === undefined) {
+			return true;
+		}
+		
+		if (sunlight.util.contains(["keyword", "ident", "number", "variable", "specialVariable"], previousNonWsToken.name)) {
+			//this is not valid context for a regex literal
+			return false;
+		}
+		
+		return true;
+	};
+	
+	var readWhileWhitespace = function(context) {
+		var value = "", peek;
+		while ((peek = context.reader.peek()) !== context.reader.EOF && /\s/.test(peek)) {
+			value += context.reader.read();
+		}
+		
+		return value;
+	};
+	
+	var readBetweenDelimiters = function(context, delimiter, appendCloser) {
+		var opener = closer = delimiter;
+		switch (delimiter) {
+			case "[":
+				closer = "]";
+				break;
+			case "(":
+				closer = ")";
+				break;
+			case "{":
+				closer = "}";
+				break;
+		}
+		
+		var trackCloser = sunlight.util.contains(["[", "(", "{"], opener);
+		var peek2, value = opener, next, closerCount = 1;
+		
+		while (context.reader.peek() !== context.reader.EOF) {
+			peek2 = context.reader.peek(2);
+			if (peek2 === "\\" + closer || peek2 === "\\\\") {
+				//escaped backslash or escaped closer
+				value += context.reader.read(2);
+				continue;
+			}
+			
+			next = context.reader.read();
+			
+			if (next === opener && trackCloser) {
+				closerCount++;
+			} else if (next === closer && --closerCount <= 0) {
+				if (trackCloser || appendCloser) {
+					value += next;
+				}
+				break;
+			}
 
-	sunlight.registerLanguage("cpp", {
+			value += next;
+		}
+		
+		return value;
+	};
+	
+	//perl allows whitespace before delimiters (wtf?)
+	var getDelimiterIfValid = function(context, peekCount) {
+		var peek = context.reader.peek(peekCount);
+		while (peek.length === peekCount && /\s$/.test(peek)) {
+			peek = context.reader.peek(++peekCount);
+		}
+		
+		if (/[\w]$/.test(peek)) {
+			return false;
+		}
+		
+		context.reader.read(peekCount);
+		return {
+			delimiter: context.reader.current(),
+			value: peek.substring(0, peek.length - 1)
+		};
+	}
+
+	sunlight.registerLanguage("perl", {
 		keywords: [
 			"caller","die","dump","eval","exit","goto","last","next","redo","return","sub","wantarray",
 			"break","continue","given","when","default",
-			"import"," local"," my","our"," state",
+			"import","local","my","our","state",
 			"do","no","package","require","use",
 			"bless","dbmclose","dbmopen","ref","tied","untie","tie",
+			
+			"if", "elsif", "else", "unless", "while", "foreach", "for", "until",
 			
 			"not", "or", "and"
 		],
@@ -31,15 +126,15 @@
 					"chdir","chmod","chown","chroot","fcntl","glob","ioctl","link","lstat","mkdir","open","opendir","readlink","rename","rmdir","stat","symlink","sysopen","umask","unlink","utime",
 					"defined","dump","eval","formline","reset","scalar","undef",
 					"alarm","exec","fork","getpgrp","getppid","getpriority","kill","pipe","setpgrp","setpriority","sleep","system","wait","waitpid",
-					"accept","bind","connect","getpeername","getsockname","getsockopt","listen","recv","send","setsockopt","shutdown","socket","socketpair"
+					"accept","bind","connect","getpeername","getsockname","getsockopt","listen","recv","send","setsockopt","shutdown","socket","socketpair",
 					"msgctl","msgget","msgrcv","msgsnd","semctl","semget","semop","shmctl","shmget","shmread","shmwrite",
 					"endgrent","endhostent","endnetent","endpwent","getgrent","getgrgid","getgrnam","getlogin","getpwent","getpwnam","getpwuid","setgrent","setpwent",
 					"endprotoent","endservent","gethostbyaddr","gethostbyname","gethostent","getnetbyaddr","getnetbyname","getnetent","getprotobyname","getprotobynumber",
 					"getprotoent","getservbyname","getservbyport","getservent","sethostent","setnetent","setprotoent","setservent",
 					"gmtime","localtime","times","time",
 
-					"lcfirst","lc","lock","prototype","readline","read",
-					"readpipe","uc","ucfirst"
+					"lcfirst","lc","lock","prototype","readline",
+					"readpipe","read","ucfirst","uc"
 				],
 				boundary: "\\b"
 			},
@@ -51,34 +146,183 @@
 				boundary: ""
 			},
 			
+			//http://perldoc.perl.org/perlvar.html
+			//jesus, perl...
 			specialVariable: {
 				values: [
-					"$.", "$<", "$_",
+					"$.", "$<", "$_", "$/", "$!", "$ARG", "$&", "$a", "$b", "$MATCH", "$PREMATCH", "${^MATCH}", "${^PREMATCH}", "$POSTMATCH", "$'", 
+					"$LAST_PAREN_MATCH", "$+", "$LAST_SUBMATCH_RESULT", "$^N", "$INPUT_LINE_NUMBER", "$NR", "$.", "$INPUT_RECORD_SEPARATOR", "$RS",
+					"$OUTPUT_AUTOFLUSH", "$OFS", "$,", 
+					
+					"@LAST_MATCH_END", "@+", 
+					
+					"%LAST_PAREN_MATCH", "%+",
+					
+					"$OUTPUT_RECORD_SEPARATOR","$ORS","$LIST_SEPARATOR","$\"","$SUBSCRIPT_SEPARATOR","$SUBSEP","$;","$FORMAT_PAGE_NUMBER","$%",
+					"$FORMAT_LINES_PER_PAGE","$=","$FORMAT_LINES_LEFT","$-","@LAST_MATCH_START","@-","%-","$FORMAT_NAME","$~","$FORMAT_TOP_NAME",
+					"$FORMAT_LINE_BREAK_CHARACTERS","$:","$FORMAT_FORMFEED","$^L","$ACCUMULATOR","$^A","$CHILD_ERROR","$?","${^CHILD_ERROR_NATIVE}",
+					"${^ENCODING}","$OS_ERROR","$ERRNO","$!","%OS_ERROR","%ERRNO","%!","$EXTENDED_OS_ERROR","$^E","$EVAL_ERROR","$@","$PROCESS_ID","$PID",
+					"$$","$REAL_USER_ID","$UID","$<","$EFFECTIVE_USER_ID","$EUID","$>","$REAL_GROUP_ID","$GID","$(","$EFFECTIVE_GROUP_ID","$EGID","$)",
+					"$PROGRAM_NAME","$0","$[","$]","$COMPILING","$^C","$DEBUGGING","$^D","${^RE_DEBUG_FLAGS}","${^RE_TRIE_MAXBUF}","$SYSTEM_FD_MAX","$^F",
+					"$^H","%^H","$INPLACE_EDIT","$^I","$^M","$OSNAME","$^O","${^OPEN}","$PERLDB","$^P","$LAST_REGEXP_CODE_RESULT","$^R","$EXCEPTIONS_BEING_CAUGHT",
+					"$^S","$BASETIME","$^T","${^TAINT}","${^UNICODE}","${^UTF8CACHE}","${^UTF8LOCALE}","$PERL_VERSION","$^V","$WARNING","$^W","${^WARNING_BITS}",
+					"${^WIN32_SLOPPY_STAT}","$EXECUTABLE_NAME","$^X","ARGV","$ARGV","@ARGV","ARGVOUT","@F","@INC","@ARG","@_","%INC","%ENV","$ENV","%SIG","$SIG",
+					
+					"$^",
+					
+					"$#array"
 				],
-				boundary: ""
+				boundary: "\\W"
 			}
 		},
 
 		scopes: {
 			string: [ ["\"", "\"", sunlight.util.escapeSequences.concat(["\\\""])], ["'", "'", ["\\\'", "\\\\"]] ],
 			comment: [ ["#", "\n", null, true] ],
-			variable: [ ["$", { length: 1, regex: /[\W]/ }, null, true], ["@", { length: 1, regex: /[\W]/ }, null, true], ["%", { length: 1, regex: /[\W]/ }, null, true] ]
+			variable: [ 
+				["$#", { length: 1, regex: /[\W]/ }, null, true], //array count
+				["$", { length: 1, regex: /[\W]/ }, null, true], 
+				["@", { length: 1, regex: /[\W]/ }, null, true], 
+				["%", { length: 1, regex: /[\W]/ }, null, true] 
+			]
 		},
 		
-		customParseRules: [	
+		customParseRules: [
+			//qr/STRING/msixpo, m/PATTERN/msixpogc, /PATTERN/msixpogc, // (empty pattern), ?pattern?
+			//y///, tr///, s/PATTERN/REPLACEMENT/msixpogce 
+			function(context) {
+				if (!isValidForRegexLiteral(context)) {
+					return null;
+				}
+				
+				var current = context.reader.current();
+				var peek = context.reader.peek();
+				var delimiter;
+				var hasReplace = false;
+				var value = "";
+				var delimiterInfo;
+				
+				if (current === "/" || current === "?") {
+					delimiter = current;
+				} else if (current === "m" || current === "y" || current === "s") {
+					if (!(delimiterInfo = getDelimiterIfValid(context, 1))) {
+						return null;
+					}
+					
+					value = current + delimiterInfo.value;
+					delimiter = delimiterInfo.delimiter;
+					hasReplace = current === "y" || current === "s";
+				} else if ((current === "t" || current === "q") && peek === "r") {
+					if (!(delimiterInfo = getDelimiterIfValid(context, 2))) {
+						return null;
+					}
+					
+					hasReplace = current === "t";
+					value = current + delimiterInfo.value;
+					delimiter = delimiterInfo.delimiter;
+				} else {
+					return null;
+				}
+				
+				//read the regex literal
+				var line = context.reader.getLine();
+				var column = context.reader.getColumn();
+				
+				value += readBetweenDelimiters(context, delimiter, !hasReplace);
+				if (hasReplace) {
+					//apparently whitespace between search and replace is allowed, so read the whitespace, if it exists
+					value += readWhileWhitespace(context);
+					//new delimiter
+					
+					var fetchSecondDelimiter = sunlight.util.contains(["[", "(", "{"], delimiter);
+					if (fetchSecondDelimiter) {
+						delimiterInfo = getDelimiterIfValid(context, 1);
+						if (delimiterInfo) {
+							value += delimiterInfo.value;
+							delimiter = delimiterInfo.delimiter;
+						}
+					}
+					
+					value += readBetweenDelimiters(context, delimiter, true);
+				}
+				
+				//read the regex modifiers (we just assume any character is valid)
+				while (context.reader.peek() !== context.reader.EOF) {
+					if (!/[A-Za-z]/.test(context.reader.peek())) {
+						break;
+					}
+					
+					value += context.reader.read();
+				}
+				
+				return context.createToken("regexLiteral", value, line, column);
+			},
+			
+			//stolen from ruby lang file
+			//raw strings
+			function(context) {
+				//begin with q, qw, qx, or qq  with a non-alphanumeric delimiter (opening bracket/paren are closed by corresponding closing bracket/paren)
+				if (context.reader.current() !== "q") {
+					return null;
+				}
+				
+				var value = "q", readCount = 1;
+				var peek = context.reader.peek();
+				if (peek === "q" || peek === "w" || peek == "x") {
+					readCount++;
+				}
+				
+				if (/[A-Za-z0-9]$/.test(context.reader.peek(readCount))) {
+					//potential % operator
+					return null;
+				}
+				
+				var line = context.reader.getLine(), column = context.reader.getColumn();
+				value += context.reader.read(readCount);
+				var opener = closer = value.charAt(value.length - 1);
+				switch (closer) {
+					case "(":
+						closer = ")";
+						break;
+					case "[":
+						closer = "]";
+						break;
+					case "{":
+						closer = "}";
+						break;
+				}
+				
+				//read until the closer (these can be nested)
+				var closerCount = 1;
+				while ((peek = context.reader.peek()) !== context.reader.EOF) {
+					if (peek === "\\" && sunlight.util.contains(["\\" + closer, "\\\\"], context.reader.peek(2))) {
+						//escape sequence
+						value += context.reader.read(2);
+						continue;
+					}
+					
+					value += context.reader.read();
+					
+					if (peek === opener && sunlight.util.contains(["(", "[", "{"], opener)) {
+						closerCount++;
+					}
+					
+					if (peek === closer && --closerCount <= 0) {
+						break;
+					}
+				}
+				
+				return context.createToken("rawString", value, line, column);
+			}
 		],
 
 		identFirstLetter: /[A-Za-z_]/,
 		identAfterFirstLetter: /\w/,
 
 		namedIdentRules: {
-			custom: [
-			],
-			
 			follows: [
-			],
-			
-			precedes: [
+				[{ token: "keyword", values: ["sub"] }, { token: "default" }],
+				[{ token: "operator", values: ["\\&"] }, sunlight.util.whitespace],
 			]
 		},
 		
@@ -91,7 +335,7 @@
 			"=>", "=~", "==", "=",
 			"!", "!~", "!=",
 			"~", "~~",
-			"\\",
+			"\\&", "\\",
 			
 			"&&=", "&=", "&&", "&", 
 			"||=", "||", "|=", "|",
@@ -100,13 +344,13 @@
 			">>=", ">>", ">=", ">",
 			"^=", "^",
 			
-			"?", ":",
+			"?", "::", ":",
 			
-			"...", ".=", "..", ".",''
+			"...", ".=", "..", ".",
 			
 			",",
 			
-			"x=", "x",
+			"x=", "x", //seriously, perl?
 			
 			"lt", "gt", "le", "ge", "eq", "ne", "cmp"
 		]
