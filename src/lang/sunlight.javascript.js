@@ -28,7 +28,7 @@
 			},
 			
 			globalVariable: {
-				values: ["NaN", "Infinity"],
+				values: ["NaN", "Infinity", "undefined"],
 				boundary: "\\b"
 			},
 			

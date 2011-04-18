@@ -3,7 +3,7 @@
 	<head>
 		<script type="text/javascript" src="../src/sunlight.js"></script>
 		<script type="text/javascript" src="../src/lang/sunlight.ruby.js"></script>
-		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.dark.css" />
+		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.default.css" />
 	</head>
 
 	<body>
@@ -144,7 +144,6 @@ print "we're still good"
 		assertExists("heredoc", "single quoted heredoc body\nSINGLEQUOTEDHEREDOC\n", "single quoted heredoc body");
 		assertExists("heredoc", "stacked heredoc #1\nstacked1\n", "stacked heredoc body");
 		assertExists("heredoc", "stacked heredoc #2\nstacked2\n", "stacked heredoc body");
-		
 		
 		assertExists("comment", "#single line comment", "comment");
 		assertExists("comment", "#single line comment", "comment");

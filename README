@@ -1,5 +1,5 @@
 Sunlight <http://sunlightjs.com/>
-Version 1.3 (see CHANGELOG for details)
+Version 1.4 (see CHANGELOG for details)
 (c) 2011 Tommy Montgomery <http://tommymontgomery.com/>
 
 Licensed under WTFPL: http://sam.zoy.org/wtfpl/
@@ -30,8 +30,21 @@ Included language files
 - Java
 - Ruby
 - Python
+- Brainfuck
+- nginx
+- C/C++
+- 6502 assembler
+- Perl
 
 Included themes
 ---------------
 - sunlight.default.css
 - sunlight.dark.css
+
+Authors
+-------
+Tommy Montgomery <http://tommymontgomery.com/>
+
+Contributors
+------------
+Bob Montgomery

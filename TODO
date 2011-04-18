@@ -1,37 +1,42 @@
 PARSING
 - PHP class name highlighting in use statements
 - C# class name highlighting in using aliases
-- CSS property values (none, solid, inset, etc.)
 - Python/Java exponents: 1e3-10
+- ruby indented heredocs
+- perl heredocs don't allow spaces before identifiers
+
+MISSING KEYWORDS
+- CSS property values (none, solid, inset, etc.)
+- nginx 3rd party modules: http://wiki.nginx.org/3rdPartyModules#Known_modules
 - PHP constants like PREG_OFFSET_CAPTURE
 - moar php functions! (preg_match and friends...)
-- ruby indented heredocs
 
 TESTING
-- test line highlighting in IE6
 
 BUGS
-- get[Next|Previous]NonWsToken() doesn't work in loops
-
+- if the last scope eats the trailing newline it's not rendered correctly
+  
 FUNCTIONALITY
 - customizable class prefix
-- code folding
 - show/hide code block
 - show whitespace option
+- plugin system (externalize all options)
+- remove hideous code duplication (e.g. between c#, java and c++)
+- handle continuations in custom parse rules (preferrably in some uniform way)
+
+FUNCTIONALITY - 2.0
+- code folding
+- scope stacking
 
 LANGUAGES
 - PostgreSQL
 - Oracle
-- Perl
 - ASP.NET
 - Razor (ASP.NET MVC)
 - httpd
-- nginx
-- assembler
 - Lisp
 - Haskell
 - VB.NET
-- C
-- C++
 
 WEB
+- document continuations for incomplete parses on custom rules

@@ -61,6 +61,7 @@
 	};
 
 	var createProceduralRule = function(startIndex, direction, tokenRequirements, caseInsensitive) {
+		tokenRequirements = tokenRequirements.slice(0);
 		return function(tokens) {
 			var tokenIndexStart = startIndex;
 			if (direction === 1) {
@@ -175,8 +176,8 @@
 				};
 
 				return evaluate(context.language.namedIdentRules.custom)
-					|| evaluate(context.language.namedIdentRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData.slice(0), context.language.caseInsensitive); })
-					|| evaluate(context.language.namedIdentRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData.slice(0), context.language.caseInsensitive); })
+					|| evaluate(context.language.namedIdentRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData, context.language.caseInsensitive); })
+					|| evaluate(context.language.namedIdentRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData, context.language.caseInsensitive); })
 					|| evaluate(context.language.namedIdentRules.between, function(ruleData) { return createBetweenRule(context.index, ruleData.opener, ruleData.closer, context.language.caseInsensitive); })
 					|| defaultHandleToken("ident")(context);
 			}
@@ -254,6 +255,8 @@
 			getLine: function() { return line; },
 			getColumn: function() { return column; },
 			isEof: function() { return index >= length; },
+			isSol: function() { return column === 1; },
+			isEol: function() { return nextReadBeginsLine; },
 			EOF: EOF,
 			current: function() { return currentChar; }
 		};
@@ -683,14 +686,17 @@
 
 	highlighterConstructor.prototype = highlighter;
 
-	var getNextNonWsToken = function(tokens, index, direction) {
+	//gets the next token in the specified direction that while matcher matches the current token
+	var getNextWhile = function(tokens, index, direction, matcher) {
 		direction = direction || 1;
-		var token = tokens[index + direction];
-		if (token !== undefined && token.name === "default") {
-			token = tokens[index + (direction * 2)];
+		var count = 1, token;
+		while (token = tokens[index + (direction * count++)]) {
+			if (!matcher(token)) {
+				return token;
+			}
 		}
-
-		return token;
+		
+		return undefined;
 	};
 
 	//this is crucial for performance
@@ -732,7 +738,7 @@
 		var peek, foundDecimal = false;
 		while ((peek = context.reader.peek()) !== context.reader.EOF) {
 			if (!/[A-Za-z0-9]/.test(peek)) {
-				if (peek === "." && !foundDecimal) {
+				if (peek === "." && !foundDecimal && /\d$/.test(context.reader.peek(2))) {
 					number += context.reader.read();
 					foundDecimal = true;
 					continue;
@@ -764,8 +770,9 @@
 		caseInsensitive: false
 	};
 
+	//public facing object
 	window.Sunlight = {
-		version: "1.3",
+		version: "1.4",
 		Highlighter: highlighterConstructor,
 		createAnalyzer: function() { return create(defaultAnalyzer); },
 		globalOptions: globalOptions,
@@ -807,8 +814,10 @@
 			createHashMap: createHashMap,
 			createBetweenRule: createBetweenRule,
 			createProceduralRule: createProceduralRule,
-			getNextNonWsToken: function(tokens, index) { return getNextNonWsToken(tokens, index, 1); },
-			getPreviousNonWsToken: function(tokens, index) { return getNextNonWsToken(tokens, index, -1); },
+			getNextNonWsToken: function(tokens, index) { return getNextWhile(tokens, index, 1, function(token) { return token.name === "default"; }); },
+			getPreviousNonWsToken: function(tokens, index) { return getNextWhile(tokens, index, -1, function(token) { return token.name === "default"; }); },
+			getNextWhile: function(tokens, index, matcher) { return getNextWhile(tokens, index, 1, matcher); },
+			getPreviousWhile: function(tokens, index, matcher) { return getNextWhile(tokens, index, -1, matcher); },
 			whitespace: { token: "default", optional: true }
 		}
 	};
