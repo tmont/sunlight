@@ -1,4 +1,4 @@
-1.4 2011-04-xx
+1.4 2011-04-17
 --------------
 - Bugfixes
 	- fixed bug in number parsing where it would incorrectly parse 1. as the number "1." rather

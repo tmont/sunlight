@@ -40,9 +40,4 @@ LANGUAGES
 - VB.NET
 
 WEB
-- add brainfuck to demo
-- add nginx to demo
-- add 6502 asm to demo
-- add perl to demo
-- make demo highlight on demand so it doesn't take forever
 - document continuations for incomplete parses on custom rules
