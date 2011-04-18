@@ -1,5 +1,9 @@
 1.5 2011-04-xx
 --------------
+- Bugfixes
+	- fixed bug where keywords were being spuriously detected in idents (e.g. "class" in "cclass")
+	  due to the fact that the regular expression in the generated hashmap was not requiring the match
+	  to start at the beginning of the string (with "^")
 
 1.4 2011-04-17
 --------------

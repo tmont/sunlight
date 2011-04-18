@@ -710,7 +710,7 @@
 				newMap[firstChar] = [];
 			}
 
-			newMap[firstChar].push({ value: word, regex: new RegExp(regexEscape(word) + boundary, caseInsensitive ? "i" : "") });
+			newMap[firstChar].push({ value: word, regex: new RegExp("^" + regexEscape(word) + boundary, caseInsensitive ? "i" : "") });
 		}
 
 		return newMap;
