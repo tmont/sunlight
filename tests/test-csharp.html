@@ -40,6 +40,8 @@ namespace My.Namespace {
 			foo.Dispose();
 			((IDisposable)this).Dispose();
 			var lame = typeof(IDisposable);
+			
+			if (notACast) methodCall();
 		}
 		#endregion
 
@@ -225,6 +227,7 @@ public class Foo { }</pre>
 		assertExists("ident", "T1", "type constraint T1");
 		assertExists("ident", "TNotNamed", "type definition as return value");
 		assertExists("ident", "TAlsoNotNamed", "type definition in default()");
+		assertExists("ident", "notACast", "if (notACast) doSomething()");
 		
 		assertExists("comment", "/* multi\n\t\t\tline comment\n\t\t\t*/", "multi line comment");
 		assertExists("comment", "//neither foo below should be a named ident", "single line comment");

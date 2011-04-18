@@ -15,7 +15,6 @@ TESTING
 
 BUGS
 - if the last scope eats the trailing newline it's not rendered correctly
-- casting probably doesn't work in c#/java
   
 FUNCTIONALITY
 - customizable class prefix

@@ -262,6 +262,47 @@
 					return false;
 				}),
 			
+				//casting
+				function() {
+					var precedes = [
+						[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "ident" }],
+						[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "keyword", values: ["this"] }]
+					];
+				
+					return createNamedIdentFunction(function(context) {
+						var precedesIsSatisfied = function(tokens) {
+							for (var i = 0; i < precedes.length; i++) {
+								if (sunlight.util.createProceduralRule(context.index + 1, 1, precedes[i], false)(tokens)) {
+									return true;
+								}
+							}
+							
+							return false;
+						}(context.tokens);
+						
+						if (!precedesIsSatisfied) {
+							return false;
+						}
+						
+						//make sure the previous tokens are "(" and then not a keyword
+						//this'll make sure that things like "if (foo) doSomething();" won't color "foo"
+						
+						var token, index = context.index;
+						while (token = context.tokens[--index]) {
+							if (token.name === "punctuation" && token.value === "(") {
+								var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, index);
+								if (prevToken && prevToken.name === "keyword") {
+									return false;
+								}
+								
+								return true;
+							}
+						}
+						
+						return false;
+					});
+				}(),
+			
 				//can't use the follows/precedes/between utilities since we need to verify that it doesn't match the type definition naming convention
 				createNamedIdentFunction(function(context) {
 					var follows = [
@@ -285,10 +326,6 @@
 					];
 					
 					var precedes = [
-						//casting
-						[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "ident" }],
-						[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "keyword", values: ["this"] }],
-						
 						//arrays
 						[sunlight.util.whitespace, { token: "punctuation", values: ["["] }, sunlight.util.whitespace, { token: "punctuation", values: ["]"] }], //in method parameters
 

@@ -21,6 +21,7 @@ public class MyClass extends ExtendedClass implements Interfacable1, Interfacabl
 		
 		this.foo = (CastingTest1)foo;
 		this.foo = ((CastingTest2)this).doStuff();
+		if (notACast) methodCall();
 	}
 	
 	/**
@@ -179,6 +180,7 @@ public enum Planet {
 		assertExists("ident", "qualified1", "fully qualified package name");
 		assertExists("ident", "qualified2", "fully qualified package name");
 		assertExists("ident", "myVector", "variable name");
+		assertExists("ident", "notACast", "if (notACast) methodCall()");
 		
 		assertExists("annotation", "@Documented", "Documented annotation");
 		assertExists("annotation", "@AnnotationWithArguments", "AnnotationWithArguments annotation");
