@@ -102,7 +102,25 @@
 					"writeFile","zip3","zipWith3","zipWith","zip"
 				],
 				boundary: "\\b"
-			}
+			},
+			
+			// "class": {
+				// values: [
+					// "Bounded", "Enum", "Eq", "Floating", "Fractional", "Functor", "Integral", "Monad", "Num", "Ord",
+					// "Read", "RealFloat", "RealFrac", "Real", "Show"
+				// ],
+				// boundary: "\\b"
+			// },
+			
+			// "type": {
+				// values: [
+					// "Bool", "Char", "Double", "Either", "FilePath", "Float", "Integer", "Int", "IOError", "IO", 
+					// "Maybe", "Ordering", "ReadS", "ShowS", "String",
+					
+					// "False", "True", "LT", "GT", "EQ", "Nothing", "Just", "Left", "Right"
+				// ],
+				// boundary: "\\b"
+			// }
 		},
 		
 		scopes: {
@@ -117,15 +135,42 @@
 		namedIdentRules: {
 			custom: [
 				function(context) {
-					return sunlight.util.contains(userDefinedFunctions, context.tokens[context.index].value);
+					//return sunlight.util.contains(userDefinedFunctions, context.tokens[context.index].value);
+				},
+				
+				//function equation/declaration
+				function(context) {
+					var prevToken = context.tokens[context.index - 1];
+					if (prevToken && (prevToken.name !== "default" || prevToken.value.indexOf("\n") === -1)) {
+						//must be first thing on the line
+						return false;
+					}
+					
+					//must have a = or a :: to the right
+					var token, index = context.index;
+					while (token = context.tokens[++index]) {
+						if (token.name === "operator") {
+							return token.value === "=" || token.value === "::";
+						}
+						
+						if (token.name === "default" && token.value.indexOf("\n") >= 0) {
+							return false;
+						}
+					}
+					
+					return false;
 				}
+			],
+			
+			follows: [
+				[{ token: "keyword", values: ["data"] }, { token: "default" } ]
 			]
 		},
 
 		operators: [
-			":", "::",
+			"::", ":",
 			
-			"=>", "=",
+			"=>", "==", "=",
 			"@",
 			"[|", "|]",
 			"\\\\", "\\",
