@@ -11,10 +11,10 @@
 --------------
 - Bugfixes
 	- fixed bug in number parsing where it would incorrectly parse 1. as the number "1." rather
-	  that the number "1" followed by a "."
+	  than the number "1" followed by a "."
 	- fixed bug where casts were being falsely detected in expressions like "if (something) doSomething();"
 	  in Java and C#
-- Enhancments
+- Enhancements
 	- new languages: brainfuck (awwwwwwww yeeeeeeeeeah), nginx, c/c++, 6502 assembler, perl
 	- added getNextWhile/getPreviousWhile utility functions
 	- added isSol() and isEol() functions to reader
