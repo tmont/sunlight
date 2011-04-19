@@ -16,6 +16,16 @@ End Class
 Public Class Dictionary(Of entryType, keyType As IComparable)
     Public Sub add(ByVal e As entryType, ByVal k As keyType)
         Dim dk As keyType
+		
+		'array initialization and char literals
+		Dim testChars As Char() = New Char(2) {"%"c, "&"c, "@"c}
+		
+		'casting stuff
+		f = CType(CType(castVar1, OohNestedCast), CastToThisType)
+		f = DirectCast(castVar2, NoCastToThisType)
+		f = CType(castVar3, CastToArray())
+		Dim objAsConvertible As IConvertible = TryCast(castVar4, TryToCastToThisType)
+		
         If k.CompareTo(dk) = 0 Then
         End If
     End Sub
@@ -179,13 +189,23 @@ End Enum
 		assertExists("named-ident", "BaseClass", "ident after Inherits");
 		assertExists("named-ident", "SubtractNumbers", "ident after AddressOf");
 		assertExists("named-ident", "entryType", "ident after Of");
+		assertExists("named-ident", "OohNestedCast", "nested cast");
+		assertExists("named-ident", "CastToThisType", "CType cast");
+		assertExists("named-ident", "NoCastToThisType", "DirectCast cast");
+		assertExists("named-ident", "TryToCastToThisType", "TryCast cast");
+		assertExists("named-ident", "CastToArray", "cast to array");
 		
 		assertExists("ident", "New", "New subprocedure");
 		assertExists("ident", "GetType", "GetType method call");
+		assertExists("ident", "castVar1", "first argument to cast function");
+		assertExists("ident", "castVar2", "first argument to cast function");
+		assertExists("ident", "castVar3", "first argument to cast function");
+		assertExists("ident", "castVar4", "first argument to cast function");
 		
 		assertExists("escapedKeyword", "[True]", "escaped keyword");
 		
 		assertExists("string", "\"ThisClass is initializing with Sub New.\"", "double quoted string");
+		assertExists("string", "\"%\"", "char");
 		
 		assertExists("number", "&HE1E4FF", "hex number");
 		assertExists("number", "459", "integer");

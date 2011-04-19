@@ -91,6 +91,37 @@
 
 		namedIdentRules: {
 			custom: [
+				//casts
+				function(context) {
+					//look backward for CType, DirectCast or TryCast
+					//could be goofy because of nesting, so we need to count parens
+					
+					//verify that this ident is the second argument to the function call
+					if (!sunlight.util.createProceduralRule(context.index - 1, -1, [{ token: "punctuation", values: [","] }, sunlight.util.whitespace])(context.tokens)) {
+						return false;
+					}
+					
+					var token, index = context.index, parenCount = 1;
+					while (token = context.tokens[--index]) {
+						if (token.name === "punctuation" && token.value === "(") {
+							parenCount--;
+							if (parenCount === 0) {
+								//we found the opening paren, so if the previous token is one of the cast functions, this is a cast
+								token = context.tokens[--index];
+								if (token && token.name === "keyword" && sunlight.util.contains(["CType", "DirectCast", "TryCast"], token.value)) {
+									return true;
+								}
+								
+								return false;
+							}
+						} else if (token.name === "punctuation" && token.value === ")") {
+							parenCount++;
+						}
+					}
+					
+					return false;
+				},
+				
 				//implemented interfaces
 				function(context) {
 					//if previous non-ws token was a "." then it's an implemented method
@@ -173,7 +204,10 @@
 			],
 			
 			follows: [
-				[{ token: "keyword", values: ["Of", "As", "Class", "Implements", "Inherits", "New", "AddressOf", "Interface", "Structure", "Event", "Module", "Enum"] }, { token: "default" } ]
+				[
+					{ token: "keyword", values: ["Of", "As", "Class", "Implements", "Inherits", "New", "AddressOf", "Interface", "Structure", "Event", "Module", "Enum"] }, 
+					{ token: "default" } 
+				]
 			]
 		},
 		

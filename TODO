@@ -5,7 +5,6 @@ PARSING
 - ruby indented heredocs
 - perl heredocs don't allow spaces before identifiers
 - vb xml doc comments with '''
-- vb array detection
 
 MISSING KEYWORDS
 - CSS property values (none, solid, inset, etc.)
