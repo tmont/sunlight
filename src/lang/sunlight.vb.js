@@ -147,6 +147,69 @@
 
 		namedIdentRules: {
 			custom: [
+				//attributes (copypasted (mostly) from c# file)
+				function(context) {
+					//if the next token is an equals sign, this is a named parameter (or something else not inside of an attribute)
+					var token, nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					if (nextToken && nextToken.name === "operator" && (nextToken.value === "=" || nextToken.value === ".")) {
+						return false;
+					}
+					
+					//we need to verify that we're between <>
+					
+					//first, verify that we're inside an opening bracket
+					var index = context.index, bracketCount = [0, 0];
+					while ((token = context.tokens[--index]) !== undefined) {
+						if (token.name === "operator") {
+							if (token.value === "<") {
+								bracketCount[0]++;
+							} else if (token.value === ">") {
+								bracketCount[1]++;
+							}
+						} else if (token.name === "keyword" && sunlight.util.contains(["Public", "Class", "Protected", "Private", "Friend"], token.value)) {
+							//early exits
+							break;
+						}
+					}
+					
+					if (bracketCount[0] === 0 || bracketCount[0] === bracketCount[1]) {
+						//if no brackets were found OR...
+						//all the found brackets are closed, so this ident is actually outside of the brackets
+						//duh.
+						return false;
+					}
+					
+					//next, verify we're inside a closing bracket
+					index = context.index;
+					var indexOfLastBracket = -1;
+					while ((token = context.tokens[++index]) !== undefined) {
+						if (token.name === "operator") {
+							if (token.value === "<") {
+								bracketCount[0]++;
+							} else if (token.value === ">") {
+								indexOfLastBracket = index;
+								bracketCount[1]++;
+							}
+						} else if (token.name === "keyword" && sunlight.util.contains(["Public", "Class", "Protected", "Private", "Friend", "ByVal"], token.value)) {
+							//early exits
+							break;
+						}
+					}
+					
+					if (indexOfLastBracket < 0 || bracketCount[0] !== bracketCount[1]) {
+						return false;
+					}
+					
+					//next token after the last closing bracket should be either a keyword or an ident
+					token = sunlight.util.getNextNonWsToken(context.tokens, indexOfLastBracket);
+					if (token && (token.name === "keyword" || token.name === "ident")) {
+						return true;
+					}
+					
+					
+					return false;
+				},
+				
 				//casts
 				function(context) {
 					//look backward for CType, DirectCast or TryCast
@@ -303,6 +366,7 @@
 		
 		operators: [
 			".",
+			"<>",
 			"=",
 			"&=",
 			"&",
@@ -322,6 +386,10 @@
 			">>",
 			"<<=",
 			"<<",
+			"<=",
+			">=",
+			"<",
+			">"
 		]
 	});
 }(window["Sunlight"]));

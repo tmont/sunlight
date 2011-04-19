@@ -4,7 +4,6 @@ PARSING
 - Python/Java exponents: 1e3-10
 - ruby indented heredocs
 - perl heredocs don't allow spaces before identifiers
-- vb attributes
 
 MISSING KEYWORDS
 - CSS property values (none, solid, inset, etc.)
@@ -37,7 +36,6 @@ LANGUAGES
 - httpd
 - Lisp
 - Haskell
-- VB.NET
 
 WEB
 - document continuations for incomplete parses on custom rules

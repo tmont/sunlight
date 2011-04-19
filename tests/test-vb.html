@@ -7,7 +7,9 @@
 	</head>
 
 	<body>
-<pre id="code" class="sunlight-highlight-vb">'comment
+<pre id="code" class="sunlight-highlight-vb">Imports System.Runtime.InteropServices
+
+'comment
 
 ''' &lt;summary&gt;
 ''' How about an XML doc comment?
@@ -15,12 +17,14 @@
 ''' &lt;/summary&gt;
 '''
 ''' &lt;param name="foos"&gt;Collection of &lt;see cref="Foo" /&gt;&lt;/param&gt;
+&lt;Attribute1("DEBUG"), Attribute2("TEST1")&gt;
+&lt;System.Runtime.InteropServices.DllImport("user32.dll")&gt;
 Public Class thisClass(Of t As {GenericConstraint1, GenericConstraint2, Class, New})
     ' Insert code that defines class members.
 End Class
 
 Public Class Dictionary(Of entryType, keyType As IComparable)
-    Public Sub add(ByVal e As entryType, ByVal k As keyType)
+    Public Sub add(&lt;[In](), ICanHazAttribute()&gt;ByVal e As entryType, ByVal k As keyType)
         Dim dk As keyType
 		
 		'array initialization and char literals
@@ -203,6 +207,10 @@ End Enum
 		assertExists("named-ident", "TryToCastToThisType", "TryCast cast");
 		assertExists("named-ident", "CastToArray", "cast to array");
 		assertExists("named-ident", "GetTypeTest", "type name inside GetType operator");
+		assertExists("named-ident", "Attribute1", "class attribute");
+		assertExists("named-ident", "Attribute2", "class attribute");
+		assertExists("named-ident", "DllImport", "class attribute");
+		assertExists("named-ident", "ICanHazAttribute", "parameter attribute");
 		
 		assertExists("ident", "New", "New subprocedure");
 		assertExists("ident", "GetType", "GetType method call");

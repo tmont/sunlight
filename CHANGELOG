@@ -6,7 +6,9 @@
 	  to start at the beginning of the string (with "^")
 	- made default number parser better (don't allow multiple decimal places, and don't allow decimal point
 	  in octal/hex numbers)
-
+- Enhancements
+	- new languages: VB.NET
+	  
 1.4 2011-04-17
 --------------
 - Bugfixes
