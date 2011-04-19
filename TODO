@@ -4,7 +4,7 @@ PARSING
 - Python/Java exponents: 1e3-10
 - ruby indented heredocs
 - perl heredocs don't allow spaces before identifiers
-- vb xml doc comments with '''
+- vb attributes
 
 MISSING KEYWORDS
 - CSS property values (none, solid, inset, etc.)

@@ -40,6 +40,62 @@
 		},
 		
 		customParseRules: [
+			//xml doc comments (copypasted from c# file)
+			function(context) {
+				if (context.reader.current() !== "'" || context.reader.peek(2) !== "''") {
+					return null;
+				}
+				
+				var metaName = "xmlDocCommentMeta"; //tags and the "'''" starting token
+				var contentName = "xmlDocCommentContent"; //actual comments (words and stuff)
+				var tokens = [context.createToken(metaName, "'''", context.reader.getLine(), context.reader.getColumn())];
+				var peek, current = { line: 0, column: 0, value: "", name: null };
+				context.reader.read(2);
+				
+				while ((peek = context.reader.peek()) !== context.reader.EOF) {
+					if (peek === "<" && current.name !== metaName) {
+						//push the current token
+						if (current.value !== "") {
+							tokens.push(context.createToken(current.name, current.value, current.line, current.column));
+						}
+						
+						//amd create a token for the tag
+						current.line = context.reader.getLine();
+						current.column = context.reader.getColumn();
+						current.name = metaName;
+						current.value = context.reader.read();
+						continue;
+					}
+					
+					if (peek === ">" && current.name === metaName) {
+						//close the tag
+						current.value += context.reader.read();
+						tokens.push(context.createToken(current.name, current.value, current.line, current.column));
+						current.name = null;
+						current.value = "";
+						continue;
+					}
+					
+					if (peek === "\n") {
+						break;
+					}
+					
+					if (current.name === null) {
+						current.name = contentName;
+						current.line = context.reader.getLine();
+						current.column = context.reader.getColumn();
+					}
+					
+					current.value += context.reader.read();
+				}
+				
+				if (current.name === contentName) {
+					tokens.push(context.createToken(current.name, current.value, current.line, current.column));
+				}
+				
+				return tokens.length > 0 ? tokens : null;
+			},
+			
 			//keyword escaping: e.g. "[In]"
 			function(context) {
 				if (context.reader.current() !== "[") {
@@ -204,10 +260,8 @@
 			],
 			
 			follows: [
-				[
-					{ token: "keyword", values: ["Of", "As", "Class", "Implements", "Inherits", "New", "AddressOf", "Interface", "Structure", "Event", "Module", "Enum"] }, 
-					{ token: "default" } 
-				]
+				[{ token: "keyword", values: ["Of", "As", "Class", "Implements", "Inherits", "New", "AddressOf", "Interface", "Structure", "Event", "Module", "Enum"] }, { token: "default" }],
+				[{ token: "keyword", values: ["GetType"] }, sunlight.util.whitespace, { token: "punctuation", values: ["("] }, sunlight.util.whitespace]
 			]
 		},
 		

@@ -9,6 +9,12 @@
 	<body>
 <pre id="code" class="sunlight-highlight-vb">'comment
 
+''' &lt;summary&gt;
+''' How about an XML doc comment?
+''' This class does &lt;c cref="Foo"&gt;something&lt;/c&gt;
+''' &lt;/summary&gt;
+'''
+''' &lt;param name="foos"&gt;Collection of &lt;see cref="Foo" /&gt;&lt;/param&gt;
 Public Class thisClass(Of t As {GenericConstraint1, GenericConstraint2, Class, New})
     ' Insert code that defines class members.
 End Class
@@ -25,6 +31,8 @@ Public Class Dictionary(Of entryType, keyType As IComparable)
 		f = DirectCast(castVar2, NoCastToThisType)
 		f = CType(castVar3, CastToArray())
 		Dim objAsConvertible As IConvertible = TryCast(castVar4, TryToCastToThisType)
+		
+		MsgBox(GetType(GetTypeTest).ToString())
 		
         If k.CompareTo(dk) = 0 Then
         End If
@@ -194,6 +202,7 @@ End Enum
 		assertExists("named-ident", "NoCastToThisType", "DirectCast cast");
 		assertExists("named-ident", "TryToCastToThisType", "TryCast cast");
 		assertExists("named-ident", "CastToArray", "cast to array");
+		assertExists("named-ident", "GetTypeTest", "type name inside GetType operator");
 		
 		assertExists("ident", "New", "New subprocedure");
 		assertExists("ident", "GetType", "GetType method call");
