@@ -38,4 +38,5 @@ LANGUAGES
 - Haskell
 
 WEB
+- add visual basic to demo
 - document continuations for incomplete parses on custom rules
