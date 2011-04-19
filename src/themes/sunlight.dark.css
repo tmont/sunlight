@@ -101,7 +101,8 @@ span.sunlight-highlighted * {
 .sunlight-globalObject, 
 .sunlight-css .sunlight-id, 
 .sunlight-python .sunlight-attribute,
-.sunlight-nginx .sunlight-context {
+.sunlight-nginx .sunlight-context,
+.sunlight-httpd .sunlight-context {
 	color: #FBBDEE !important;
 	font-weight: bold !important;
 }
@@ -136,6 +137,7 @@ span.sunlight-highlighted * {
 	font-weight: bold !important;
 }
 .sunlight-variable,
+.sunlight-environmentVariable,
 .sunlight-ruby .sunlight-globalVariable,
 .sunlight-ruby .sunlight-instanceVariable {
 	color: #F5E5B0 !important;

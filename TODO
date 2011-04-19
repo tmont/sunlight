@@ -33,10 +33,12 @@ LANGUAGES
 - Oracle
 - ASP.NET
 - Razor (ASP.NET MVC)
-- httpd
 - Lisp
 - Haskell
+- powershell
 
 WEB
 - add visual basic to demo
+- add httpd to demo
 - document continuations for incomplete parses on custom rules
+- document isSolWs
