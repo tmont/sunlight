@@ -143,6 +143,17 @@ span.sunlight-highlighted * {
 	font-style: italic !important;
 	font-weight: bold !important;
 }
+.sunlight-csharp .sunlight-pragma,
+.sunlight-cpp .sunlight-preprocessorDirective,
+.sunlight-vb .sunlight-compilerDirective {
+	color: #999999 !important;
+	font-style: italic !important;
+}
+.sunlight-csharp .sunlight-xmlDocCommentMeta,
+.sunlight-java .sunlight-annotation,
+.sunlight-docComment {
+	color: #808080 !important;
+}
 
 
 
@@ -175,18 +186,6 @@ span.sunlight-highlighted * {
 /* html */
 .sunlight-html .sunlight-doctype {
 	color: #2B91AF !important;
-}
-
-/* c# */
-.sunlight-csharp .sunlight-pragma,
-.sunlight-cpp .sunlight-preprocessorDirective {
-	color: #999999 !important;
-	font-style: italic !important;
-}
-.sunlight-csharp .sunlight-xmlDocCommentMeta,
-.sunlight-java .sunlight-annotation,
-.sunlight-docComment {
-	color: #808080 !important;
 }
 
 /* javascript */
