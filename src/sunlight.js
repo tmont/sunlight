@@ -256,6 +256,24 @@
 			getColumn: function() { return column; },
 			isEof: function() { return index >= length; },
 			isSol: function() { return column === 1; },
+			isSolWs: function() {
+				if (column === 1) {
+					return true;
+				}
+				
+				//look backward until we find a newline or a non-whitespace character
+				var temp = index, c;
+				while ((c = text.charAt(--temp)) !== "") {
+					if (c === "\n") {
+						return true;
+					}
+					if (!/\s/.test(c)) {
+						return false;
+					}
+				}
+				
+				return true;
+			},
 			isEol: function() { return nextReadBeginsLine; },
 			EOF: EOF,
 			current: function() { return currentChar; }
@@ -448,10 +466,10 @@
 				if (customRules === undefined) {
 					return null;
 				}
-
+				
 				for (var i = 0, token; i < customRules.length; i++) {
 					token = customRules[i](context);
-					if (token !== null) {
+					if (token) {
 						return token;
 					}
 				}
