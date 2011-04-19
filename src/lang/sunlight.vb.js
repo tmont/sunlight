@@ -40,6 +40,30 @@
 		},
 		
 		customParseRules: [
+			//keyword escaping: e.g. "[In]"
+			function(context) {
+				if (context.reader.current() !== "[") {
+					return null;
+				}
+				
+				//read until "]"
+				var line = context.reader.getLine(), column = context.reader.getColumn();
+				var next = context.reader.read(), value = "[";
+				while (next !== context.reader.EOF) {
+					value += next;
+					
+					if (next === "]") {
+						break;
+					}
+					
+					next = context.reader.read();
+				}
+				
+				//TODO handle continuations
+				
+				return context.createToken("escapedKeyword", value, line, column);
+			},
+			
 			//handles New/GetType contextual keywords
 			//e.g. prevents "New" in "SomeClass.New()" from being a keyword
 			function() {
@@ -150,12 +174,6 @@
 			
 			follows: [
 				[{ token: "keyword", values: ["Of", "As", "Class", "Implements", "Inherits", "New", "AddressOf", "Interface", "Structure", "Event", "Module", "Enum"] }, { token: "default" } ]
-			],
-			
-			precedes: [
-			],
-
-			between: [
 			]
 		},
 		
@@ -169,12 +187,10 @@
 			} else if (/\d/.test(current)) {
 				number = current;
 			} else {
-				//is it a decimal followed by a number?
 				if (current !== "." || !/\d/.test(context.reader.peek())) {
 					return null;
 				}
 
-				//decimal without leading zero
 				number = current + context.reader.read();
 				allowDecimal = false;
 			}

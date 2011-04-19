@@ -717,8 +717,7 @@
 	};
 
 	var defaultNumberParser = function(context) {
-		var current = 
-			context.reader.current(), 
+		var current = context.reader.current(), 
 			number, 
 			line = context.reader.getLine(), 
 			column = context.reader.getColumn(),
