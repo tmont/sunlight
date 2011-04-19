@@ -4,6 +4,8 @@
 	- fixed bug where keywords were being spuriously detected in idents (e.g. "class" in "cclass")
 	  due to the fact that the regular expression in the generated hashmap was not requiring the match
 	  to start at the beginning of the string (with "^")
+	- made default number parser better (don't allow multiple decimal places, and don't allow decimal point
+	  in octal/hex numbers)
 
 1.4 2011-04-17
 --------------

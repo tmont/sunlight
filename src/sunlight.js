@@ -717,7 +717,12 @@
 	};
 
 	var defaultNumberParser = function(context) {
-		var current = context.reader.current(), number, line = context.reader.getLine(), column = context.reader.getColumn();
+		var current = 
+			context.reader.current(), 
+			number, 
+			line = context.reader.getLine(), 
+			column = context.reader.getColumn(),
+			allowDecimal = true;
 
 		if (!/\d/.test(current)) {
 			//is it a decimal followed by a number?
@@ -727,20 +732,25 @@
 
 			//decimal without leading zero
 			number = current + context.reader.read();
+			allowDecimal = false;
 		} else {
 			number = current;
+			if (current === "0" && context.reader.peek() !== ".") {
+				//hex or octal
+				allowDecimal = false;
+			}
 		}
 
 		//easy way out: read until it's not a number or letter
 		//this will work for hex (0xef), octal (012), decimal and scientific notation (1e3)
 		//anything else and you're on your own
 
-		var peek, foundDecimal = false;
+		var peek;
 		while ((peek = context.reader.peek()) !== context.reader.EOF) {
 			if (!/[A-Za-z0-9]/.test(peek)) {
-				if (peek === "." && !foundDecimal && /\d$/.test(context.reader.peek(2))) {
+				if (peek === "." && allowDecimal && /\d$/.test(context.reader.peek(2))) {
 					number += context.reader.read();
-					foundDecimal = true;
+					allowDecimal = false;
 					continue;
 				}
 				
