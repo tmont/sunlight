@@ -31,11 +31,10 @@ FUNCTIONALITY - 2.0
 LANGUAGES
 - PostgreSQL
 - Oracle
-- ASP.NET
-- Razor (ASP.NET MVC)
 - Lisp
 - Haskell
 - powershell
+- scala: http://www.scala-lang.org/node/198
 
 WEB
 - add visual basic to demo
