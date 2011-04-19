@@ -6,6 +6,8 @@
 	  to start at the beginning of the string (with "^")
 	- made default number parser better (don't allow multiple decimal places, and don't allow decimal point
 	  in octal/hex numbers)
+	- fixed bug in C# attribute detection where it would falsely identify the namespace portion of a fully
+	  qualified type name
 - Enhancements
 	- new languages: VB.NET
 	  

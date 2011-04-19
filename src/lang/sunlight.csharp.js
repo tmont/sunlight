@@ -479,7 +479,7 @@
 				createNamedIdentFunction(function(context) {
 					//if the next token is an equals sign, this is a named parameter (or something else not inside of an attribute)
 					var token = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-					if (token && token.name === "operator" && token.value === "=") {
+					if (token && token.name === "operator" && (token.value === "=" || token.value === ".")) {
 						return false;
 					}
 					
@@ -508,9 +508,6 @@
 							if (token.value === "{" || token.value === "}" || token.value === ";") {
 								break;
 							}
-						} else if (token.name === "ident" && bracketCount[1] === 0 && !foundComma) {
-							//prevents false positives like "new Integer[initialArrayLength]" but not things like "[FirstAttribute, SecondAttribute]"
-							return false;
 						}
 					}
 					

@@ -13,6 +13,7 @@ using System;
 using UsingAlias = System.Linq.Enumerable;
 
 namespace My.Namespace {
+	[NotAnAttribute.FullyQualifiedAttribute]
 	public abstract class ValueHandlerFactoryBase&lt;T1, T2, in TClass1&gt; : MarshalByRefObject, IValueHandlerFactory, IAmAnInterface 
 		where TClass1Constraint : IAmATypeConstraint
 		where T2 : T1
@@ -180,6 +181,7 @@ public class Foo { }</pre>
 		assertExists("named-ident", "AnAttribute", "attribute");
 		assertExists("named-ident", "FirstAttribute", "attribute");
 		assertExists("named-ident", "ThirdAttribute", "attribute");
+		assertExists("named-ident", "FullyQualifiedAttribute", "fully qualified attribute");
 		assertExists("named-ident", "SecondGeneric", "second generic argument");
 		assertExists("named-ident", "ArrayOfSomething", "class name before []");
 		assertExists("named-ident", "AnotherArrayOfSomething", "class name before []");
@@ -228,6 +230,7 @@ public class Foo { }</pre>
 		assertExists("ident", "TNotNamed", "type definition as return value");
 		assertExists("ident", "TAlsoNotNamed", "type definition in default()");
 		assertExists("ident", "notACast", "if (notACast) doSomething()");
+		assertExists("ident", "NotAnAttribute", "namespace of fully qualified attribute");
 		
 		assertExists("comment", "/* multi\n\t\t\tline comment\n\t\t\t*/", "multi line comment");
 		assertExists("comment", "//neither foo below should be a named ident", "single line comment");
