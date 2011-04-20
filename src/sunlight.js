@@ -569,7 +569,8 @@
 				continuation: parseData.continuation,
 				addNode: function(node) { nodes.push(node); },
 				createTextNode: function(text) { return document.createTextNode(prepareText(text)); },
-				getNodes: function() { return nodes; }
+				getNodes: function() { return nodes; },
+				items: language.analyzerContextItems
 			};
 		};
 
@@ -799,7 +800,8 @@
 		punctuation: /[^\w\s]/,
 		numberParser: defaultNumberParser,
 		caseInsensitive: false,
-		doNotParse: /\s/
+		doNotParse: /\s/,
+		analyzerContextItems: {}
 	};
 
 	//public facing object

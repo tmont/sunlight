@@ -10,7 +10,8 @@
 	  qualified type name
 - Enhancements
 	- new languages: VB.NET, httpd, Lisp
-	- added doNotParse language property (defaults to whitespace)
+	- added doNotParse language property
+	- added analyzerContextItems language property
 	  
 1.4 2011-04-17
 --------------

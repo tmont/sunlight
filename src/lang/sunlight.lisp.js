@@ -5,8 +5,6 @@
 	}
 	
 	var functionBoundary = "[\\s\\(\\)]";
-	//keep track of all user defined functions so we can highlight them later
-	var userDefinedFunctions = [];
 	
 	var createFunctionRule = function(words, tokenName) {
 		var map = sunlight.util.createHashMap(words, functionBoundary, false);
@@ -331,13 +329,17 @@
 						var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
 						var identValue = context.tokens[context.index].value;
 						if (prevToken && prevToken.name === "macro" && sunlight.util.contains(defMacros, prevToken.value)) {
-							userDefinedFunctions.push(identValue);
+							context.items.userDefinedFunctions.push(identValue);
 						}
 						
-						return sunlight.util.contains(userDefinedFunctions, identValue);
+						return sunlight.util.contains(context.items.userDefinedFunctions, identValue);
 					};
 				}()
 			]
+		},
+		
+		analyzerContextItems: {
+			userDefinedFunctions: []
 		},
 
 		operators: [

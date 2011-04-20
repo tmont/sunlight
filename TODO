@@ -42,3 +42,4 @@ WEB
 - document continuations for incomplete parses on custom rules
 - document new doNotParse language property
 - document isSolWs
+- document analyzerContext.items/language.analyzerContextItems
