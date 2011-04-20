@@ -10,6 +10,7 @@
 	  qualified type name
 - Enhancements
 	- new languages: VB.NET, httpd, Lisp
+	- added doNotParse language property (defaults to whitespace)
 	  
 1.4 2011-04-17
 --------------

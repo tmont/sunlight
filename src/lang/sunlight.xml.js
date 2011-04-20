@@ -5,6 +5,9 @@
 	}
 
 	sunlight.registerLanguage("xml", {
+		//parse everything
+		doNotParse: /(?!x)x/,
+		
 		scopes: {
 			string: [ ["\"", "\""], ["'", "'"] ],
 			comment: [ ["<!--", "-->"] ],

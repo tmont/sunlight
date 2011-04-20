@@ -477,6 +477,10 @@
 				return null;
 			};
 
+			if (context.language.doNotParse.test(context.reader.current())) {
+				return parseDefault();
+			}
+			
 			return parseCustomRules()
 				|| parseCustomTokens()
 				|| parseKeyword()
@@ -794,7 +798,8 @@
 		namedIdentRules: {},
 		punctuation: /[^\w\s]/,
 		numberParser: defaultNumberParser,
-		caseInsensitive: false
+		caseInsensitive: false,
+		doNotParse: /\s/
 	};
 
 	//public facing object

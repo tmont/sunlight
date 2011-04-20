@@ -40,4 +40,5 @@ WEB
 - add httpd to demo
 - add lisp to demo
 - document continuations for incomplete parses on custom rules
+- document new doNotParse language property
 - document isSolWs
