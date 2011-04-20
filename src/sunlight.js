@@ -220,6 +220,11 @@
 
 			read: function(count) {
 				var value = getCharacters(count);
+				
+				if (value === "") {
+					//this is a result of reading/peeking/doing nothing
+					return value;
+				}
 
 				if (value !== EOF) {
 					//advance index
@@ -365,18 +370,18 @@
 				return context.createToken(tokenName, buffer, line, column);
 			};
 		};
-
-		var parseNextToken = function(context) {
-			var isIdentMatch = function() {
+		
+		var parseNextToken = function() {
+			var isIdentMatch = function(context) {
 				return context.language.identFirstLetter && context.language.identFirstLetter.test(context.reader.current());
 			};
 
 			//token parsing functions
-			var parseKeyword = function() {
+			var parseKeyword = function(context) {
 				return matchWord(context, context.language.keywords, "keyword");
 			};
 
-			var parseCustomTokens = function() {
+			var parseCustomTokens = function(context) {
 				if (context.language.customTokens === undefined) {
 					return null;
 				}
@@ -391,11 +396,11 @@
 				return null;
 			};
 
-			var parseOperator = function() {
+			var parseOperator = function(context) {
 				return matchWord(context, context.language.operators, "operator");
 			};
 
-			var parsePunctuation = function() {
+			var parsePunctuation = function(context) {
 				var current = context.reader.current();
 				if (context.language.punctuation.test(regexEscape(current))) {
 					return context.createToken("punctuation", current, context.reader.getLine(), context.reader.getColumn());
@@ -404,8 +409,8 @@
 				return null;
 			};
 
-			var parseIdent = function(isNamed) {
-				if (!isIdentMatch()) {
+			var parseIdent = function(context) {
+				if (!isIdentMatch(context)) {
 					return null;
 				}
 
@@ -421,10 +426,10 @@
 					peek = context.reader.peek();
 				}
 
-				return context.createToken(isNamed ? "namedIdent" : "ident", ident, line, column);
+				return context.createToken("ident", ident, line, column);
 			};
 
-			var parseDefault = function() {
+			var parseDefault = function(context) {
 				if (context.defaultData.text === "") {
 					//new default token
 					context.defaultData.line = context.reader.getLine();
@@ -435,7 +440,7 @@
 				return null;
 			};
 
-			var parseScopes = function() {
+			var parseScopes = function(context) {
 				var current = context.reader.current();
 
 				for (var tokenName in context.language.scopes) {
@@ -457,11 +462,11 @@
 				return null;
 			};
 
-			var parseNumber = function() {
+			var parseNumber = function(context) {
 				return context.language.numberParser(context);
 			};
 
-			var parseCustomRules = function() {
+			var parseCustomRules = function(context) {
 				var customRules = context.language.customParseRules;
 				if (customRules === undefined) {
 					return null;
@@ -477,20 +482,22 @@
 				return null;
 			};
 
-			if (context.language.doNotParse.test(context.reader.current())) {
-				return parseDefault();
+			return function(context) {
+				if (context.language.doNotParse.test(context.reader.current())) {
+					return parseDefault(context);
+				}
+				
+				return parseCustomRules(context)
+					|| parseCustomTokens(context)
+					|| parseKeyword(context)
+					|| parseScopes(context)
+					|| parseIdent(context)
+					|| parseNumber(context)
+					|| parseOperator(context)
+					|| parsePunctuation(context)
+					|| parseDefault(context);
 			}
-			
-			return parseCustomRules()
-				|| parseCustomTokens()
-				|| parseKeyword()
-				|| parseScopes()
-				|| parseIdent()
-				|| parseNumber()
-				|| parseOperator()
-				|| parsePunctuation()
-				|| parseDefault();
-		};
+		}();
 
 		var tokenize = function(unhighlightedCode, language, continuation) {
 			var tokens = [];
