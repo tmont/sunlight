@@ -22,11 +22,11 @@ FUNCTIONALITY
 - show whitespace option
 - plugin system (externalize all options)
 - remove hideous code duplication (e.g. between c#, java and c++)
-- handle continuations in custom parse rules (preferrably in some uniform way)
 
 FUNCTIONALITY - 2.0
 - code folding
 - scope stacking
+- handle continuations in custom parse rules (preferrably in some uniform way)
 
 LANGUAGES
 - PostgreSQL
