@@ -102,7 +102,8 @@ span.sunlight-highlighted * {
 .sunlight-nginx .sunlight-context,
 .sunlight-httpd .sunlight-context,
 .sunlight-haskell .sunlight-class,
-.sunlight-haskell .sunlight-type {
+.sunlight-haskell .sunlight-type,
+.sunlight-lisp .sunlight-declarationSpecifier {
 	color: #2B91AF !important;
 }
 .sunlight-keyword,
@@ -128,18 +129,23 @@ span.sunlight-highlighted * {
 .sunlight-function,
 .sunlight-globalFunction,
 .sunlight-ruby .sunlight-specialFunction,
-.sunlight-6502asm .sunlight-illegalOpcode {
+.sunlight-6502asm .sunlight-illegalOpcode,
+.sunlight-lisp .sunlight-macro,
+.sunlight-lisp .sunlight-specialForm,
+.sunlight-lisp .sunlight-type {
 	color: #B069AF !important;
 }
 
 .sunlight-variable,
 .sunlight-specialVariable,
 .sunlight-environmentVariable,
+.sunlight-lisp .sunlight-globalVariable,
 .sunlight-ruby .sunlight-globalVariable,
 .sunlight-ruby .sunlight-instanceVariable {
 	color: #325484 !important;
 }
 .sunlight-regexLiteral,
+.sunlight-lisp .sunlight-operator,
 .sunlight-6502asm .sunlight-pseudoOp {
 	color: #FF00B2 !important;
 }
@@ -157,6 +163,10 @@ span.sunlight-highlighted * {
 .sunlight-java .sunlight-annotation,
 .sunlight-docComment {
 	color: #808080 !important;
+}
+.sunlight-quotedIdent,
+.sunlight-lisp .sunlight-keywordArgument {
+	color: #999900 !important;
 }
 
 
@@ -195,11 +205,6 @@ span.sunlight-highlighted * {
 /* javascript */
 .sunlight-javascript .sunlight-reservedWord {
 	font-style: italic !important;
-}
-
-/* sql */
-.sunlight-quotedIdent {
-	color: #999900 !important;
 }
 
 /* css */
@@ -278,4 +283,9 @@ span.sunlight-highlighted * {
 	font-weight: bold !important;
 	color: #000000 !important;
 	background: none !important;
+}
+
+/* lisp */
+.sunlight-lisp .sunlight-macro {
+	font-style: italic !important;
 }

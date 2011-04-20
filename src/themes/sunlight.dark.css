@@ -65,19 +65,19 @@ span.sunlight-highlighted * {
 
 
 
-.sunlight-string, 
-.sunlight-heredoc, 
-.sunlight-heredocDeclaration, 
-.sunlight-nowdoc, 
-.sunlight-longString, 
-.sunlight-rawString, 
-.sunlight-binaryString, 
-.sunlight-rawLongString, 
+.sunlight-string,
+.sunlight-heredoc,
+.sunlight-heredocDeclaration,
+.sunlight-nowdoc,
+.sunlight-longString,
+.sunlight-rawString,
+.sunlight-binaryString,
+.sunlight-rawLongString,
 .sunlight-binaryLongString {
 	color: #55EB54 !important;
 }
-.sunlight-operator, 
-.sunlight-punctuation, 
+.sunlight-operator,
+.sunlight-punctuation,
 .sunlight-delimiter {
 	color: #B1EDEC !important;
 }
@@ -85,42 +85,43 @@ span.sunlight-highlighted * {
 	color: #E0E0E0 !important;
 	font-weight: bold !important;
 }
-.sunlight-comment, 
+.sunlight-comment,
 .sunlight-xmlDocCommentContent,
 .sunlight-nginx .sunlight-ssiCommand {
 	color: #787D31 !important;
 }
-.sunlight-number, 
+.sunlight-number,
 .sunlight-cdata {
 	color: #F7BA7E !important;
 	font-weight: bold !important;
 }
-.sunlight-named-ident, 
-.sunlight-constant, 
-.sunlight-javascript .sunlight-globalVariable, 
-.sunlight-globalObject, 
-.sunlight-css .sunlight-id, 
+.sunlight-named-ident,
+.sunlight-constant,
+.sunlight-javascript .sunlight-globalVariable,
+.sunlight-globalObject,
+.sunlight-css .sunlight-id,
 .sunlight-python .sunlight-attribute,
 .sunlight-nginx .sunlight-context,
-.sunlight-httpd .sunlight-context {
+.sunlight-httpd .sunlight-context,
+.sunlight-lisp .sunlight-declarationSpecifier {
 	color: #FBBDEE !important;
 	font-weight: bold !important;
 }
-.sunlight-keyword, 
-.sunlight-languageConstruct, 
-.sunlight-html .sunlight-ident, 
-.sunlight-html .sunlight-operator, 
-.sunlight-xml .sunlight-ident, 
-.sunlight-xml .sunlight-operator, 
+.sunlight-keyword,
+.sunlight-languageConstruct,
+.sunlight-html .sunlight-ident,
+.sunlight-html .sunlight-operator,
+.sunlight-xml .sunlight-ident,
+.sunlight-xml .sunlight-operator,
 .sunlight-bash .sunlight-command,
 .sunlight-ruby .sunlight-specialOperator {
 	color: #A3CCF7 !important;
 	font-weight: bold !important;
 }
-.sunlight-shortOpenTag, 
-.sunlight-openTag, 
-.sunlight-closeTag, 
-.sunlight-xmlOpenTag, 
+.sunlight-shortOpenTag,
+.sunlight-openTag,
+.sunlight-closeTag,
+.sunlight-xmlOpenTag,
 .sunlight-xmlCloseTag,
 .sunlight-label {
 	background-color: #7373C1 !important;
@@ -129,21 +130,26 @@ span.sunlight-highlighted * {
 	color: #FFFFFF !important;
 	font-weight: bold !important;
 }
-.sunlight-function, 
+.sunlight-function,
 .sunlight-globalFunction,
 .sunlight-ruby .sunlight-specialFunction,
-.sunlight-6502asm .sunlight-illegalOpcode {
+.sunlight-6502asm .sunlight-illegalOpcode,
+.sunlight-lisp .sunlight-macro,
+.sunlight-lisp .sunlight-specialForm,
+.sunlight-lisp .sunlight-type {
 	color: #C8BBF1 !important;
 	font-weight: bold !important;
 }
 .sunlight-variable,
 .sunlight-environmentVariable,
+.sunlight-lisp .sunlight-globalVariable,
 .sunlight-ruby .sunlight-globalVariable,
 .sunlight-ruby .sunlight-instanceVariable {
 	color: #F5E5B0 !important;
 	font-weight: bold !important;
 }
 .sunlight-regexLiteral,
+.sunlight-lisp .sunlight-operator,
 .sunlight-6502asm .sunlight-pseudoOp {
 	color: #E0F16A !important;
 }
@@ -162,16 +168,20 @@ span.sunlight-highlighted * {
 .sunlight-docComment {
 	color: #666363 !important;
 }
+.sunlight-quotedIdent,
+.sunlight-lisp .sunlight-keywordArgument {
+	color: #FB74F1 !important;
+}
 
 
 
 
 /* html/xml */
-.sunlight-html .sunlight-ident, 
-.sunlight-xml .sunlight-ident, 
-.sunlight-xml .sunlight-operator, 
-.sunlight-html .sunlight-operator, 
-.sunlight-html .sunlight-named-ident, 
+.sunlight-html .sunlight-ident,
+.sunlight-xml .sunlight-ident,
+.sunlight-xml .sunlight-operator,
+.sunlight-html .sunlight-operator,
+.sunlight-html .sunlight-named-ident,
 .sunlight-xml .sunlight-named-ident {
 	font-weight: normal !important;
 }
@@ -179,7 +189,7 @@ span.sunlight-highlighted * {
 	color: #DEB9B2 !important;
 	font-style: italic !important;
 }
-.sunlight-html .sunlight-entity, 
+.sunlight-html .sunlight-entity,
 .sunlight-xml .sunlight-entity {
 	background-color: #E6E585 !important;
 	color: #000000 !important;
@@ -188,11 +198,6 @@ span.sunlight-highlighted * {
 /* javascript */
 .sunlight-javascript .sunlight-reservedWord {
 	font-style: italic !important;
-}
-
-/* mysql */
-.sunlight-quotedIdent {
-	color: #FBFA9C !important;
 }
 
 /* css */
@@ -267,4 +272,9 @@ span.sunlight-highlighted * {
 	background: none !important;
 	color: #FFFFFF !important;
 	text-decoration: underline !important;
+}
+
+/* lisp */
+.sunlight-lisp .sunlight-macro {
+	font-style: italic !important;
 }

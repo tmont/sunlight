@@ -76,6 +76,7 @@
 			<fileset dir="${temp.dir}" includes="sunlight.perl.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.vb.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.httpd.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight.lisp.js"/>
 		</concat>
 	
 		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${deploy.dir}">
@@ -103,6 +104,7 @@
 			<include name="sunlight.perl.js"/>
 			<include name="sunlight.vb.js"/>
 			<include name="sunlight.httpd.js"/>
+			<include name="sunlight.lisp.js"/>
 		</yui-compressor>
 		
 		<!-- delete temporary files -->

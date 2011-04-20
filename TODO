@@ -31,7 +31,6 @@ FUNCTIONALITY - 2.0
 LANGUAGES
 - PostgreSQL
 - Oracle
-- Lisp
 - Haskell
 - powershell
 - scala: http://www.scala-lang.org/node/198
@@ -39,5 +38,6 @@ LANGUAGES
 WEB
 - add visual basic to demo
 - add httpd to demo
+- add lisp to demo
 - document continuations for incomplete parses on custom rules
 - document isSolWs
