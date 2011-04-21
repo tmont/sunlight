@@ -16,7 +16,6 @@ TESTING
 BUGS
   
 FUNCTIONALITY
-- customizable class prefix
 - show/hide code block
 - show whitespace option
 - plugin system (externalize all options)
@@ -42,3 +41,5 @@ WEB
 - document new doNotParse language property
 - document isSolWs
 - document analyzerContext.items/language.analyzerContextItems
+- document analyzerContext.options 
+- document classPrefix global option

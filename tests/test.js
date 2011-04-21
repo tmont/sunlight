@@ -16,8 +16,9 @@ if (typeof(console) === "undefined" || typeof(console.log) === "undefined") {
 	}();
 }
 
+var prefix = "sunlight-";
 var start = new Date();
-Sunlight.highlightAll();
+Sunlight.highlightAll({ classPrefix: prefix });
 console.log("highlighting time: " + (new Date().getTime() - start.getTime()) + "ms");
 
 //tests
@@ -30,7 +31,7 @@ function exists(className, content, tags) {
 	}
 	
 	var searched = 0;
-	var regex = new RegExp("\s*sunlight-" + className + "\s*");
+	var regex = new RegExp("\\s*" + prefix + className + "\\s*");
 	for (var i = 0; i < tags.length; i++) {
 		if (regex.test(tags[i].className)) {
 			searched++;

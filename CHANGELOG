@@ -14,6 +14,8 @@
 	- new languages: VB.NET, httpd, Lisp
 	- added doNotParse language property
 	- added analyzerContextItems language property
+	- the class prefix is now customizable via the classPrefix option
+	- the highlighter's options are now available to the analyzer context via the "options" property
 
 1.4 2011-04-17
 --------------

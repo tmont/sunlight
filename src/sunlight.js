@@ -16,6 +16,7 @@
 	var EMPTY = function() { return null; };
 	var HIGHLIGHTED_NODE_COUNT = 0;
 	var DEFAULT_LANGUAGE = "plaintext";
+	var DEFAULT_CLASS_PREFIX = "sunlight-";
 
 	//http://javascript.crockford.com/prototypal.html
 	var create = function(o) {
@@ -146,7 +147,7 @@
 		var defaultHandleToken = function(suffix) {
 			return function(context) {
 				var element = document.createElement("span");
-				element.className = "sunlight-" + suffix;
+				element.className = context.options.classPrefix + suffix;
 				element.appendChild(context.createTextNode(context.tokens[context.index].value));
 				return context.addNode(element) || true;
 			};
@@ -573,6 +574,7 @@
 				tokens: (partialContext.tokens || []).concat(parseData.tokens),
 				index: partialContext.index ? partialContext.index + 1 : 0,
 				language: language,
+				options: options,
 				continuation: parseData.continuation,
 				addNode: function(node) { nodes.push(node); },
 				createTextNode: function(text) { return document.createTextNode(prepareText(text)); },
@@ -625,14 +627,37 @@
 		};
 
 		return {
+			//matches the language of the node to highlight
+			matchSunlightNode: function() {
+				var regex;
+				return function(node) {
+					if (!regex) {
+						regex = new RegExp("(?:\\s|^)" + this.options.classPrefix + "highlight-(\\S+)(?:\\s|$)");
+					}
+					
+					return regex.exec(node.className);
+				};
+			}(),
+			
+			//determines if the node has already been highlighted
+			isAlreadyHighlighted: function() {
+				var regex;
+				return function(node) {
+					if (!regex) {
+						regex = new RegExp("(?:\\s|^)" + this.options.classPrefix + "highlighted(?:\\s|$)");
+					}
+					
+					return regex.test(node.className);
+				};
+			}(),
+			
 			//highlights a block of text
 			highlight: function(code, languageId) { return highlightText.call(this, code, languageId); },
 
 			//recursively highlights a DOM node
 			highlightNode: function highlightRecursive(node) {
 				var match;
-				if ((match = node.className.match(/(?:\s|^)sunlight-highlight-(\S+)(?:\s|$)/)) === null || /(?:\s|^)sunlight-highlighted(?:\s|$)/.test(node.className)) {
-					//not a valid sunlight node or it's already been highlighted
+				if (this.isAlreadyHighlighted(node) || (match = this.matchSunlightNode(node)) === null) {
 					return;
 				}
 
@@ -643,7 +668,7 @@
 						//text nodes
 						span = document.createElement("span");
 
-						span.className = "sunlight-highlighted sunlight-" + languageId;
+						span.className = this.options.classPrefix + "highlighted " + this.options.classPrefix + languageId;
 						partialContext = highlightText.call(this, node.childNodes[j].nodeValue, languageId, partialContext);
 						HIGHLIGHTED_NODE_COUNT++;
 						currentNodeCount = currentNodeCount || HIGHLIGHTED_NODE_COUNT;
@@ -660,7 +685,7 @@
 				}
 
 				//indicate that this node has been highlighted
-				node.className += " sunlight-highlighted";
+				node.className += " " + this.options.classPrefix + "highlighted";
 
 				if (this.options.lineNumbers === true || (getComputedStyle && this.options.lineNumbers === "automatic" && getComputedStyle(node, "display") === "block")) {
 					var container = document.createElement("div"), lineContainer = document.createElement("pre");
@@ -683,15 +708,15 @@
 					var lineHighlightOverlay, currentLineOverlay, lineHighlightingEnabled = this.options.lineHighlight.length > 0;
 					if (lineHighlightingEnabled) {
 						lineHighlightOverlay = document.createElement("div");
-						lineHighlightOverlay.className = "sunlight-line-highlight-overlay";
+						lineHighlightOverlay.className = DEFAULT_CLASS_PREFIX + "line-highlight-overlay";
 					}
 					
-					container.className = "sunlight-container";
-					lineContainer.className = "sunlight-line-number-margin";
+					container.className = this.options.classPrefix + "container";
+					lineContainer.className = this.options.classPrefix + "line-number-margin";
 
 					for (var i = this.options.lineNumberStart, eol = document.createTextNode(isIe ? "\r" : "\n"), link, name; i <= this.options.lineNumberStart + lineCount; i++) {
 						link = document.createElement("a");
-						name = (node.id ? node.id : "sunlight-" + currentNodeCount) + "-line-" + i;
+						name = (node.id ? node.id : this.options.classPrefix + currentNodeCount) + "-line-" + i;
 						
 						link.setAttribute("name", name);
 						link.setAttribute("href", "#" + name);
@@ -703,7 +728,7 @@
 						if (lineHighlightingEnabled) {
 							currentLineOverlay = document.createElement("div");
 							if (contains(this.options.lineHighlight, i)) {
-								currentLineOverlay.className = "sunlight-line-highlight-active";
+								currentLineOverlay.className = this.options.classPrefix + "line-highlight-active";
 							}
 							lineHighlightOverlay.appendChild(currentLineOverlay);
 						}
@@ -723,6 +748,7 @@
 
 	var highlighterConstructor = function(options) {
 		this.options = merge(merge({}, globalOptions), options);
+		console.dir(this.options);
 	};
 
 	highlighterConstructor.prototype = highlighter;
@@ -807,7 +833,8 @@
 		tabWidth: 4,
 		lineNumbers: "automatic", //true/false/"automatic"
 		lineNumberStart: 1,
-		lineHighlight: []
+		lineHighlight: [],
+		classPrefix: DEFAULT_CLASS_PREFIX
 	};
 
 	var languages = {};
