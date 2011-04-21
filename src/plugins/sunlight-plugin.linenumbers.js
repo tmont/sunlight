@@ -14,22 +14,6 @@
 		throw "Include sunlight.js before including plugin files";
 	}
 	
-	//adapted from http://blargh.tommymontgomery.com/2010/04/get-computed-style-in-javascript/
-	var getComputedStyle = function() {
-		var func = null;
-		if (document.defaultView && document.defaultView.getComputedStyle) {
-			func = document.defaultView.getComputedStyle;
-		} else {
-			func = function(element, anything) {
-				return element["currentStyle"] || {};
-			};
-		}
-
-		return function(element, style) {
-			return func(element, null)[style];
-		}
-	}();
-	
 	function getLineCount(node) {
 		//browsers don't render the last trailing newline, so we make sure that the line numbers reflect that
 		//by disregarding the last trailing newline
@@ -51,12 +35,12 @@
 			return;
 		}
 		
-		if (this.options.lineNumbers !== "automatic" || getComputedStyle(context.node, "display") !== "block") {
+		if (this.options.lineNumbers !== "automatic" || sunlight.util.getComputedStyle(context.node, "display") !== "block") {
 			//if it's not a block level element or the lineNumbers option is not set to "automatic"
 			return;
 		}
 		
-		var container = document.createElement("div"), lineContainer = document.createElement("pre");
+		var lineContainer = document.createElement("pre");
 		var lineCount = getLineCount(context.node);
 		
 		var lineHighlightOverlay, currentLineOverlay, lineHighlightingEnabled = this.options.lineHighlight.length > 0;
@@ -65,7 +49,6 @@
 			lineHighlightOverlay.className = this.options.classPrefix + "line-highlight-overlay";
 		}
 		
-		container.className = this.options.classPrefix + "container";
 		lineContainer.className = this.options.classPrefix + "line-number-margin";
 
 		for (var i = this.options.lineNumberStart, eol = document.createTextNode(sunlight.util.eol), link, name; i <= this.options.lineNumberStart + lineCount; i++) {
@@ -88,12 +71,10 @@
 			}
 		}
 
-		container.appendChild(lineContainer);
-		context.node.parentNode.insertBefore(container, context.node);
-		context.node.parentNode.removeChild(context.node);
-		container.appendChild(context.node);
+		context.codeContainer.insertBefore(lineContainer, context.codeContainer.firstChild);
+		
 		if (lineHighlightingEnabled) {
-			container.appendChild(lineHighlightOverlay);
+			context.codeContainer.appendChild(lineHighlightOverlay);
 		}
 	});
 	

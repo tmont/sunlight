@@ -44,6 +44,11 @@ Included themes
 - sunlight.default.css
 - sunlight.dark.css
 
+Included plugins
+----------------
+- sunlight-plugin.linenumbers.js (bundled)
+- sunlight-plugin.menu.js (bundled)
+
 Authors
 -------
 Tommy Montgomery <http://tommymontgomery.com/>

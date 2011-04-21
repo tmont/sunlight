@@ -16,7 +16,6 @@ TESTING
 BUGS
 
 FUNCTIONALITY
-- show/hide code block
 - show whitespace option
 - remove hideous code duplication (e.g. between c#, java and c++)
 
@@ -43,4 +42,6 @@ WEB
 - document analyzerContext.options
 - document classPrefix global option
 - document eol utility
+- document getComputedStyle utility
 - document plugin mechanism
+- document menu options

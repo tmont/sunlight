@@ -1,20 +1,25 @@
 /* global styles */
 .sunlight-container {
 	clear: both;
-	border: 1px solid #626262 !important;
 	position: relative;
+}
+.sunlight-code-container {
+	clear: both;
+	position: relative;
+	border: 1px solid #626262 !important;
 	background-color: #262626 !important;
 }
-.sunlight-highlighted, .sunlight-container {
+.sunlight-highlighted, .sunlight-container, textarea {
 	color: #FFFFFF !important;
 	font-family: Consolas, Inconsolata, Monaco, "Courier New" !important;
 	font-size: 12px !important;
 	line-height: 15px !important;
 	margin: 0 !important;
 }
-.sunlight-container > .sunlight-highlighted {
+.sunlight-code-container > .sunlight-highlighted {
 	white-space: pre;
 	overflow-x: auto;
+	overflow-y: hidden; /* ie requires this wtf? */
 }
 span.sunlight-highlighted {
 	z-index: 1;

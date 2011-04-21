@@ -12,6 +12,7 @@
 	<property name="temp.dir" value="${build.dir}/temp"/>
 	<property name="lang.dir" value="${deploy.dir}/lang"/>
 	<property name="themes.dir" value="${deploy.dir}/themes"/>
+	<property name="plugins.dir" value="${deploy.dir}/plugins"/>
 	
 	<property environment="env"/>
 	
@@ -58,6 +59,7 @@
 		<concat destfile="${temp.dir}/sunlight-all.js" encoding="UTF-8" eol="lf">
 			<fileset dir="${temp.dir}" includes="sunlight.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight-plugin.linenumbers.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight-plugin.menu.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.csharp.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.javascript.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.php.js"/>
@@ -106,6 +108,11 @@
 			<include name="sunlight.vb.js"/>
 			<include name="sunlight.httpd.js"/>
 			<include name="sunlight.lisp.js"/>
+		</yui-compressor>
+		
+		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${plugins.dir}">
+			<include name="sunlight-plugin.linenumbers.js"/>
+			<include name="sunlight-plugin.menu.js"/>
 		</yui-compressor>
 		
 		<!-- delete temporary files -->

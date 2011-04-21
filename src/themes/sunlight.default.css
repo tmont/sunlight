@@ -1,18 +1,22 @@
 /* global styles */
 .sunlight-container {
 	clear: both;
-	border: 1px solid #969696 !important;
 	position: relative;
+}
+.sunlight-code-container {
+	clear: both;
+	position: relative;
+	border: 1px solid #969696 !important;
 	background-color: #FFFFFF !important;
 }
-.sunlight-highlighted, .sunlight-container {
+.sunlight-highlighted, .sunlight-container, textarea {
 	color: #000000 !important;
 	font-family: Consolas, Inconsolata, Monaco, "Courier New" !important;
 	font-size: 12px !important;
 	line-height: 15px !important;
 	margin: 0 !important;
 }
-.sunlight-container > .sunlight-highlighted {
+.sunlight-code-container > .sunlight-highlighted {
 	white-space: pre;
 	overflow-x: auto;
 	overflow-y: hidden; /* ie requires this wtf? */
@@ -61,6 +65,24 @@ span.sunlight-highlighted * {
 }
 .sunlight-line-highlight-overlay .sunlight-line-highlight-active {
 	background-color: #E7FCFA;
+}
+.sunlight-menu {
+	background-color: #FFFFCC;
+	color: #000000;
+}
+.sunlight-menu ul {
+	margin: 0 !important;
+	padding: 0 !important;
+	list-style-type: none !important;
+}
+.sunlight-menu li {
+	float: right !important;
+	margin-left: 5px !important;
+}
+.sunlight-menu a {
+	color: #000099 !important;
+	text-decoration: none !important;
+	border: none !important;
 }
 
 
