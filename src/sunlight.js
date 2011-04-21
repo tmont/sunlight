@@ -893,7 +893,7 @@
 				return function(element, style) {
 					return func(element, null)[style];
 				}
-			}(),
+			}()
 		}
 	};
 

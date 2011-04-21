@@ -2,6 +2,7 @@
  * Sunlight menu plugin
  *
  * This creates the menu in the upper right corner for block-level elements.
+ * This plugin is not supported for IE6.
  *
  * Options:
  * 	- showMenu: true/false (default is true)
@@ -35,8 +36,11 @@
 		return text;
 	}
 	
+	//http://dean.edwards.name/weblog/2007/03/sniff/#comment83695
+	var ieVersion = 0 /*@cc_on+ScriptEngineMajorVersion()@*/;
+	
 	sunlight.bind("afterHighlightNode", function(context) {
-		if (!this.options.showMenu || sunlight.util.getComputedStyle(context.node, "display") !== "block") {
+		if ((ieVersion && ieVersion < 7) || !this.options.showMenu || sunlight.util.getComputedStyle(context.node, "display") !== "block") {
 			return;
 		}
 		
@@ -90,9 +94,10 @@
 					textarea = document.createElement("textarea");
 					textarea.value = rawCode;
 					textarea.setAttribute("readonly", "readonly");
-					textarea.style.width = sunlight.util.getComputedStyle(context.node, "width");
+					textarea.style.width = (parseInt(sunlight.util.getComputedStyle(context.node, "width")) - 5) + "px"; //IE, Safari and Chrome can't handle the actual width
 					textarea.style.height = sunlight.util.getComputedStyle(context.node, "height");
 					textarea.style.border = "none";
+					textarea.style.overflowX = "hidden"; //IE requires this
 					textarea.setAttribute("wrap", "off"); //prevent line wrapping lol
 					context.codeContainer.insertBefore(textarea, context.node);
 					context.node.style.display = "none";

@@ -9,12 +9,18 @@
 	border: 1px solid #626262 !important;
 	background-color: #262626 !important;
 }
-.sunlight-highlighted, .sunlight-container, textarea {
+.sunlight-highlighted, .sunlight-container, .sunlight-container textarea {
 	color: #FFFFFF !important;
 	font-family: Consolas, Inconsolata, Monaco, "Courier New" !important;
 	font-size: 12px !important;
 	line-height: 15px !important;
 	margin: 0 !important;
+}
+.sunlight-container textarea {
+	padding-left: 0 !important;
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+	padding-right: 0 !important;
 }
 .sunlight-code-container > .sunlight-highlighted {
 	white-space: pre;

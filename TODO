@@ -44,4 +44,4 @@ WEB
 - document eol utility
 - document getComputedStyle utility
 - document plugin mechanism
-- document menu options
+- document menu option and how IE6 is not supported
