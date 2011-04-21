@@ -66,6 +66,25 @@ span.sunlight-highlighted * {
 	background-color: #4B4B4B;
 }
 
+/* menu */
+.sunlight-menu {
+	background-color: #FFFFCC;
+	color: #000000;
+}
+.sunlight-menu ul {
+	margin: 0 !important;
+	padding: 0 !important;
+	list-style-type: none !important;
+}
+.sunlight-menu li {
+	float: right !important;
+	margin-left: 5px !important;
+}
+.sunlight-menu a, .sunlight-menu img {
+	color: #000099 !important;
+	text-decoration: none !important;
+	border: none !important;
+}
 
 
 
