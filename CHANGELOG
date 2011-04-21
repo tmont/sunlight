@@ -8,11 +8,13 @@
 	  in octal/hex numbers)
 	- fixed bug in C# attribute detection where it would falsely identify the namespace portion of a fully
 	  qualified type name
+	- fixed bug where if an unclosed scope contained the trailing newline, the line numbers were rendered
+	  incorrectly
 - Enhancements
 	- new languages: VB.NET, httpd, Lisp
 	- added doNotParse language property
 	- added analyzerContextItems language property
-	  
+
 1.4 2011-04-17
 --------------
 - Bugfixes

@@ -14,7 +14,6 @@ MISSING KEYWORDS
 TESTING
 
 BUGS
-- if the last scope eats the trailing newline it's not rendered correctly
   
 FUNCTIONALITY
 - customizable class prefix

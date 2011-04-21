@@ -667,7 +667,18 @@
 					
 					//browsers don't render the last trailing newline, so we make sure that the line numbers reflect that
 					//by disregarding the last trailing newline
-					var lineCount =  node.innerHTML.replace(/[^\n]/g, "").length - /\n$/.test(node.lastChild.innerHTML);
+					
+					//get the last text node
+					var lastTextNode = function getLastNode(node) {
+						if (node.lastChild.nodeType === 3) {
+							return node.lastChild;
+						}
+						
+						return getLastNode(node.lastChild);
+					}(node);
+					
+					//we want the last node that contains code (whether it's whitespace or not)
+					var lineCount =  node.innerHTML.replace(/[^\n]/g, "").length - /\n$/.test(lastTextNode.nodeValue);
 					
 					var lineHighlightOverlay, currentLineOverlay, lineHighlightingEnabled = this.options.lineHighlight.length > 0;
 					if (lineHighlightingEnabled) {
