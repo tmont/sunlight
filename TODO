@@ -14,11 +14,10 @@ MISSING KEYWORDS
 TESTING
 
 BUGS
-  
+
 FUNCTIONALITY
 - show/hide code block
 - show whitespace option
-- plugin system (externalize all options)
 - remove hideous code duplication (e.g. between c#, java and c++)
 
 FUNCTIONALITY - 2.0
@@ -41,5 +40,7 @@ WEB
 - document new doNotParse language property
 - document isSolWs
 - document analyzerContext.items/language.analyzerContextItems
-- document analyzerContext.options 
+- document analyzerContext.options
 - document classPrefix global option
+- document eol utility
+- document plugin mechanism

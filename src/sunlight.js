@@ -25,9 +25,6 @@
         return new F();
     };
 
-	//gets defined after the first call to highlight something
-	var getComputedStyle = false;
-
 	//array.contains()
 	var contains = function(arr, value, caseInsensitive) {
 		for (var i = 0; i < arr.length; i++) {
@@ -501,6 +498,7 @@
 		}();
 
 		var tokenize = function(unhighlightedCode, language, continuation) {
+			fireEvent("beforeTokenize", this, { code: unhighlightedCode, language: language });
 			var tokens = [];
 			var context = {
 				reader: createCodeReader(unhighlightedCode),
@@ -556,6 +554,7 @@
 				tokens.push(context.createToken("default", context.defaultData.text, context.defaultData.line, context.defaultData.column));
 			}
 
+			fireEvent("afterTokenize", this, { code: unhighlightedCode, language: language, tokens: tokens, continuation: context.continuation });
 			return { tokens: tokens, continuation: context.continuation };
 		};
 
@@ -586,26 +585,6 @@
 		//partialContext allows us to perform a partial parse, and then pick up where we left off at a later time
 		//this functionality enables nested highlights (language within a language, e.g. PHP within HTML followed by more PHP)
 		var highlightText = function(unhighlightedCode, languageId, partialContext) {
-			if (!getComputedStyle) {
-				//http://blargh.tommymontgomery.com/2010/04/get-computed-style-in-javascript/
-				getComputedStyle = function() {
-					var func = null;
-					if (document.defaultView && document.defaultView.getComputedStyle) {
-						func = document.defaultView.getComputedStyle;
-					} else if (typeof(document.body.currentStyle) !== "undefined") {
-						func = function(element, anything) {
-							return element["currentStyle"];
-						};
-					} else {
-						func = EMPTY;
-					}
-
-					return function(element, style) {
-						return func(element, null)[style];
-					}
-				}();
-			};
-
 			partialContext = partialContext || { };
 			var language = languages[languageId];
 			if (language === undefined) {
@@ -613,8 +592,13 @@
 				language = languages[DEFAULT_LANGUAGE];
 			}
 
+			//invoke beforeHighlight event
+			fireEvent("beforeHighlight", this, { code: unhighlightedCode, language: language, previousContext: partialContext });
+			
 			var analyzerContext = createAnalyzerContext(unhighlightedCode, language, partialContext, this.options);
 			var analyzer = language.analyzer;
+			
+			fireEvent("beforeAnalyze", this, { analyzerContext: analyzerContext });
 			for (var i = partialContext.index ? partialContext.index + 1 : 0, tokenName, func, exit; i < analyzerContext.tokens.length; i++) {
 				analyzerContext.index = i;
 				tokenName = analyzerContext.tokens[i].name;
@@ -622,6 +606,9 @@
 
 				analyzer[func] ? analyzer[func](analyzerContext) : analyzer.handleToken(analyzerContext);
 			}
+			fireEvent("afterAnalyze", this, { analyzerContext: analyzerContext });
+			
+			fireEvent("afterHighlight", this, { analyzerContext: analyzerContext });
 
 			return analyzerContext;
 		};
@@ -663,6 +650,7 @@
 
 				var languageId = match[1];
 				var currentNodeCount = 0;
+				fireEvent("beforeHighlightNode", this, { node: node });
 				for (var j = 0, span, nodes, k, partialContext; j < node.childNodes.length; j++) {
 					if (node.childNodes[j].nodeType === 3) {
 						//text nodes
@@ -686,62 +674,8 @@
 
 				//indicate that this node has been highlighted
 				node.className += " " + this.options.classPrefix + "highlighted";
-
-				if (this.options.lineNumbers === true || (getComputedStyle && this.options.lineNumbers === "automatic" && getComputedStyle(node, "display") === "block")) {
-					var container = document.createElement("div"), lineContainer = document.createElement("pre");
-					
-					//browsers don't render the last trailing newline, so we make sure that the line numbers reflect that
-					//by disregarding the last trailing newline
-					
-					//get the last text node
-					var lastTextNode = function getLastNode(node) {
-						if (node.lastChild.nodeType === 3) {
-							return node.lastChild;
-						}
-						
-						return getLastNode(node.lastChild);
-					}(node);
-					
-					//we want the last node that contains code (whether it's whitespace or not)
-					var lineCount =  node.innerHTML.replace(/[^\n]/g, "").length - /\n$/.test(lastTextNode.nodeValue);
-					
-					var lineHighlightOverlay, currentLineOverlay, lineHighlightingEnabled = this.options.lineHighlight.length > 0;
-					if (lineHighlightingEnabled) {
-						lineHighlightOverlay = document.createElement("div");
-						lineHighlightOverlay.className = DEFAULT_CLASS_PREFIX + "line-highlight-overlay";
-					}
-					
-					container.className = this.options.classPrefix + "container";
-					lineContainer.className = this.options.classPrefix + "line-number-margin";
-
-					for (var i = this.options.lineNumberStart, eol = document.createTextNode(isIe ? "\r" : "\n"), link, name; i <= this.options.lineNumberStart + lineCount; i++) {
-						link = document.createElement("a");
-						name = (node.id ? node.id : this.options.classPrefix + currentNodeCount) + "-line-" + i;
-						
-						link.setAttribute("name", name);
-						link.setAttribute("href", "#" + name);
-						
-						link.appendChild(document.createTextNode(i));
-						lineContainer.appendChild(link);
-						lineContainer.appendChild(eol.cloneNode(false));
-						
-						if (lineHighlightingEnabled) {
-							currentLineOverlay = document.createElement("div");
-							if (contains(this.options.lineHighlight, i)) {
-								currentLineOverlay.className = this.options.classPrefix + "line-highlight-active";
-							}
-							lineHighlightOverlay.appendChild(currentLineOverlay);
-						}
-					}
-
-					container.appendChild(lineContainer);
-					node.parentNode.insertBefore(container, node);
-					node.parentNode.removeChild(node);
-					container.appendChild(node);
-					if (lineHighlightingEnabled) {
-						container.appendChild(lineHighlightOverlay);
-					}
-				}
+				
+				fireEvent("afterHighlightNode", this, { node: node, count: currentNodeCount, totalCount: HIGHLIGHTED_NODE_COUNT });
 			}
 		};
 	}();
@@ -830,9 +764,6 @@
 
 	var globalOptions = {
 		tabWidth: 4,
-		lineNumbers: "automatic", //true/false/"automatic"
-		lineNumberStart: 1,
-		lineHighlight: [],
 		classPrefix: DEFAULT_CLASS_PREFIX
 	};
 
@@ -847,6 +778,27 @@
 		doNotParse: /\s/,
 		analyzerContextItems: {}
 	};
+	
+	//event handling: an interface to extend sunlight in an unobtrusive way
+	var events = {
+		beforeHighlightNode: [],
+		beforeHighlight: [],
+		beforeTokenize: [],
+		afterTokenize: [],
+		beforeAnalyze: [],
+		afterAnalyze: [],
+		afterHighlight: [],
+		afterHighlightNode: []
+	};
+	
+	var fireEvent = function(eventName, highlighter, eventContext) {
+		var delegates = events[eventName] || [];
+		for (var i = 0, len = delegates.length; i < len; i++) {
+			delegates[i].call(highlighter, eventContext);
+		}
+	};
+	
+	var plugins = [];
 
 	//public facing object
 	window.Sunlight = {
@@ -884,8 +836,17 @@
 
 			languages[languageData.name] = languageData;
 		},
+		
+		bind: function(event, callback) {
+			if (!events[event]) {
+				throw "Unknown event \"" + event + "\"";
+			}
+			
+			events[event].push(callback);
+		},
 
 		util: {
+			eol: isIe ? "\r" : "\n",
 			escapeSequences: ["\\n", "\\t", "\\r", "\\\\", "\\v", "\\f"],
 			contains: contains,
 			matchWord: matchWord,
@@ -903,4 +864,4 @@
 	//register the default language
 	window.Sunlight.registerLanguage(DEFAULT_LANGUAGE, { punctuation: /(?!x)x/, numberParser: EMPTY });
 
-}(window, document));
+}(this, document));

@@ -16,6 +16,7 @@
 	- added analyzerContextItems language property
 	- the class prefix is now customizable via the classPrefix option
 	- the highlighter's options are now available to the analyzer context via the "options" property
+	- created plugin mechanism (Sunlight.bind) and externalized line number/line highlight options
 
 1.4 2011-04-17
 --------------

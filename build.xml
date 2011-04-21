@@ -57,6 +57,7 @@
 		<!-- combine all files for sunlight-all.js -->
 		<concat destfile="${temp.dir}/sunlight-all.js" encoding="UTF-8" eol="lf">
 			<fileset dir="${temp.dir}" includes="sunlight.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight-plugin.linenumbers.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.csharp.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.javascript.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.php.js"/>
@@ -134,6 +135,7 @@
 		<copy todir="${temp.dir}">
 			<fileset dir="${src.dir}" includes="*.js"/>
 			<fileset dir="${src.dir}/lang" includes="*.js"/>
+			<fileset dir="${src.dir}/plugins" includes="*.js"/>
 		</copy>
 	</target>
 	
