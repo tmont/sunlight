@@ -748,12 +748,11 @@
 
 	var highlighterConstructor = function(options) {
 		this.options = merge(merge({}, globalOptions), options);
-		console.dir(this.options);
 	};
 
 	highlighterConstructor.prototype = highlighter;
 
-	//gets the next token in the specified direction that while matcher matches the current token
+	//gets the next token in the specified direction while matcher matches the current token
 	var getNextWhile = function(tokens, index, direction, matcher) {
 		direction = direction || 1;
 		var count = 1, token;
