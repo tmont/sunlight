@@ -118,11 +118,13 @@ span.sunlight-highlighted * {
 }
 .sunlight-comment,
 .sunlight-xmlDocCommentContent,
-.sunlight-nginx .sunlight-ssiCommand {
+.sunlight-nginx .sunlight-ssiCommand,
+.sunlight-sln .sunlight-formatDeclaration {
 	color: #787D31 !important;
 }
 .sunlight-number,
-.sunlight-cdata {
+.sunlight-cdata,
+.sunlight-guid {
 	color: #F7BA7E !important;
 	font-weight: bold !important;
 }
@@ -167,7 +169,8 @@ span.sunlight-highlighted * {
 .sunlight-6502asm .sunlight-illegalOpcode,
 .sunlight-lisp .sunlight-macro,
 .sunlight-lisp .sunlight-specialForm,
-.sunlight-lisp .sunlight-type {
+.sunlight-lisp .sunlight-type,
+.sunlight-sln .sunlight-sectionName {
 	color: #C8BBF1 !important;
 	font-weight: bold !important;
 }
