@@ -5,6 +5,9 @@
 	}
 	
 	sunlight.registerLanguage("html", {
+		//parse everything
+		doNotParse: /(?!x)x/,
+		
 		scopes: {
 			string: [ ["\"", "\""], ["'", "'"] ],
 			doctype: [ ["<!doctype", ">"], ["<!DOCTYPE", ">"] ],
@@ -99,4 +102,4 @@
 			"=", "/>", "</", "<", ">", ":"
 		]
 	});
-}(window["Sunlight"]));
+}(this["Sunlight"]));

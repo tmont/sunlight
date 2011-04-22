@@ -65,4 +65,4 @@
 			";;", ";"
 		]
 	});
-}(window["Sunlight"]));
+}(this["Sunlight"]));

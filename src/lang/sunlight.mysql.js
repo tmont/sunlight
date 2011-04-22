@@ -192,4 +192,4 @@
 			"."
 		]
 	});
-}(window["Sunlight"]));
+}(this["Sunlight"]));

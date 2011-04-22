@@ -8,7 +8,7 @@
 		var word = context.tokens[context.index].value;
 		var suffix = context.tokens[context.index].name;
 		var link = document.createElement("a");
-		link.className = "sunlight-" + suffix;
+		link.className = context.options.classPrefix + suffix;
 		link.setAttribute("href", "http://php.net/" + word);
 		link.appendChild(context.createTextNode(word));
 		context.addNode(link);
@@ -329,4 +329,4 @@
 		
 		analyzer: phpAnalyzer
 	});
-}(window["Sunlight"], document));
+}(this["Sunlight"], document));

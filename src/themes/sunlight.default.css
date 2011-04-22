@@ -1,18 +1,23 @@
 /* global styles */
 .sunlight-container {
 	clear: both;
-	border: 1px solid #969696 !important;
 	position: relative;
+}
+.sunlight-code-container {
+	clear: both;
+	position: relative;
+	border: none;
+	border-color: #969696 !important;
 	background-color: #FFFFFF !important;
 }
-.sunlight-highlighted, .sunlight-container {
+.sunlight-highlighted, .sunlight-container, textarea {
 	color: #000000 !important;
 	font-family: Consolas, Inconsolata, Monaco, "Courier New" !important;
 	font-size: 12px !important;
 	line-height: 15px !important;
 	margin: 0 !important;
 }
-.sunlight-container > .sunlight-highlighted {
+.sunlight-code-container > .sunlight-highlighted {
 	white-space: pre;
 	overflow-x: auto;
 	overflow-y: hidden; /* ie requires this wtf? */
@@ -63,6 +68,26 @@ span.sunlight-highlighted * {
 	background-color: #E7FCFA;
 }
 
+/* menu */
+.sunlight-menu {
+	background-color: #FFFFCC;
+	color: #000000;
+}
+.sunlight-menu ul {
+	margin: 0 !important;
+	padding: 0 !important;
+	list-style-type: none !important;
+}
+.sunlight-menu li {
+	float: right !important;
+	margin-left: 5px !important;
+}
+.sunlight-menu a, .sunlight-menu img {
+	color: #000099 !important;
+	text-decoration: none !important;
+	border: none !important;
+}
+
 
 
 
@@ -99,7 +124,11 @@ span.sunlight-highlighted * {
 .sunlight-javascript .sunlight-globalVariable,
 .sunlight-globalObject,
 .sunlight-python .sunlight-attribute,
-.sunlight-nginx .sunlight-context {
+.sunlight-nginx .sunlight-context,
+.sunlight-httpd .sunlight-context,
+.sunlight-haskell .sunlight-class,
+.sunlight-haskell .sunlight-type,
+.sunlight-lisp .sunlight-declarationSpecifier {
 	color: #2B91AF !important;
 }
 .sunlight-keyword,
@@ -125,23 +154,44 @@ span.sunlight-highlighted * {
 .sunlight-function,
 .sunlight-globalFunction,
 .sunlight-ruby .sunlight-specialFunction,
-.sunlight-6502asm .sunlight-illegalOpcode {
+.sunlight-6502asm .sunlight-illegalOpcode,
+.sunlight-lisp .sunlight-macro,
+.sunlight-lisp .sunlight-specialForm,
+.sunlight-lisp .sunlight-type {
 	color: #B069AF !important;
 }
 
 .sunlight-variable,
 .sunlight-specialVariable,
+.sunlight-environmentVariable,
+.sunlight-lisp .sunlight-globalVariable,
 .sunlight-ruby .sunlight-globalVariable,
 .sunlight-ruby .sunlight-instanceVariable {
 	color: #325484 !important;
 }
 .sunlight-regexLiteral,
+.sunlight-lisp .sunlight-operator,
 .sunlight-6502asm .sunlight-pseudoOp {
 	color: #FF00B2 !important;
 }
 .sunlight-specialVariable {
 	font-style: italic !important;
 	font-weight: bold !important;
+}
+.sunlight-csharp .sunlight-pragma,
+.sunlight-cpp .sunlight-preprocessorDirective,
+.sunlight-vb .sunlight-compilerDirective {
+	color: #999999 !important;
+	font-style: italic !important;
+}
+.sunlight-xmlDocCommentMeta,
+.sunlight-java .sunlight-annotation,
+.sunlight-docComment {
+	color: #808080 !important;
+}
+.sunlight-quotedIdent,
+.sunlight-lisp .sunlight-keywordArgument {
+	color: #999900 !important;
 }
 
 
@@ -177,26 +227,9 @@ span.sunlight-highlighted * {
 	color: #2B91AF !important;
 }
 
-/* c# */
-.sunlight-csharp .sunlight-pragma,
-.sunlight-cpp .sunlight-preprocessorDirective {
-	color: #999999 !important;
-	font-style: italic !important;
-}
-.sunlight-csharp .sunlight-xmlDocCommentMeta,
-.sunlight-java .sunlight-annotation,
-.sunlight-docComment {
-	color: #808080 !important;
-}
-
 /* javascript */
 .sunlight-javascript .sunlight-reservedWord {
 	font-style: italic !important;
-}
-
-/* sql */
-.sunlight-quotedIdent {
-	color: #999900 !important;
 }
 
 /* css */
@@ -275,4 +308,9 @@ span.sunlight-highlighted * {
 	font-weight: bold !important;
 	color: #000000 !important;
 	background: none !important;
+}
+
+/* lisp */
+.sunlight-lisp .sunlight-macro {
+	font-style: italic !important;
 }

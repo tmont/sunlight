@@ -166,4 +166,4 @@
 			"?", ":", ".", "="
 		]
 	});
-}(window["Sunlight"]));
+}(this["Sunlight"]));

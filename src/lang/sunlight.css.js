@@ -334,4 +334,4 @@
 		]
 
 	});
-}(window["Sunlight"]));
+}(this["Sunlight"]));

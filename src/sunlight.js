@@ -11,11 +11,12 @@
 (function(window, document, undefined){
 
 	//http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
-	var isIe = !+"\v1"; //we have to sniff this because IE requires \r\n
+	var isIe = !+"\v1"; //we have to sniff this because IE requires \r
 
 	var EMPTY = function() { return null; };
 	var HIGHLIGHTED_NODE_COUNT = 0;
 	var DEFAULT_LANGUAGE = "plaintext";
+	var DEFAULT_CLASS_PREFIX = "sunlight-";
 
 	//http://javascript.crockford.com/prototypal.html
 	var create = function(o) {
@@ -23,9 +24,6 @@
         F.prototype = o;
         return new F();
     };
-
-	//gets defined after the first call to highlight something
-	var getComputedStyle = false;
 
 	//array.contains()
 	var contains = function(arr, value, caseInsensitive) {
@@ -146,7 +144,7 @@
 		var defaultHandleToken = function(suffix) {
 			return function(context) {
 				var element = document.createElement("span");
-				element.className = "sunlight-" + suffix;
+				element.className = context.options.classPrefix + suffix;
 				element.appendChild(context.createTextNode(context.tokens[context.index].value));
 				return context.addNode(element) || true;
 			};
@@ -220,6 +218,11 @@
 
 			read: function(count) {
 				var value = getCharacters(count);
+				
+				if (value === "") {
+					//this is a result of reading/peeking/doing nothing
+					return value;
+				}
 
 				if (value !== EOF) {
 					//advance index
@@ -256,6 +259,24 @@
 			getColumn: function() { return column; },
 			isEof: function() { return index >= length; },
 			isSol: function() { return column === 1; },
+			isSolWs: function() {
+				if (column === 1) {
+					return true;
+				}
+				
+				//look backward until we find a newline or a non-whitespace character
+				var temp = index, c;
+				while ((c = text.charAt(--temp)) !== "") {
+					if (c === "\n") {
+						return true;
+					}
+					if (!/\s/.test(c)) {
+						return false;
+					}
+				}
+				
+				return true;
+			},
 			isEol: function() { return nextReadBeginsLine; },
 			EOF: EOF,
 			current: function() { return currentChar; }
@@ -347,18 +368,18 @@
 				return context.createToken(tokenName, buffer, line, column);
 			};
 		};
-
-		var parseNextToken = function(context) {
-			var isIdentMatch = function() {
+		
+		var parseNextToken = function() {
+			var isIdentMatch = function(context) {
 				return context.language.identFirstLetter && context.language.identFirstLetter.test(context.reader.current());
 			};
 
 			//token parsing functions
-			var parseKeyword = function() {
+			var parseKeyword = function(context) {
 				return matchWord(context, context.language.keywords, "keyword");
 			};
 
-			var parseCustomTokens = function() {
+			var parseCustomTokens = function(context) {
 				if (context.language.customTokens === undefined) {
 					return null;
 				}
@@ -373,11 +394,11 @@
 				return null;
 			};
 
-			var parseOperator = function() {
+			var parseOperator = function(context) {
 				return matchWord(context, context.language.operators, "operator");
 			};
 
-			var parsePunctuation = function() {
+			var parsePunctuation = function(context) {
 				var current = context.reader.current();
 				if (context.language.punctuation.test(regexEscape(current))) {
 					return context.createToken("punctuation", current, context.reader.getLine(), context.reader.getColumn());
@@ -386,8 +407,8 @@
 				return null;
 			};
 
-			var parseIdent = function(isNamed) {
-				if (!isIdentMatch()) {
+			var parseIdent = function(context) {
+				if (!isIdentMatch(context)) {
 					return null;
 				}
 
@@ -403,10 +424,10 @@
 					peek = context.reader.peek();
 				}
 
-				return context.createToken(isNamed ? "namedIdent" : "ident", ident, line, column);
+				return context.createToken("ident", ident, line, column);
 			};
 
-			var parseDefault = function() {
+			var parseDefault = function(context) {
 				if (context.defaultData.text === "") {
 					//new default token
 					context.defaultData.line = context.reader.getLine();
@@ -417,7 +438,7 @@
 				return null;
 			};
 
-			var parseScopes = function() {
+			var parseScopes = function(context) {
 				var current = context.reader.current();
 
 				for (var tokenName in context.language.scopes) {
@@ -439,19 +460,19 @@
 				return null;
 			};
 
-			var parseNumber = function() {
+			var parseNumber = function(context) {
 				return context.language.numberParser(context);
 			};
 
-			var parseCustomRules = function() {
+			var parseCustomRules = function(context) {
 				var customRules = context.language.customParseRules;
 				if (customRules === undefined) {
 					return null;
 				}
-
+				
 				for (var i = 0, token; i < customRules.length; i++) {
 					token = customRules[i](context);
-					if (token !== null) {
+					if (token) {
 						return token;
 					}
 				}
@@ -459,22 +480,30 @@
 				return null;
 			};
 
-			return parseCustomRules()
-				|| parseCustomTokens()
-				|| parseKeyword()
-				|| parseScopes()
-				|| parseIdent()
-				|| parseNumber()
-				|| parseOperator()
-				|| parsePunctuation()
-				|| parseDefault();
-		};
+			return function(context) {
+				if (context.language.doNotParse.test(context.reader.current())) {
+					return parseDefault(context);
+				}
+				
+				return parseCustomRules(context)
+					|| parseCustomTokens(context)
+					|| parseKeyword(context)
+					|| parseScopes(context)
+					|| parseIdent(context)
+					|| parseNumber(context)
+					|| parseOperator(context)
+					|| parsePunctuation(context)
+					|| parseDefault(context);
+			}
+		}();
 
-		var tokenize = function(unhighlightedCode, language, continuation) {
+		var tokenize = function(unhighlightedCode, language, partialContext) {
+			fireEvent("beforeTokenize", this, { code: unhighlightedCode, language: language });
 			var tokens = [];
 			var context = {
 				reader: createCodeReader(unhighlightedCode),
 				language: language,
+				items: language.contextItems,
 				token: function(index) { return tokens[index]; },
 				getAllTokens: function() { return tokens.slice(0); },
 				count: function() { return tokens.length; },
@@ -495,7 +524,9 @@
 
 			//if continuation is given, then we need to pick up where we left off from a previous parse
 			//basically it indicates that a scope was never closed, so we need to continue that scope
-			if (continuation) {
+			if (partialContext.continuation) {
+				var continuation = partialContext.continuation;
+				partialContext.continuation = null;
 				tokens.push(continuation(context, continuation, "", context.reader.getLine(), context.reader.getColumn(), true));
 			}
 
@@ -526,12 +557,13 @@
 				tokens.push(context.createToken("default", context.defaultData.text, context.defaultData.line, context.defaultData.column));
 			}
 
-			return { tokens: tokens, continuation: context.continuation };
+			fireEvent("afterTokenize", this, { code: unhighlightedCode, parserContext: context });
+			return context;
 		};
 
 		var createAnalyzerContext = function(unhighlightedCode, language, partialContext, options) {
 			var nodes = [];
-			var parseData = tokenize(unhighlightedCode, language, partialContext.continuation);
+			var parserContext = tokenize(unhighlightedCode, language, partialContext);
 			var prepareText = function() {
 				var nbsp = String.fromCharCode(0xa0);
 				var tab = new Array(options.tabWidth + 1).join(nbsp);
@@ -541,39 +573,21 @@
 			}();
 
 			return {
-				tokens: (partialContext.tokens || []).concat(parseData.tokens),
+				tokens: (partialContext.tokens || []).concat(parserContext.getAllTokens()),
 				index: partialContext.index ? partialContext.index + 1 : 0,
 				language: language,
-				continuation: parseData.continuation,
+				options: options,
+				continuation: parserContext.continuation,
 				addNode: function(node) { nodes.push(node); },
 				createTextNode: function(text) { return document.createTextNode(prepareText(text)); },
-				getNodes: function() { return nodes; }
+				getNodes: function() { return nodes; },
+				items: parserContext.items
 			};
 		};
 
 		//partialContext allows us to perform a partial parse, and then pick up where we left off at a later time
 		//this functionality enables nested highlights (language within a language, e.g. PHP within HTML followed by more PHP)
 		var highlightText = function(unhighlightedCode, languageId, partialContext) {
-			if (!getComputedStyle) {
-				//http://blargh.tommymontgomery.com/2010/04/get-computed-style-in-javascript/
-				getComputedStyle = function() {
-					var func = null;
-					if (document.defaultView && document.defaultView.getComputedStyle) {
-						func = document.defaultView.getComputedStyle;
-					} else if (typeof(document.body.currentStyle) !== "undefined") {
-						func = function(element, anything) {
-							return element["currentStyle"];
-						};
-					} else {
-						func = EMPTY;
-					}
-
-					return function(element, style) {
-						return func(element, null)[style];
-					}
-				}();
-			};
-
 			partialContext = partialContext || { };
 			var language = languages[languageId];
 			if (language === undefined) {
@@ -581,8 +595,13 @@
 				language = languages[DEFAULT_LANGUAGE];
 			}
 
+			//invoke beforeHighlight event
+			fireEvent("beforeHighlight", this, { code: unhighlightedCode, language: language, previousContext: partialContext });
+			
 			var analyzerContext = createAnalyzerContext(unhighlightedCode, language, partialContext, this.options);
 			var analyzer = language.analyzer;
+			
+			fireEvent("beforeAnalyze", this, { analyzerContext: analyzerContext });
 			for (var i = partialContext.index ? partialContext.index + 1 : 0, tokenName, func, exit; i < analyzerContext.tokens.length; i++) {
 				analyzerContext.index = i;
 				tokenName = analyzerContext.tokens[i].name;
@@ -590,30 +609,57 @@
 
 				analyzer[func] ? analyzer[func](analyzerContext) : analyzer.handleToken(analyzerContext);
 			}
+			fireEvent("afterAnalyze", this, { analyzerContext: analyzerContext });
+			
+			fireEvent("afterHighlight", this, { analyzerContext: analyzerContext });
 
 			return analyzerContext;
 		};
 
 		return {
+			//matches the language of the node to highlight
+			matchSunlightNode: function() {
+				var regex;
+				return function(node) {
+					if (!regex) {
+						regex = new RegExp("(?:\\s|^)" + this.options.classPrefix + "highlight-(\\S+)(?:\\s|$)");
+					}
+					
+					return regex.exec(node.className);
+				};
+			}(),
+			
+			//determines if the node has already been highlighted
+			isAlreadyHighlighted: function() {
+				var regex;
+				return function(node) {
+					if (!regex) {
+						regex = new RegExp("(?:\\s|^)" + this.options.classPrefix + "highlighted(?:\\s|$)");
+					}
+					
+					return regex.test(node.className);
+				};
+			}(),
+			
 			//highlights a block of text
 			highlight: function(code, languageId) { return highlightText.call(this, code, languageId); },
 
 			//recursively highlights a DOM node
 			highlightNode: function highlightRecursive(node) {
 				var match;
-				if ((match = node.className.match(/(?:\s|^)sunlight-highlight-(\S+)(?:\s|$)/)) === null || /(?:\s|^)sunlight-highlighted(?:\s|$)/.test(node.className)) {
-					//not a valid sunlight node or it's already been highlighted
+				if (this.isAlreadyHighlighted(node) || (match = this.matchSunlightNode(node)) === null) {
 					return;
 				}
 
 				var languageId = match[1];
 				var currentNodeCount = 0;
+				fireEvent("beforeHighlightNode", this, { node: node });
 				for (var j = 0, span, nodes, k, partialContext; j < node.childNodes.length; j++) {
 					if (node.childNodes[j].nodeType === 3) {
 						//text nodes
 						span = document.createElement("span");
 
-						span.className = "sunlight-highlighted sunlight-" + languageId;
+						span.className = this.options.classPrefix + "highlighted " + this.options.classPrefix + languageId;
 						partialContext = highlightText.call(this, node.childNodes[j].nodeValue, languageId, partialContext);
 						HIGHLIGHTED_NODE_COUNT++;
 						currentNodeCount = currentNodeCount || HIGHLIGHTED_NODE_COUNT;
@@ -630,52 +676,33 @@
 				}
 
 				//indicate that this node has been highlighted
-				node.className += " sunlight-highlighted";
-
-				if (this.options.lineNumbers === true || (getComputedStyle && this.options.lineNumbers === "automatic" && getComputedStyle(node, "display") === "block")) {
-					var container = document.createElement("div"), lineContainer = document.createElement("pre");
+				node.className += " " + this.options.classPrefix + "highlighted";
+				
+				var container, codeContainer;
+				//if the node is block level, we put it in a container, otherwise we just leave it alone
+				if (getComputedStyle(node, "display") === "block") {
+					container = document.createElement("div")
+					container.className = this.options.classPrefix + "container";
 					
-					//browsers don't render the last trailing newline, so we make sure that the line numbers reflect that
-					//by disregarding the last trailing newline
-					var lineCount =  node.innerHTML.replace(/[^\n]/g, "").length - /\n$/.test(node.lastChild.innerHTML);
+					codeContainer = document.createElement("div");
+					codeContainer.className = this.options.classPrefix + "code-container";
+					container.appendChild(codeContainer);
 					
-					var lineHighlightOverlay, currentLineOverlay, lineHighlightingEnabled = this.options.lineHighlight.length > 0;
-					if (lineHighlightingEnabled) {
-						lineHighlightOverlay = document.createElement("div");
-						lineHighlightOverlay.className = "sunlight-line-highlight-overlay";
-					}
-					
-					container.className = "sunlight-container";
-					lineContainer.className = "sunlight-line-number-margin";
-
-					for (var i = this.options.lineNumberStart, eol = document.createTextNode(isIe ? "\r" : "\n"), link, name; i <= this.options.lineNumberStart + lineCount; i++) {
-						link = document.createElement("a");
-						name = (node.id ? node.id : "sunlight-" + currentNodeCount) + "-line-" + i;
-						
-						link.setAttribute("name", name);
-						link.setAttribute("href", "#" + name);
-						
-						link.appendChild(document.createTextNode(i));
-						lineContainer.appendChild(link);
-						lineContainer.appendChild(eol.cloneNode(false));
-						
-						if (lineHighlightingEnabled) {
-							currentLineOverlay = document.createElement("div");
-							if (contains(this.options.lineHighlight, i)) {
-								currentLineOverlay.className = "sunlight-line-highlight-active";
-							}
-							lineHighlightOverlay.appendChild(currentLineOverlay);
-						}
-					}
-
-					container.appendChild(lineContainer);
-					node.parentNode.insertBefore(container, node);
+					node.parentNode.insertBefore(codeContainer, node);
 					node.parentNode.removeChild(node);
-					container.appendChild(node);
-					if (lineHighlightingEnabled) {
-						container.appendChild(lineHighlightOverlay);
-					}
+					codeContainer.appendChild(node);
+					
+					codeContainer.parentNode.insertBefore(container, codeContainer);
+					codeContainer.parentNode.removeChild(codeContainer);
+					container.appendChild(codeContainer);
 				}
+				
+				fireEvent("afterHighlightNode", this, { 
+					container: container,
+					codeContainer: codeContainer,
+					node: node, 
+					count: currentNodeCount
+				});
 			}
 		};
 	}();
@@ -686,7 +713,7 @@
 
 	highlighterConstructor.prototype = highlighter;
 
-	//gets the next token in the specified direction that while matcher matches the current token
+	//gets the next token in the specified direction while matcher matches the current token
 	var getNextWhile = function(tokens, index, direction, matcher) {
 		direction = direction || 1;
 		var count = 1, token;
@@ -710,14 +737,18 @@
 				newMap[firstChar] = [];
 			}
 
-			newMap[firstChar].push({ value: word, regex: new RegExp(regexEscape(word) + boundary, caseInsensitive ? "i" : "") });
+			newMap[firstChar].push({ value: word, regex: new RegExp("^" + regexEscape(word) + boundary, caseInsensitive ? "i" : "") });
 		}
 
 		return newMap;
 	};
 
 	var defaultNumberParser = function(context) {
-		var current = context.reader.current(), number, line = context.reader.getLine(), column = context.reader.getColumn();
+		var current = context.reader.current(), 
+			number, 
+			line = context.reader.getLine(), 
+			column = context.reader.getColumn(),
+			allowDecimal = true;
 
 		if (!/\d/.test(current)) {
 			//is it a decimal followed by a number?
@@ -727,20 +758,25 @@
 
 			//decimal without leading zero
 			number = current + context.reader.read();
+			allowDecimal = false;
 		} else {
 			number = current;
+			if (current === "0" && context.reader.peek() !== ".") {
+				//hex or octal
+				allowDecimal = false;
+			}
 		}
 
 		//easy way out: read until it's not a number or letter
 		//this will work for hex (0xef), octal (012), decimal and scientific notation (1e3)
 		//anything else and you're on your own
 
-		var peek, foundDecimal = false;
+		var peek;
 		while ((peek = context.reader.peek()) !== context.reader.EOF) {
 			if (!/[A-Za-z0-9]/.test(peek)) {
-				if (peek === "." && !foundDecimal && /\d$/.test(context.reader.peek(2))) {
+				if (peek === "." && allowDecimal && /\d$/.test(context.reader.peek(2))) {
 					number += context.reader.read();
-					foundDecimal = true;
+					allowDecimal = false;
 					continue;
 				}
 				
@@ -755,9 +791,7 @@
 
 	var globalOptions = {
 		tabWidth: 4,
-		lineNumbers: "automatic", //true/false/"automatic"
-		lineNumberStart: 1,
-		lineHighlight: []
+		classPrefix: DEFAULT_CLASS_PREFIX
 	};
 
 	var languages = {};
@@ -767,12 +801,49 @@
 		namedIdentRules: {},
 		punctuation: /[^\w\s]/,
 		numberParser: defaultNumberParser,
-		caseInsensitive: false
+		caseInsensitive: false,
+		doNotParse: /\s/,
+		analyzerContextItems: {}
 	};
+	
+	//event handling: an interface to extend sunlight in an unobtrusive way
+	var events = {
+		beforeHighlightNode: [],
+		beforeHighlight: [],
+		beforeTokenize: [],
+		afterTokenize: [],
+		beforeAnalyze: [],
+		afterAnalyze: [],
+		afterHighlight: [],
+		afterHighlightNode: []
+	};
+	
+	var fireEvent = function(eventName, highlighter, eventContext) {
+		var delegates = events[eventName] || [];
+		for (var i = 0, len = delegates.length; i < len; i++) {
+			delegates[i].call(highlighter, eventContext);
+		}
+	};
+	
+	//adapted from http://blargh.tommymontgomery.com/2010/04/get-computed-style-in-javascript/
+	var getComputedStyle = function() {
+		var func = null;
+		if (document.defaultView && document.defaultView.getComputedStyle) {
+			func = document.defaultView.getComputedStyle;
+		} else {
+			func = function(element, anything) {
+				return element["currentStyle"] || {};
+			};
+		}
+
+		return function(element, style) {
+			return func(element, null)[style];
+		}
+	}();
 
 	//public facing object
 	window.Sunlight = {
-		version: "1.4",
+		version: "1.5",
 		Highlighter: highlighterConstructor,
 		createAnalyzer: function() { return create(defaultAnalyzer); },
 		globalOptions: globalOptions,
@@ -806,8 +877,17 @@
 
 			languages[languageData.name] = languageData;
 		},
+		
+		bind: function(event, callback) {
+			if (!events[event]) {
+				throw "Unknown event \"" + event + "\"";
+			}
+			
+			events[event].push(callback);
+		},
 
 		util: {
+			eol: isIe ? "\r" : "\n",
 			escapeSequences: ["\\n", "\\t", "\\r", "\\\\", "\\v", "\\f"],
 			contains: contains,
 			matchWord: matchWord,
@@ -818,11 +898,12 @@
 			getPreviousNonWsToken: function(tokens, index) { return getNextWhile(tokens, index, -1, function(token) { return token.name === "default"; }); },
 			getNextWhile: function(tokens, index, matcher) { return getNextWhile(tokens, index, 1, matcher); },
 			getPreviousWhile: function(tokens, index, matcher) { return getNextWhile(tokens, index, -1, matcher); },
-			whitespace: { token: "default", optional: true }
+			whitespace: { token: "default", optional: true },
+			getComputedStyle: getComputedStyle
 		}
 	};
 
 	//register the default language
 	window.Sunlight.registerLanguage(DEFAULT_LANGUAGE, { punctuation: /(?!x)x/, numberParser: EMPTY });
 
-}(window, document));
+}(this, document));

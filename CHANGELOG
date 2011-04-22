@@ -1,11 +1,32 @@
+1.5 2011-04-xx
+--------------
+- Bugfixes
+	- fixed bug where keywords were being spuriously detected in idents (e.g. "class" in "cclass")
+	  due to the fact that the regular expression in the generated hashmap was not requiring the match
+	  to start at the beginning of the string (with "^")
+	- made default number parser better (don't allow multiple decimal places, and don't allow decimal point
+	  in octal/hex numbers)
+	- fixed bug in C# attribute detection where it would falsely identify the namespace portion of a fully
+	  qualified type name
+	- fixed bug where if an unclosed scope contained the trailing newline, the line numbers were rendered
+	  incorrectly
+- Enhancements
+	- new languages: VB.NET, httpd, Lisp
+	- added doNotParse language property
+	- added contextItems language property
+	- the class prefix is now customizable via the classPrefix option
+	- the highlighter's options are now available to the analyzer context via the "options" property
+	- created plugin mechanism (Sunlight.bind) and externalized line number/line highlight options
+	- added ability to collapse the code block and view the raw text via the menu plugin
+
 1.4 2011-04-17
 --------------
 - Bugfixes
 	- fixed bug in number parsing where it would incorrectly parse 1. as the number "1." rather
-	  that the number "1" followed by a "."
+	  than the number "1" followed by a "."
 	- fixed bug where casts were being falsely detected in expressions like "if (something) doSomething();"
 	  in Java and C#
-- Enhancments
+- Enhancements
 	- new languages: brainfuck (awwwwwwww yeeeeeeeeeah), nginx, c/c++, 6502 assembler, perl
 	- added getNextWhile/getPreviousWhile utility functions
 	- added isSol() and isEol() functions to reader

@@ -156,4 +156,4 @@
 		}
     });
 	
-}(window["Sunlight"]));
+}(this["Sunlight"]));
