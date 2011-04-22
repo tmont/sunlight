@@ -2,7 +2,7 @@
  * Sunlight menu plugin
  *
  * This creates the menu in the upper right corner for block-level elements.
- * This plugin is not supported for IE6.
+ * This plugin is not supported for IE6. It is bundled in sunlight-min.js.
  *
  * Options:
  * 	- showMenu: true/false (default is true)
@@ -104,7 +104,7 @@
 					
 					this.replaceChild(document.createTextNode("highlighted"), this.firstChild);
 					this.setAttribute("title", "view highlighted code");
-					textarea.select();
+					textarea.select(); //highlight everything
 				}
 				
 				return false;

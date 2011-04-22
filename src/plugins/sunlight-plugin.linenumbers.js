@@ -2,7 +2,7 @@
  * Sunlight line number/line highlighting plugin
  *
  * This creates the line number gutter in addition to creating the line highlighting
- * overlay (if applicable).
+ * overlay (if applicable). It is bundled in sunlight-min.js.
  *
  * Options:
  * 	- lineNumbers: true/false/"automatic" (default is "automatic")
