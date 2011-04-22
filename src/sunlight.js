@@ -843,7 +843,7 @@
 
 	//public facing object
 	window.Sunlight = {
-		version: "1.5",
+		version: "1.6",
 		Highlighter: highlighterConstructor,
 		createAnalyzer: function() { return create(defaultAnalyzer); },
 		globalOptions: globalOptions,
