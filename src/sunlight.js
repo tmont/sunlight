@@ -11,7 +11,7 @@
 (function(window, document, undefined){
 
 	//http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
-	var isIe = !+"\v1"; //we have to sniff this because IE requires \r\n
+	var isIe = !+"\v1"; //we have to sniff this because IE requires \r
 
 	var EMPTY = function() { return null; };
 	var HIGHLIGHTED_NODE_COUNT = 0;
