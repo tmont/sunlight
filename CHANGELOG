@@ -1,4 +1,4 @@
-1.5 2011-04-xx
+1.5 2011-04-22
 --------------
 - Bugfixes
 	- fixed bug where keywords were being spuriously detected in idents (e.g. "class" in "cclass")
