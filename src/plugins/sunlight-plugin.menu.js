@@ -2,10 +2,10 @@
  * Sunlight menu plugin
  *
  * This creates the menu in the upper right corner for block-level elements.
- * This plugin is not supported for IE6. It is bundled in sunlight-min.js.
+ * This plugin is not supported for IE6.
  *
  * Options:
- * 	- showMenu: true/false (default is true)
+ * 	- showMenu: true/false (default is false)
  * 	- autoCollapse: true/false (default is false)
  */
 (function(sunlight, document, undefined){
@@ -134,7 +134,7 @@
 		}
 	});
 	
-	sunlight.globalOptions.showMenu = true;
+	sunlight.globalOptions.showMenu = false;
 	sunlight.globalOptions.autoCollapse = false;
 	
 }(this["Sunlight"], document));

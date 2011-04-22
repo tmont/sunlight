@@ -55,11 +55,16 @@
 	</target>
 	
 	<target name="compress" depends="init, clean, create-build-dirs, copy-uncompressed" description="Compresses JavaScript source files using YUI compressor">
-		<!-- combine all files for sunlight-all.js -->
-		<concat destfile="${temp.dir}/sunlight-all.js" encoding="UTF-8" eol="lf">
+		<!-- combine sunlight core and bundled plugins -->
+		<concat destfile="${temp.dir}/sunlight-bundled.js" encoding="UTF-8" eol="lf">
 			<fileset dir="${temp.dir}" includes="sunlight.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight-plugin.linenumbers.js"/>
+		</concat>
+		
+		<!-- combine all files for sunlight-all.js -->
+		<concat destfile="${temp.dir}/sunlight-all.js" encoding="UTF-8" eol="lf">
 			<fileset dir="${temp.dir}" includes="sunlight-plugin.menu.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight-bundled.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.csharp.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.javascript.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.php.js"/>
@@ -84,8 +89,10 @@
 	
 		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${deploy.dir}">
 			<include name="sunlight-all.js"/>
-			<include name="sunlight.js"/>
+			<include name="sunlight-bundled.js"/>
 		</yui-compressor>
+		
+		<move file="${deploy.dir}/sunlight-bundled-min.js" tofile="${deploy.dir}/sunlight-min.js" />
 		
 		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${lang.dir}">
 			<include name="sunlight.csharp.js"/>
@@ -135,6 +142,7 @@
 		<mkdir dir="${deploy.dir}"/>
 		<mkdir dir="${lang.dir}"/>
 		<mkdir dir="${themes.dir}"/>
+		<mkdir dir="${plugins.dir}"/>
 	</target>
 	
 	<target name="copy-uncompressed">

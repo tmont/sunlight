@@ -18,7 +18,7 @@ if (typeof(console) === "undefined" || typeof(console.log) === "undefined") {
 
 var prefix = "sunlight-";
 var start = new Date();
-Sunlight.highlightAll({ classPrefix: prefix });
+Sunlight.highlightAll({ classPrefix: prefix, showMenu: true });
 console.log("highlighting time: " + (new Date().getTime() - start.getTime()) + "ms");
 
 //tests
