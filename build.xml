@@ -63,6 +63,7 @@
 		
 		<!-- combine all files for sunlight-all.js -->
 		<concat destfile="${temp.dir}/sunlight-all.js" encoding="UTF-8" eol="lf">
+			<fileset dir="${temp.dir}" includes="sunlight-bundled.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight-plugin.menu.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight-bundled.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.csharp.js"/>
