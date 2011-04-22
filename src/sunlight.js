@@ -825,8 +825,6 @@
 		}
 	};
 	
-	var plugins = [];
-	
 	//adapted from http://blargh.tommymontgomery.com/2010/04/get-computed-style-in-javascript/
 	var getComputedStyle = function() {
 		var func = null;

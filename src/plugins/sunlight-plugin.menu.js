@@ -37,7 +37,8 @@
 	}
 	
 	//http://dean.edwards.name/weblog/2007/03/sniff/#comment83695
-	var ieVersion = 0 /*@cc_on+ScriptEngineMajorVersion()@*/;
+	//eval()'d so that it compresses correctly
+	var ieVersion = eval("0 /*@cc_on+ScriptEngineMajorVersion()@*/");
 	
 	sunlight.bind("afterHighlightNode", function(context) {
 		if ((ieVersion && ieVersion < 7) || !this.options.showMenu || sunlight.util.getComputedStyle(context.node, "display") !== "block") {
