@@ -677,21 +677,25 @@
 
 				//indicate that this node has been highlighted
 				node.className += " " + this.options.classPrefix + "highlighted";
-				var container = document.createElement("div")
-				container.className = this.options.classPrefix + "container";
 				
-				var codeContainer = document.createElement("div");
-				codeContainer.className = this.options.classPrefix + "code-container";
-				container.appendChild(codeContainer);
-				
-				node.parentNode.insertBefore(codeContainer, node);
-				node.parentNode.removeChild(node);
-				codeContainer.appendChild(node);
-				
-				codeContainer.parentNode.insertBefore(container, codeContainer);
-				codeContainer.parentNode.removeChild(codeContainer);
-				container.appendChild(codeContainer);
-				
+				var container, codeContainer;
+				//if the node is block level, we put it in a container, otherwise we just leave it alone
+				if (getComputedStyle(node, "display") === "block") {
+					container = document.createElement("div")
+					container.className = this.options.classPrefix + "container";
+					
+					codeContainer = document.createElement("div");
+					codeContainer.className = this.options.classPrefix + "code-container";
+					container.appendChild(codeContainer);
+					
+					node.parentNode.insertBefore(codeContainer, node);
+					node.parentNode.removeChild(node);
+					codeContainer.appendChild(node);
+					
+					codeContainer.parentNode.insertBefore(container, codeContainer);
+					codeContainer.parentNode.removeChild(codeContainer);
+					container.appendChild(codeContainer);
+				}
 				
 				fireEvent("afterHighlightNode", this, { 
 					container: container,
@@ -822,6 +826,22 @@
 	};
 	
 	var plugins = [];
+	
+	//adapted from http://blargh.tommymontgomery.com/2010/04/get-computed-style-in-javascript/
+	var getComputedStyle = function() {
+		var func = null;
+		if (document.defaultView && document.defaultView.getComputedStyle) {
+			func = document.defaultView.getComputedStyle;
+		} else {
+			func = function(element, anything) {
+				return element["currentStyle"] || {};
+			};
+		}
+
+		return function(element, style) {
+			return func(element, null)[style];
+		}
+	}();
 
 	//public facing object
 	window.Sunlight = {
@@ -881,22 +901,7 @@
 			getNextWhile: function(tokens, index, matcher) { return getNextWhile(tokens, index, 1, matcher); },
 			getPreviousWhile: function(tokens, index, matcher) { return getNextWhile(tokens, index, -1, matcher); },
 			whitespace: { token: "default", optional: true },
-			
-			//adapted from http://blargh.tommymontgomery.com/2010/04/get-computed-style-in-javascript/
-			getComputedStyle: function() {
-				var func = null;
-				if (document.defaultView && document.defaultView.getComputedStyle) {
-					func = document.defaultView.getComputedStyle;
-				} else {
-					func = function(element, anything) {
-						return element["currentStyle"] || {};
-					};
-				}
-
-				return function(element, style) {
-					return func(element, null)[style];
-				}
-			}()
+			getComputedStyle: getComputedStyle
 		}
 	};
 
