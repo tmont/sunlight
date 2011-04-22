@@ -4,8 +4,6 @@
 		throw "Include sunlight.js before including language files";
 	}
 	
-	var heredocQueue = [];
-	
 	var isValidForRegexLiteral = function(context) {
 		var previousNonWsToken = context.token(context.count() - 1);
 		var previousToken = null;
@@ -341,7 +339,7 @@
 					ident += peek;
 				}
 				
-				heredocQueue.push(ident);
+				context.items.heredocQueue.push(ident);
 				
 				var token = context.createToken("heredocDeclaration", value, line, column);
 				return token;
@@ -349,7 +347,7 @@
 			
 			//heredoc
 			function(context) {
-				if (heredocQueue.length === 0) {
+				if (context.items.heredocQueue.length === 0) {
 					return null;
 				}
 				
@@ -361,8 +359,8 @@
 				//we're confirmed to be in the heredoc body, so read until all of the heredoc declarations have been satisfied
 				
 				var tokens = [], declaration, line, column, value = context.reader.current();
-				while (heredocQueue.length > 0 && context.reader.peek() !== context.reader.EOF) {
-					declaration = heredocQueue.shift();
+				while (context.items.heredocQueue.length > 0 && context.reader.peek() !== context.reader.EOF) {
+					declaration = context.items.heredocQueue.shift();
 					line = context.reader.getLine(), column = context.reader.getColumn();
 					
 					//read until "\n{declaration}\n"
@@ -454,7 +452,11 @@
 			"x=", "x", //seriously, perl?
 			
 			"lt", "gt", "le", "ge", "eq", "ne", "cmp"
-		]
+		],
+		
+		contextItems: {
+			heredocQueue: []
+		}
 		
 	});
 }(this["Sunlight"]));

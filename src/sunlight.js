@@ -497,12 +497,13 @@
 			}
 		}();
 
-		var tokenize = function(unhighlightedCode, language, continuation) {
+		var tokenize = function(unhighlightedCode, language, partialContext) {
 			fireEvent("beforeTokenize", this, { code: unhighlightedCode, language: language });
 			var tokens = [];
 			var context = {
 				reader: createCodeReader(unhighlightedCode),
 				language: language,
+				items: language.contextItems,
 				token: function(index) { return tokens[index]; },
 				getAllTokens: function() { return tokens.slice(0); },
 				count: function() { return tokens.length; },
@@ -523,7 +524,9 @@
 
 			//if continuation is given, then we need to pick up where we left off from a previous parse
 			//basically it indicates that a scope was never closed, so we need to continue that scope
-			if (continuation) {
+			if (partialContext.continuation) {
+				var continuation = partialContext.continuation;
+				partialContext.continuation = null;
 				tokens.push(continuation(context, continuation, "", context.reader.getLine(), context.reader.getColumn(), true));
 			}
 
@@ -554,13 +557,13 @@
 				tokens.push(context.createToken("default", context.defaultData.text, context.defaultData.line, context.defaultData.column));
 			}
 
-			fireEvent("afterTokenize", this, { code: unhighlightedCode, language: language, tokens: tokens, continuation: context.continuation });
-			return { tokens: tokens, continuation: context.continuation };
+			fireEvent("afterTokenize", this, { code: unhighlightedCode, parserContext: context });
+			return context;
 		};
 
 		var createAnalyzerContext = function(unhighlightedCode, language, partialContext, options) {
 			var nodes = [];
-			var parseData = tokenize(unhighlightedCode, language, partialContext.continuation);
+			var parserContext = tokenize(unhighlightedCode, language, partialContext);
 			var prepareText = function() {
 				var nbsp = String.fromCharCode(0xa0);
 				var tab = new Array(options.tabWidth + 1).join(nbsp);
@@ -570,15 +573,15 @@
 			}();
 
 			return {
-				tokens: (partialContext.tokens || []).concat(parseData.tokens),
+				tokens: (partialContext.tokens || []).concat(parserContext.getAllTokens()),
 				index: partialContext.index ? partialContext.index + 1 : 0,
 				language: language,
 				options: options,
-				continuation: parseData.continuation,
+				continuation: parserContext.continuation,
 				addNode: function(node) { nodes.push(node); },
 				createTextNode: function(text) { return document.createTextNode(prepareText(text)); },
 				getNodes: function() { return nodes; },
-				items: language.analyzerContextItems
+				items: parserContext.items
 			};
 		};
 

@@ -338,7 +338,7 @@
 			]
 		},
 		
-		analyzerContextItems: {
+		contextItems: {
 			userDefinedFunctions: []
 		},
 
