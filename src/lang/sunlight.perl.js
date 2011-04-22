@@ -1,4 +1,4 @@
-(function(sunlight, document, undefined){
+(function(sunlight, undefined){
 
 	if (sunlight === undefined || sunlight["registerLanguage"] === undefined) {
 		throw "Include sunlight.js before including language files";
@@ -457,4 +457,4 @@
 		]
 		
 	});
-}(window["Sunlight"], document));
+}(this["Sunlight"]));

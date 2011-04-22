@@ -174,4 +174,4 @@
 		]
 		
 	});
-}(window["Sunlight"]));
+}(this["Sunlight"]));

@@ -194,4 +194,4 @@
 			
 		]
 	});
-}(window["Sunlight"]));
+}(this["Sunlight"]));

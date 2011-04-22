@@ -391,4 +391,4 @@
 			"?", ":", ".", "="
 		]
 	});
-}(window["Sunlight"]));
+}(this["Sunlight"]));

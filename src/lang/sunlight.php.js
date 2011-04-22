@@ -329,4 +329,4 @@
 		
 		analyzer: phpAnalyzer
 	});
-}(window["Sunlight"], document));
+}(this["Sunlight"], document));

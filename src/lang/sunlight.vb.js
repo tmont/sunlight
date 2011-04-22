@@ -392,4 +392,4 @@
 			">"
 		]
 	});
-}(window["Sunlight"]));
+}(this["Sunlight"]));

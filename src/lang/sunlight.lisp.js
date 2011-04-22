@@ -352,4 +352,4 @@
 			"...", "..", "."
 		]
 	});
-}(window["Sunlight"]));
+}(this["Sunlight"]));
