@@ -6,7 +6,8 @@
 .sunlight-code-container {
 	clear: both;
 	position: relative;
-	border: 1px solid #626262 !important;
+	border: none;
+	border-color: #626262 !important;
 	background-color: #262626 !important;
 }
 .sunlight-highlighted, .sunlight-container, .sunlight-container textarea {

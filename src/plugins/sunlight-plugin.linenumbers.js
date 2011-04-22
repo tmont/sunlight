@@ -76,6 +76,10 @@
 		if (lineHighlightingEnabled) {
 			context.codeContainer.appendChild(lineHighlightOverlay);
 		}
+		
+		//enable the border on the code container
+		context.codeContainer.style.borderWidth = "1px";
+		context.codeContainer.style.borderStyle = "solid";
 	});
 	
 	sunlight.globalOptions.lineNumbers = "automatic";
