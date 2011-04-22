@@ -33,16 +33,4 @@ LANGUAGES
 - scala: http://www.scala-lang.org/node/198
 
 WEB
-- add visual basic to demo
-- add httpd to demo
-- add lisp to demo
 - document continuations for incomplete parses on custom rules
-- document new doNotParse language property
-- document isSolWs
-- document analyzerContext.items/parserContext.items/language.contextItems
-- document analyzerContext.options
-- document classPrefix global option
-- document eol utility
-- document getComputedStyle utility
-- document plugin mechanism
-- document menu option and how IE6 is not supported
