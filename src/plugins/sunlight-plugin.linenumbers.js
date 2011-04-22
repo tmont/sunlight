@@ -35,7 +35,7 @@
 			return;
 		}
 		
-		if (this.options.lineNumbers !== "automatic" || sunlight.util.getComputedStyle(context.node, "display") !== "block") {
+		if (this.options.lineNumbers === "automatic" && sunlight.util.getComputedStyle(context.node, "display") !== "block") {
 			//if it's not a block level element or the lineNumbers option is not set to "automatic"
 			return;
 		}
