@@ -28,7 +28,6 @@ FUNCTIONALITY - 2.0
 LANGUAGES
 - PostgreSQL
 - Oracle
-- Haskell
 - powershell
 - scala: http://www.scala-lang.org/node/198
 

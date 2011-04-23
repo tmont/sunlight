@@ -1,5 +1,5 @@
 Sunlight <http://sunlightjs.com/>
-Version 1.5 (see CHANGELOG for details)
+Version 1.6 (see CHANGELOG for details)
 (c) 2011 Tommy Montgomery <http://tommymontgomery.com/>
 
 Licensed under WTFPL: http://sam.zoy.org/wtfpl/
@@ -38,6 +38,9 @@ Included language files
 - VB.NET
 - httpd
 - Lisp
+- Visual Studio solution files (*.sln)
+- DOS batch
+- Haskell
 
 Included themes
 ---------------
@@ -47,7 +50,7 @@ Included themes
 Included plugins
 ----------------
 - sunlight-plugin.linenumbers.js (bundled)
-- sunlight-plugin.menu.js (bundled)
+- sunlight-plugin.menu.js
 
 Authors
 -------

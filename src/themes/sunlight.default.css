@@ -92,6 +92,7 @@ span.sunlight-highlighted * {
 
 
 .sunlight-string,
+.sunlight-char,
 .sunlight-heredoc,
 .sunlight-heredocDeclaration,
 .sunlight-nowdoc,
@@ -112,10 +113,12 @@ span.sunlight-highlighted * {
 
 .sunlight-comment,
 .sunlight-xmlDocCommentContent,
-.sunlight-nginx .sunlight-ssiCommand {
+.sunlight-nginx .sunlight-ssiCommand,
+.sunlight-sln .sunlight-formatDeclaration {
 	color: #009900 !important;
 }
-.sunlight-number {
+.sunlight-number,
+.sunlight-guid {
 	color: #CC6600 !important;
 }
 
@@ -157,7 +160,8 @@ span.sunlight-highlighted * {
 .sunlight-6502asm .sunlight-illegalOpcode,
 .sunlight-lisp .sunlight-macro,
 .sunlight-lisp .sunlight-specialForm,
-.sunlight-lisp .sunlight-type {
+.sunlight-lisp .sunlight-type,
+.sunlight-sln .sunlight-sectionName {
 	color: #B069AF !important;
 }
 
@@ -166,7 +170,8 @@ span.sunlight-highlighted * {
 .sunlight-environmentVariable,
 .sunlight-lisp .sunlight-globalVariable,
 .sunlight-ruby .sunlight-globalVariable,
-.sunlight-ruby .sunlight-instanceVariable {
+.sunlight-ruby .sunlight-instanceVariable,
+.sunlight-sln .sunlight-operator {
 	color: #325484 !important;
 }
 .sunlight-regexLiteral,
@@ -190,7 +195,8 @@ span.sunlight-highlighted * {
 	color: #808080 !important;
 }
 .sunlight-quotedIdent,
-.sunlight-lisp .sunlight-keywordArgument {
+.sunlight-lisp .sunlight-keywordArgument,
+.sunlight-haskell .sunlight-infixOperator {
 	color: #999900 !important;
 }
 
