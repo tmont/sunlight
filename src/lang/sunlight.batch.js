@@ -94,12 +94,8 @@
 						return null;
 					}
 					
-					//only highlight if it's not between echo and [\n|]
-					//or not between = and ,
-					
-					
-					//look backward for echo or "|" or beginning of line
-					//if we find echo or "=" before "|" or sol then it's a fail
+					//look backward for "echo" or "title" or "set" or "|" or beginning of line
+					//if we find "echo" or "set" or "title" or "=" before "|" or sol then it's a fail
 					
 					if (!context.reader.isSolWs()) {
 						var prevToken, index = context.count();
