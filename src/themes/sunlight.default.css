@@ -92,6 +92,7 @@ span.sunlight-highlighted * {
 
 
 .sunlight-string,
+.sunlight-char,
 .sunlight-heredoc,
 .sunlight-heredocDeclaration,
 .sunlight-nowdoc,

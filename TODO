@@ -28,7 +28,6 @@ FUNCTIONALITY - 2.0
 LANGUAGES
 - PostgreSQL
 - Oracle
-- Haskell
 - powershell
 - scala: http://www.scala-lang.org/node/198
 
@@ -36,3 +35,4 @@ WEB
 - document continuations for incomplete parses on custom rules
 - add sln to demo
 - add batch to demo
+- add haskell to demo

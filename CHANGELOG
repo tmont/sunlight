@@ -1,7 +1,7 @@
-1.6 2011-04-xx
+1.6 2011-04-23
 --------------
 - Enhancements
-	- new languages: sln, batch
+	- new languages: sln, batch, Haskell (kind of, this language is really hard to understand by reading tutorials)
 
 1.5 2011-04-22
 --------------

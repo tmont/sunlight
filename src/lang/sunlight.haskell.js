@@ -4,9 +4,6 @@
 		throw "Include sunlight.js before including language files";
 	}
 	
-	//keep track of all user defined functions so we can highlight them later
-	var userDefinedFunctions = [];
-	
 	sunlight.registerLanguage("haskell", {
 		//http://www.haskell.org/haskellwiki/Keywords
 		keywords: [
@@ -42,16 +39,13 @@
 			
 			//look for user defined functions
 			function(context) {
-				if (!context.reader.isSol()) {
-					return null;
-				}
-				
 				//read the ident, if a :: operator follows it, then it's a function definition (i guess, like i know anything about haskell)
+				//or if follows newtype, class or data, we keep track of it as well
 				if (!/[A-Za-z_]/.test(context.reader.current())) {
 					return null;
 				}
 				
-				var peek, value = context.reader.current(), count = 1;
+				var peek, value = context.reader.current(), count = 0;
 				while ((peek = context.reader.peek(++count)) && peek.length === count) {
 					if (!/[\w']$/.test(peek)) {
 						break;
@@ -60,19 +54,30 @@
 				
 				var ident = context.reader.current() + peek.substring(0, peek.length - 1);
 				
-				//should be some whitespace, and then ::
-				while ((peek = context.reader.peek(++count)) && peek.length === count) {
-					if (!/\s$/.test(peek)) {
-						if (!/::$/.test(context.reader.peek(++count))) {
-							return null;
-						}
-						
-						//yay it's a function!
-						var line = context.reader.getLine(), column = context.reader.getColumn();
-						userDefinedFunctions.push(ident);
+				//if it follows class, newtype, type or data
+				var prevToken = context.token(context.count() - 1);
+				if (prevToken && prevToken.name === "keyword" && sunlight.util.contains(["class", "newtype", "data", "type"], prevToken.value)) {
+					context.items.userDefinedFunctions.push(ident);
+					context.reader.read(ident.length - 1); //already read the first character
+					return context.createToken("ident", ident, line, column);
+				}
 				
-						context.reader.read(ident.length - 1); //already read the first character
-						return context.createToken("ident", ident, line, column);
+				//function definitions: start of line followed by ::
+				if (context.reader.isSolWs()) {
+					//should be some whitespace, and then ::
+					while ((peek = context.reader.peek(++count)) && peek.length === count) {
+						if (!/\s$/.test(peek)) {
+							if (!/::$/.test(context.reader.peek(++count))) {
+								return null;
+							}
+							
+							//yay it's a function!
+							var line = context.reader.getLine(), column = context.reader.getColumn();
+							context.items.userDefinedFunctions.push(ident);
+					
+							context.reader.read(ident.length - 1); //already read the first character
+							return context.createToken("ident", ident, line, column);
+						}
 					}
 				}
 				
@@ -104,23 +109,23 @@
 				boundary: "\\b"
 			},
 			
-			// "class": {
-				// values: [
-					// "Bounded", "Enum", "Eq", "Floating", "Fractional", "Functor", "Integral", "Monad", "Num", "Ord",
-					// "Read", "RealFloat", "RealFrac", "Real", "Show"
-				// ],
-				// boundary: "\\b"
-			// },
+			"class": {
+				values: [
+					"Bounded", "Enum", "Eq", "Floating", "Fractional", "Functor", "Integral", "Monad", "Num", "Ord",
+					"Read", "RealFloat", "RealFrac", "Real", "Show"
+				],
+				boundary: "\\b"
+			},
 			
-			// "type": {
-				// values: [
-					// "Bool", "Char", "Double", "Either", "FilePath", "Float", "Integer", "Int", "IOError", "IO", 
-					// "Maybe", "Ordering", "ReadS", "ShowS", "String",
+			"type": {
+				values: [
+					"Bool", "Char", "Double", "Either", "FilePath", "Float", "Integer", "Int", "IOError", "IO", 
+					"Maybe", "Ordering", "ReadS", "ShowS", "String",
 					
-					// "False", "True", "LT", "GT", "EQ", "Nothing", "Just", "Left", "Right"
-				// ],
-				// boundary: "\\b"
-			// }
+					"False", "True", "LT", "GT", "EQ", "Nothing", "Just", "Left", "Right"
+				],
+				boundary: "\\b"
+			}
 		},
 		
 		scopes: {
@@ -135,36 +140,13 @@
 		namedIdentRules: {
 			custom: [
 				function(context) {
-					//return sunlight.util.contains(userDefinedFunctions, context.tokens[context.index].value);
-				},
-				
-				//function equation/declaration
-				function(context) {
-					var prevToken = context.tokens[context.index - 1];
-					if (prevToken && (prevToken.name !== "default" || prevToken.value.indexOf("\n") === -1)) {
-						//must be first thing on the line
-						return false;
-					}
-					
-					//must have a = or a :: to the right
-					var token, index = context.index;
-					while (token = context.tokens[++index]) {
-						if (token.name === "operator") {
-							return token.value === "=" || token.value === "::";
-						}
-						
-						if (token.name === "default" && token.value.indexOf("\n") >= 0) {
-							return false;
-						}
-					}
-					
-					return false;
+					return sunlight.util.contains(context.items.userDefinedFunctions, context.tokens[context.index].value);
 				}
-			],
-			
-			follows: [
-				[{ token: "keyword", values: ["data"] }, { token: "default" } ]
 			]
+		},
+		
+		contextItems: {
+			userDefinedFunctions: []
 		},
 
 		operators: [
@@ -191,7 +173,6 @@
 			"~",
 			"_",
 			"..", "."
-			
 		]
 	});
 }(this["Sunlight"]));

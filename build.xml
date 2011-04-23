@@ -87,6 +87,7 @@
 			<fileset dir="${temp.dir}" includes="sunlight.lisp.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.sln.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.batch.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight.haskell.js"/>
 		</concat>
 	
 		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${deploy.dir}">
@@ -119,6 +120,7 @@
 			<include name="sunlight.lisp.js"/>
 			<include name="sunlight.sln.js"/>
 			<include name="sunlight.batch.js"/>
+			<include name="sunlight.haskell.js"/>
 		</yui-compressor>
 		
 		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${plugins.dir}">
@@ -153,7 +155,7 @@
 		<mkdir dir="${temp.dir}"/>
 		<copy todir="${temp.dir}">
 			<fileset dir="${src.dir}" includes="*.js"/>
-			<fileset dir="${src.dir}/lang" includes="*.js" excludes="sunlight.haskell.js"/>
+			<fileset dir="${src.dir}/lang" includes="*.js"/>
 			<fileset dir="${src.dir}/plugins" includes="*.js"/>
 		</copy>
 	</target>
