@@ -33,6 +33,3 @@ LANGUAGES
 
 WEB
 - document continuations for incomplete parses on custom rules
-- add sln to demo
-- add batch to demo
-- add haskell to demo
