@@ -39,6 +39,7 @@ Included language files
 - httpd
 - Lisp
 - Visual Studio solution files (*.sln)
+- DOS batch
 
 Included themes
 ---------------
