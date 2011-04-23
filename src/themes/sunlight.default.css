@@ -195,7 +195,8 @@ span.sunlight-highlighted * {
 	color: #808080 !important;
 }
 .sunlight-quotedIdent,
-.sunlight-lisp .sunlight-keywordArgument {
+.sunlight-lisp .sunlight-keywordArgument,
+.sunlight-haskell .sunlight-infixOperator {
 	color: #999900 !important;
 }
 
