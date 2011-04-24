@@ -131,7 +131,8 @@ span.sunlight-highlighted * {
 .sunlight-httpd .sunlight-context,
 .sunlight-haskell .sunlight-class,
 .sunlight-haskell .sunlight-type,
-.sunlight-lisp .sunlight-declarationSpecifier {
+.sunlight-lisp .sunlight-declarationSpecifier,
+.sunlight-erlang .sunlight-userDefinedFunction {
 	color: #2B91AF !important;
 }
 .sunlight-keyword,
@@ -139,7 +140,8 @@ span.sunlight-highlighted * {
 .sunlight-css
 .sunlight-element,
 .sunlight-bash .sunlight-command,
-.sunlight-ruby .sunlight-specialOperator {
+.sunlight-ruby .sunlight-specialOperator,
+.sunlight-erlang .sunlight-moduleAttribute {
 	color: #0000FF !important;
 }
 .sunlight-shortOpenTag,
@@ -176,7 +178,8 @@ span.sunlight-highlighted * {
 }
 .sunlight-regexLiteral,
 .sunlight-lisp .sunlight-operator,
-.sunlight-6502asm .sunlight-pseudoOp {
+.sunlight-6502asm .sunlight-pseudoOp,
+.sunlight-erlang .sunlight-macro {
 	color: #FF00B2 !important;
 }
 .sunlight-specialVariable {
@@ -196,7 +199,8 @@ span.sunlight-highlighted * {
 }
 .sunlight-quotedIdent,
 .sunlight-lisp .sunlight-keywordArgument,
-.sunlight-haskell .sunlight-infixOperator {
+.sunlight-haskell .sunlight-infixOperator,
+.sunlight-erlang .sunlight-quotedAtom {
 	color: #999900 !important;
 }
 
@@ -319,4 +323,9 @@ span.sunlight-highlighted * {
 /* lisp */
 .sunlight-lisp .sunlight-macro {
 	font-style: italic !important;
+}
+
+/* erlang */
+.sunlight-erlang .sunlight-atom {
+	font-weight: bold !important;
 }
