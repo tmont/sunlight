@@ -36,7 +36,6 @@
 				//if the next non-whitespace character is "(", then it's a function
 				var isFunction = false;
 				count--;
-				//console.log(ident + ": " + count);
 				while (peek = context.reader.peek(++count)) {
 					if (!/\s$/.test(peek)) {
 						if (/\($/.test(peek)) {
@@ -45,8 +44,6 @@
 						
 						break;
 					}
-					
-					console.log(ident + ": " + count + " " + peek);
 				}
 				
 				if (!isFunction && !/^[A-Z_]/.test(ident)) {
@@ -69,6 +66,7 @@
 								if (!/\s$/.test(peek)) {
 									if (/->$/.test(context.reader.peek(count + 1))) {
 										//function declaration
+										context.items.userDefinedFunctions.push(ident);
 										return context.createToken("userDefinedFunction", ident, line, column);
 									}
 									
@@ -90,7 +88,7 @@
 					return context.createToken("function", ident, line, column);
 				}
 				
-				return context.createToken("atom", ident, line, column);
+				return context.createToken("ident", ident, line, column);
 			}
 		],
 		
@@ -123,12 +121,19 @@
 		identAfterFirstLetter: /[\w@]/,
 
 		namedIdentRules: {
+			custom: [
+				function(context) {
+					return sunlight.util.contains(context.items.userDefinedFunctions, context.tokens[context.index].value);
+				}
+			],
+			
 			precedes: [
 				[{ token: "operator", values: [":"] }]
 			]
 		},
 		
 		contextItems: {
+			userDefinedFunctions: []
 		},
 
 		operators: [
@@ -142,7 +147,7 @@
 			"#",
 			"!",
 			"++", "+",
-			"--", "-",
+			"->", "--", "-",
 			"/=", "/"
 			
 		]

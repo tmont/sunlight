@@ -4,7 +4,7 @@
 		<script type="text/javascript" src="../src/sunlight.js"></script>
 		<script type="text/javascript" src="../src/plugins/sunlight-plugin.linenumbers.js"></script>
 		<script type="text/javascript" src="../src/lang/sunlight.erlang.js"></script>
-		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.dark.css" />
+		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.default.css" />
 	</head>
 
 	<body>
@@ -62,9 +62,6 @@ clean(Data) -&gt;
 		
 		assertExists("quotedAtom", "'What node? '", "atom surrounded by single quotes");
 		
-		assertExists("atom", "OtherNode", "atom");
-		assertExists("atom", "FullNode", "atom");
-		assertExists("atom", "Message", "atom");
 		
 		assertExists("function", "clean", "function");
 		assertExists("function", "format", "function");
@@ -73,9 +70,14 @@ clean(Data) -&gt;
 		assertExists("named-ident", "rpc", "fully qualified module name");
 		assertExists("named-ident", "io", "fully qualified module name");
 		assertExists("named-ident", "string", "fully qualified module name");
+		assertExists("named-ident", "receiver", "user defined function reference");
+		assertExists("named-ident", "sender", "user defined function reference");
+		assertExists("named-ident", "send_message", "user defined function reference");
 		
-		assertExists("ident", "receiver", "ident");
 		assertExists("ident", "talk2", "ident");
+		assertExists("ident", "OtherNode", "atom");
+		assertExists("ident", "FullNode", "atom");
+		assertExists("ident", "Message", "atom");
 		
 		assertExists("keyword", "of", "of keyword");
 		assertExists("keyword", "case", "case keyword");
