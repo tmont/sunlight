@@ -24,6 +24,12 @@
         F.prototype = o;
         return new F();
     };
+	
+	var appendAll = function(parent, children) {
+		for (var i = 0; i < children.length; i++) {
+			parent.appendChild(children[i]);
+		}
+	}
 
 	//array.contains()
 	var contains = function(arr, value, caseInsensitive) {
@@ -517,7 +523,8 @@
 						name: name,
 						line: line,
 						value: isIe ? value.replace(/\n/g, "\r") : value,
-						column: column
+						column: column,
+						language: this.language.name
 					};
 				}
 			};
@@ -561,9 +568,8 @@
 			return context;
 		};
 
-		var createAnalyzerContext = function(unhighlightedCode, language, partialContext, options) {
+		var createAnalyzerContext = function(parserContext, partialContext, options) {
 			var nodes = [];
-			var parserContext = tokenize(unhighlightedCode, language, partialContext);
 			var prepareText = function() {
 				var nbsp = String.fromCharCode(0xa0);
 				var tab = new Array(options.tabWidth + 1).join(nbsp);
@@ -575,12 +581,13 @@
 			return {
 				tokens: (partialContext.tokens || []).concat(parserContext.getAllTokens()),
 				index: partialContext.index ? partialContext.index + 1 : 0,
-				language: language,
+				language: null,
 				options: options,
 				continuation: parserContext.continuation,
 				addNode: function(node) { nodes.push(node); },
 				createTextNode: function(text) { return document.createTextNode(prepareText(text)); },
 				getNodes: function() { return nodes; },
+				resetNodes: function() { nodes = []; },
 				items: parserContext.items
 			};
 		};
@@ -595,31 +602,70 @@
 				language = languages[DEFAULT_LANGUAGE];
 			}
 
-			//invoke beforeHighlight event
 			fireEvent("beforeHighlight", this, { code: unhighlightedCode, language: language, previousContext: partialContext });
 			
-			var analyzerContext = createAnalyzerContext(unhighlightedCode, language, partialContext, this.options);
-			var analyzer = language.analyzer;
+			var analyzerContext = createAnalyzerContext(
+				tokenize(unhighlightedCode, language, partialContext),
+				partialContext, 
+				this.options
+			);
 			
-			fireEvent("beforeAnalyze", this, { analyzerContext: analyzerContext });
-			for (var i = partialContext.index ? partialContext.index + 1 : 0, tokenName, func, exit; i < analyzerContext.tokens.length; i++) {
-				analyzerContext.index = i;
-				tokenName = analyzerContext.tokens[i].name;
-				func = "handle_" + tokenName;
-
-				analyzer[func] ? analyzer[func](analyzerContext) : analyzer.handleToken(analyzerContext);
-			}
-			fireEvent("afterAnalyze", this, { analyzerContext: analyzerContext });
+			analyze(analyzerContext, partialContext.index ? partialContext.index + 1 : 0);
 			
 			fireEvent("afterHighlight", this, { analyzerContext: analyzerContext });
 
 			return analyzerContext;
+		};
+		
+		var createContainer = function(ctx) {
+			var container = document.createElement("span");
+			container.className = ctx.options.classPrefix + ctx.language.name;
+			return container;
+		}
+		
+		var analyze = function(analyzerContext, startIndex) {
+			fireEvent("beforeAnalyze", this, { analyzerContext: analyzerContext });
+			
+			if (analyzerContext.tokens.length > 0) {
+				analyzerContext.language = languages[analyzerContext.tokens[0].language] || languages[DEFAULT_LANGUAGE];;
+				var nodes = [], lastIndex = 0, container = createContainer(analyzerContext);
+				
+				for (var i = startIndex, tokenName, func, language, analyzer; i < analyzerContext.tokens.length; i++) {
+					language = languages[analyzerContext.tokens[i].language] || languages[DEFAULT_LANGUAGE];
+					if (language.name !== analyzerContext.language.name) {
+						appendAll(container, analyzerContext.getNodes());
+						analyzerContext.resetNodes();
+						
+						nodes.push(container);
+						analyzerContext.language = language;
+						container = createContainer(analyzerContext);
+					}
+					
+					analyzerContext.index = i;
+					tokenName = analyzerContext.tokens[i].name;
+					func = "handle_" + tokenName;
+
+					analyzer = analyzerContext.language.analyzer;
+					analyzer[func] ? analyzer[func](analyzerContext) : analyzer.handleToken(analyzerContext);
+				}
+				
+				//append the last nodes, and add the final nodes to the context
+				appendAll(container, analyzerContext.getNodes());
+				nodes.push(container);
+				analyzerContext.resetNodes();
+				for (var i = 0; i < nodes.length; i++) {
+					analyzerContext.addNode(nodes[i]);
+				}
+			}
+			
+			fireEvent("afterAnalyze", this, { analyzerContext: analyzerContext });
 		};
 
 		return {
 			//matches the language of the node to highlight
 			matchSunlightNode: function() {
 				var regex;
+				
 				return function(node) {
 					if (!regex) {
 						regex = new RegExp("(?:\\s|^)" + this.options.classPrefix + "highlight-(\\S+)(?:\\s|$)");
@@ -654,23 +700,21 @@
 				var languageId = match[1];
 				var currentNodeCount = 0;
 				fireEvent("beforeHighlightNode", this, { node: node });
-				for (var j = 0, span, nodes, k, partialContext; j < node.childNodes.length; j++) {
+				for (var j = 0, nodes, k, partialContext; j < node.childNodes.length; j++) {
 					if (node.childNodes[j].nodeType === 3) {
 						//text nodes
-						span = document.createElement("span");
-
-						span.className = this.options.classPrefix + "highlighted " + this.options.classPrefix + languageId;
 						partialContext = highlightText.call(this, node.childNodes[j].nodeValue, languageId, partialContext);
 						HIGHLIGHTED_NODE_COUNT++;
 						currentNodeCount = currentNodeCount || HIGHLIGHTED_NODE_COUNT;
 
 						nodes = partialContext.getNodes();
-						for (k = 0; k < nodes.length; k++) {
-							span.appendChild(nodes[k]);
-						}
 
-						node.replaceChild(span, node.childNodes[j]);
-					} else {
+						node.replaceChild(nodes[0], node.childNodes[j]);
+						for (k = 1; k < nodes.length; k++) {
+							node.insertBefore(nodes[k], nodes[k - 1].nextSibling);
+						}
+					} else if (node.childNodes[j].nodeType === 1) {
+						//element nodes
 						highlightRecursive.call(this, node.childNodes[j]);
 					}
 				}
@@ -877,6 +921,8 @@
 
 			languages[languageData.name] = languageData;
 		},
+		
+		isRegistered: function(languageId) { return langugages[languageId] !== undefined; },
 		
 		bind: function(event, callback) {
 			if (!events[event]) {
