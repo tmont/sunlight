@@ -70,7 +70,6 @@
 			<fileset dir="${temp.dir}" includes="sunlight.php.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.mysql.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.xml.js"/>
-			<fileset dir="${temp.dir}" includes="sunlight.html.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.css.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.bash.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.tsql.js"/>
@@ -104,7 +103,6 @@
 			<include name="sunlight.php.js"/>
 			<include name="sunlight.mysql.js"/>
 			<include name="sunlight.xml.js"/>
-			<include name="sunlight.html.js"/>
 			<include name="sunlight.css.js"/>
 			<include name="sunlight.bash.js"/>
 			<include name="sunlight.tsql.js"/>

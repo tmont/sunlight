@@ -1,0 +1,32 @@
+<!doctype html >
+<html>
+
+	<head>
+		<script type="text/javascript" src="../src/sunlight.js"></script>
+		<script type="text/javascript" src="../src/lang/sunlight.xml.js"></script>
+		<script type="text/javascript" src="../src/lang/sunlight.scala.js"></script>
+		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.default.css" />
+	</head>
+
+	<body>
+<pre id="code" class="sunlight-highlight-scala">val id = 5
+
+val b = &lt;book&gt;
+	&lt;title id="{ id }"&gt;The Scala Language Specification&lt;/title&gt;
+	&lt;version&gt;{scalaBook.version}&lt;/version&gt;
+	&lt;authors&gt;{scalaBook.authors.mkList("", ", ", "")}&lt;/authors&gt;
+&lt;/book&gt;
+
+
+package scala
+final case class Symbol private (name: String) {
+	override def toString: String = "'" + name
+}
+</pre>
+	</body>
+
+	<script type="text/javascript"  src="test.js"></script>
+	<script type="text/javascript">//<![CDATA[
+		//assertExists("comment", "--comment 1", "-- comment");
+	//]]></script>
+</html>

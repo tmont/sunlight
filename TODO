@@ -36,3 +36,4 @@ WEB
 - document changes to analyzerContext (resetNodes)
 - document changes to generated DOM tree
 - document new language property of the token object
+- document options property on parser context

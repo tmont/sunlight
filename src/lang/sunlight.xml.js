@@ -5,13 +5,13 @@
 	}
 
 	sunlight.registerLanguage("xml", {
-		//parse everything
-		doNotParse: /(?!x)x/,
+		caseInsenstive: true,
 		
 		scopes: {
 			string: [ ["\"", "\""], ["'", "'"] ],
 			comment: [ ["<!--", "-->"] ],
-			cdata: [ ["<![CDATA[", "]]>"] ]
+			cdata: [ ["<![CDATA[", "]]>"] ],
+			doctype: [ ["<!DOCTYPE", ">"] ]
 		},
 		
 		customTokens: {
@@ -20,81 +20,143 @@
 		},
 		
 		customParseRules: [
-			//tag content can't be parsed as anything except an ident, so it must be done manually
+			//tag names
 			function(context) {
 				var current = context.reader.current();
-				if (current === ">" || current === "<") {
-					//starting or ending a tag
+				if (!/[A-Za-z_]/.test(current)) {
 					return null;
 				}
 				
-				var lastToken = context.token(context.count() - 1);
-				if (lastToken === undefined) {
+				var prevToken = context.token(context.count() - 1);
+				if (prevToken.name !== "operator" || !sunlight.util.contains(["<", "</"], prevToken.value)) {
 					return null;
 				}
 				
-				if (lastToken.name !== "operator" || (lastToken.value !== ">" && lastToken.value !== "/>")) {
-					return null;
-				}
-				
-				var getEntity = function() {
-					//find semicolon, or whitespace, or < or >
-					var count = 2, peek = context.reader.peek(count);
-					var line = context.reader.getLine();
-					var column = context.reader.getColumn();
-					while (peek.length === count) {
-						if (peek.charAt(peek.length - 1) === ";") {
-							return context.createToken("entity", context.reader.read(count), line, column);
-						}
-						
-						if (!/[A-Za-z0-9]$/.test(peek)) {
-							break;
-						}
-						
-						peek = context.reader.peek(++count);
-					}
-					
-					return null;
-				};
-				
-				//read until <
-				var value = context.reader.current();
-				var line = context.reader.getLine();
-				var column = context.reader.getColumn();
-				var peek, entity, tokens = [];
-				while ((peek = context.reader.peek()) !== context.reader.EOF) {
-					if (peek === "<") {
+				//read the tag name
+				var peek, tagName = current, line = context.reader.getLine(), column = context.reader.getColumn();
+				while (peek = context.reader.peek()) {
+					if (!/[\w-]/.test(peek)) {
 						break;
 					}
 					
-					if (peek === "&" && (entity = getEntity())) {
-						//might be an entity
-						tokens.push(context.createToken("content", value, line, column));
-						tokens.push(entity);
-						line = context.reader.getLine();
-						column = context.reader.getColumn();
-						value = "";
-					} else {
-						value += context.reader.read();
+					tagName += context.reader.read();
+				}
+				
+				return context.createToken("tagName", tagName, line, column);
+			},
+			
+			//attributes
+			function(context) {
+				var current = context.reader.current();
+				if (!/[A-Za-z_]/.test(current)) {
+					return null;
+				}
+				
+				//must be between < and >
+				
+				//look backward for a tag name
+				var token, index = context.count();
+				while (token = context.token(--index)) {
+					if (token.name === "operator") {
+						if (token.value === ">" || token.value === "/>" || token.value === "</") {
+							return null;
+						}
+					}
+					
+					if (token.name === "tagName" || token.name === "xmlOpenTag") {
+						break;
 					}
 				}
 				
-				if (value !== "") {
-					tokens.push(context.createToken("content", value, line, column));
+				if (!token) {
+					return null;
 				}
 				
-				return tokens;
+				//look forward for >
+				var peek = context.reader.peek(), count = 1, attribute;
+				while (peek.length === count) {
+					if (/<$/.test(peek)) {
+						return null;
+					}
+					
+					if (/>$/.test(peek)) {
+						var line = context.reader.getLine(), column = context.reader.getColumn();
+						attribute = attribute || current + peek.substring(0, peek.length - 1);
+						context.reader.read(attribute.length - 1);
+						return context.createToken("attribute", attribute, line, column);
+					}
+					
+					if (!attribute && /[=\s:]$/.test(peek)) {
+						attribute = current + peek.substring(0, peek.length - 1);
+					}
+					
+					peek = context.reader.peek(++count);
+				}
+				
+				return null;
+			},
+			
+			//entities
+			function(context) {
+				var current = context.reader.current();
+				if (current !== "&") {
+					return null;
+				}
+				
+				//find semicolon, or whitespace, or < or >
+				var count = 1, peek = context.reader.peek(count);
+				var line = context.reader.getLine(), column = context.reader.getColumn();
+				while (peek.length === count) {
+					if (peek.charAt(peek.length - 1) === ";") {
+						return context.createToken("entity", current + context.reader.read(count), line, column);
+					}
+					
+					if (!/[A-Za-z0-9]$/.test(peek)) {
+						break;
+					}
+					
+					peek = context.reader.peek(++count);
+				}
+				
+				return null;
 			}
 		],
 		
-		identFirstLetter: /[A-Za-z_]/,
-		identAfterFirstLetter: /[\w-]/,
-
-		//these are considered attributes
-		namedIdentRules: {
-			precedes: [
-				[sunlight.util.whitespace, { token: "operator", values: ["=", ":"] }]
-			]
+		embeddedLanguages: {
+			scala: {
+				switchTo: function(context) {
+					if (!context.options.enableScalaXmlInterpolation) {
+						return false;
+					}
+					
+					if (context.reader.current() === "{") {
+						context.items.scalaBracketNestingLevel = 1;
+						return true;
+					}
+					
+					return false;
+				},
+				
+				switchBack: function(context) {
+					var current = context.reader.current();
+					
+					if (current === "{") {
+						context.items.scalaBracketNestingLevel++;
+					} else if (current === "}") {
+						context.items.scalaBracketNestingLevel--;
+						
+						if (context.items.scalaBracketNestingLevel === 0) {
+							return true;
+						}
+					}
+					
+					return false;
+				}
+			}
+		},
+		
+		contextItems: {
+			scalaBracketNestingLevel: 0
 		},
 
 		operators: [

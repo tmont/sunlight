@@ -30,6 +30,16 @@
 			parent.appendChild(children[i]);
 		}
 	}
+	
+	var Stack = function() {};
+	Stack.prototype = new Array();
+	Stack.prototype.peek = function() {
+		if (this.length === 0) {
+			return null;
+		}
+		
+		return this[this.length - 1];
+	};
 
 	//array.contains()
 	var contains = function(arr, value, caseInsensitive) {
@@ -375,6 +385,27 @@
 			};
 		};
 		
+		var toggleEmbeddedLanguageIfNecessary = function(context) {
+			var current = context.embeddedLanguageStack.peek();
+			
+			//if we are already embedded, should we switch back?
+			if (current && current.switchBack(context)) {
+				context.language = languages[current.parentLanguage];
+				context.embeddedLanguageStack.pop();
+			}
+			
+			//should we switch to an embedded language?
+			for (var i = 0, embeddedLanguage; i < context.language.embeddedLanguages.length; i++) {
+				embeddedLanguage = context.language.embeddedLanguages[i];
+				if (embeddedLanguage.switchTo(context)) {
+					context.embeddedLanguageStack.push(embeddedLanguage);
+					context.language = languages[embeddedLanguage.language];
+					context.items = merge(context.items, context.language.contextItems);
+					break;
+				}
+			}
+		};
+		
 		var parseNextToken = function() {
 			var isIdentMatch = function(context) {
 				return context.language.identFirstLetter && context.language.identFirstLetter.test(context.reader.current());
@@ -451,8 +482,10 @@
 					var specificScopes = context.language.scopes[tokenName];
 					for (var j = 0, opener, line, column, continuation; j < specificScopes.length; j++) {
 						opener = specificScopes[j][0];
+						
+						var value = current + context.reader.peek(opener.length - 1);
 
-						if (opener !== current + context.reader.peek(opener.length - 1)) {
+						if (opener !== value && (!context.language.caseInsensitive || value.toUpperCase() !== opener.toUpperCase())) {
 							continue;
 						}
 
@@ -491,6 +524,8 @@
 					return parseDefault(context);
 				}
 				
+				toggleEmbeddedLanguageIfNecessary(context);
+				
 				return parseCustomRules(context)
 					|| parseCustomTokens(context)
 					|| parseKeyword(context)
@@ -503,7 +538,7 @@
 			}
 		}();
 
-		var tokenize = function(unhighlightedCode, language, partialContext) {
+		var tokenize = function(unhighlightedCode, language, partialContext, options) {
 			fireEvent("beforeTokenize", this, { code: unhighlightedCode, language: language });
 			var tokens = [];
 			var context = {
@@ -513,6 +548,9 @@
 				token: function(index) { return tokens[index]; },
 				getAllTokens: function() { return tokens.slice(0); },
 				count: function() { return tokens.length; },
+				options: options,
+				embeddedLanguageStack: new Stack(),
+				
 				defaultData: {
 					text: "",
 					line: 1,
@@ -605,7 +643,7 @@
 			fireEvent("beforeHighlight", this, { code: unhighlightedCode, language: language, previousContext: partialContext });
 			
 			var analyzerContext = createAnalyzerContext(
-				tokenize(unhighlightedCode, language, partialContext),
+				tokenize(unhighlightedCode, language, partialContext, this.options),
 				partialContext, 
 				this.options
 			);
@@ -847,7 +885,8 @@
 		numberParser: defaultNumberParser,
 		caseInsensitive: false,
 		doNotParse: /\s/,
-		analyzerContextItems: {}
+		contextItems: {},
+		embeddedLanguages: {}
 	};
 	
 	//event handling: an interface to extend sunlight in an unobtrusive way
@@ -918,11 +957,24 @@
 					languageData.caseInsensitive
 				);
 			}
+			
+			//convert the embedded language object to an easier-to-use array
+			var embeddedLanguages = [];
+			for (var languageName in languageData.embeddedLanguages) {
+				embeddedLanguages.push({
+					parentLanguage: languageData.name,
+					language: languageName,
+					switchTo: languageData.embeddedLanguages[languageName].switchTo,
+					switchBack: languageData.embeddedLanguages[languageName].switchBack
+				});
+			}
+			
+			languageData.embeddedLanguages = embeddedLanguages;
 
 			languages[languageData.name] = languageData;
 		},
 		
-		isRegistered: function(languageId) { return langugages[languageId] !== undefined; },
+		isRegistered: function(languageId) { return languages[languageId] !== undefined; },
 		
 		bind: function(event, callback) {
 			if (!events[event]) {
