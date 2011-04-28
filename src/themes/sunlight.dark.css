@@ -135,6 +135,7 @@ span.sunlight-highlighted * {
 	font-weight: bold !important;
 }
 .sunlight-named-ident,
+.sunlight-xml .sunlight-attribute,
 .sunlight-constant,
 .sunlight-javascript .sunlight-globalVariable,
 .sunlight-globalObject,
@@ -150,9 +151,7 @@ span.sunlight-highlighted * {
 }
 .sunlight-keyword,
 .sunlight-languageConstruct,
-.sunlight-html .sunlight-ident,
-.sunlight-html .sunlight-operator,
-.sunlight-xml .sunlight-ident,
+.sunlight-xml .sunlight-tagName,
 .sunlight-xml .sunlight-operator,
 .sunlight-bash .sunlight-command,
 .sunlight-ruby .sunlight-specialOperator,
@@ -211,6 +210,7 @@ span.sunlight-highlighted * {
 }
 .sunlight-xmlDocCommentMeta,
 .sunlight-java .sunlight-annotation,
+.sunlight-scala .sunlight-annotation,
 .sunlight-docComment {
 	color: #666363 !important;
 }
@@ -225,19 +225,15 @@ span.sunlight-highlighted * {
 
 
 /* html/xml */
-.sunlight-html .sunlight-ident,
-.sunlight-xml .sunlight-ident,
+.sunlight-xml .sunlight-tagName,
 .sunlight-xml .sunlight-operator,
-.sunlight-html .sunlight-operator,
-.sunlight-html .sunlight-named-ident,
-.sunlight-xml .sunlight-named-ident {
+.sunlight-xml .sunlight-attribute {
 	font-weight: normal !important;
 }
 .sunlight-doctype {
 	color: #DEB9B2 !important;
 	font-style: italic !important;
 }
-.sunlight-html .sunlight-entity,
 .sunlight-xml .sunlight-entity {
 	background-color: #E6E585 !important;
 	color: #000000 !important;
