@@ -5,7 +5,6 @@
 	}
 
 	sunlight.registerLanguage("xml", {
-		//doNotParse: /(?!x)x/,
 		caseInsenstive: true,
 		
 		scopes: {

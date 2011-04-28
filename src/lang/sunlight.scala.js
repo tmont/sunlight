@@ -9,8 +9,6 @@
 	}
 
 	sunlight.registerLanguage("scala", {
-		//doNotParse: /(?!x)x/,
-		
 		keywords: [
 			"abstract","case","catch","class","def","do","else","extends","false","final","finally","forSome","for",
 			"if","implicit","import","lazy","match","new","null","object","override","package","private","protected",
