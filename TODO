@@ -39,6 +39,7 @@ WEB
 - add erlang to demo
 - add diff to demo
 - update nested demo
+- remove html demo
 - document continuations for incomplete parses on custom rules
 - document changes to analyzerContext (resetNodes)
 - document changes to generated DOM tree
