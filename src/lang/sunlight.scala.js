@@ -63,11 +63,11 @@
 		},
 		
 		scopes: {
-			string: [ ["\"", "\"", ["\\\\", "\\\""]], ["\"\"\"", "\"\"\""] ],
+			string: [ ["\"\"\"", "\"\"\""], ["\"", "\"", ["\\\\", "\\\""]] ],
 			"char": [ ["'", "'", ["\\\\", "\\'"]] ],
 			quotedIdent: [ ["`", "`", ["\\`", "\\\\"]] ],
 			comment: [ ["//", "\n", null, true], ["/*", "*/"] ],
-			annotation: [ ["@", { length: 1, regex: /[\s\(]/ }, null, true] ]
+			annotation: [ ["@", { length: 1, regex: /\W/ }, null, true] ]
 		},
 		
 		identFirstLetter: /[A-Za-z]/,
@@ -84,55 +84,169 @@
 					return false;
 				}
 				
-				var matches = sunlight.util.createProceduralRule(context.count() - 1, -1, [{ token: "keyword", values: ["case"] }, { token: "default" }, { token: "keyword", values: ["class"] }])(context.getAllTokens());
-				if (!matches) {
+				var prevToken = context.token(context.count() - 1);
+				if (context.defaultData.text === "" || !prevToken || prevToken.name !== "keyword" || !sunlight.util.contains(["class", "type", "trait", "object"], prevToken.value)) {
 					return false;
 				}
 				
-				//this is a case class definition, read the class name
-				var peek, className = context.reader.current(), line = context.reader.getLine(), column = context.reader.getColumn();
+				//read the ident
+				var peek, ident = context.reader.current(), line = context.reader.getLine(), column = context.reader.getColumn();
 				while (peek = context.reader.peek()) {
 					if (!/\w/.test(peek)) {
 						break;
 					}
 					
-					className += context.reader.read();
+					ident += context.reader.read();
 				}
 				
-				context.items.caseClasses.push(className);
+				context.items.userDefinedTypes.push(ident);
 				
-				return context.createToken("ident", className, line, column);
+				return context.createToken("ident", ident, line, column);
 			}
 		],
 
 		namedIdentRules: {
 			custom: [	
-				//user-defined case classes
-				function(context) {
-					return sunlight.util.contains(context.items.caseClasses, context.tokens[context.index].value);
-				}
+				//some built in types
+				function() {
+					var builtInTypes = [
+						"Nil", "Nothing", "Unit", "Pair", "Map", "String", "List", "Int",
+						
+						"Seq", "Option", "Double", "AnyRef", "AnyVal", "Any", "ScalaObject",
+						"Float", "Long", "Short", "Byte", "Char", "Boolean"
+					];
+					
+					return function(context) {
+						//next token is not "."
+						var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+						if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
+							return false;
+						}
+					
+						return sunlight.util.contains(builtInTypes, context.tokens[context.index].value);
+					};
+				}(),
 				
-			],
-			
-			follows: [
-				[{ token: "keyword", values: ["class", "object", "extends", "new", "type", "trait"] }, { token: "default" }],
-				[{ token: "operator", values: [":"] }, sunlight.util.whitespace],
-				[{ token: "operator", values: ["#"] }]
-			],
-			
-			precedes: [
-				//[{ token: "punctuation", values: ["["] }, sunlight.util.whitespace]
+				//user-defined types
+				function(context) {
+					//next token is not "."
+					// var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					// if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
+						// return false;
+					// }
+					
+					return sunlight.util.contains(context.items.userDefinedTypes, context.tokens[context.index].value);
+				},
+				
+				//fully qualified type names after "new"
+				function(context) {
+					//next token is not "."
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
+						return false;
+					}
+					
+					//go backward and make sure that there are only idents and dots after the new keyword
+					var token, index = context.index, previous = context.tokens[index];
+					while ((token = context.tokens[--index]) !== undefined) {
+						if (token.name === "keyword" && token.value === "new") {
+							return true;
+						}
+						
+						if (token.name === "default") {
+							continue;
+						}
+						
+						if (token.name === "ident") {
+							if (previous && previous.name === "ident") {
+								return false;
+							}
+							
+							previous = token;
+							continue;
+						}
+						
+						if (token.name === "operator" && token.value === ".") {
+							if (previous && previous.name !== "ident") {
+								return false;
+							}
+							
+							previous = token;
+							continue;
+						}
+						
+						break;
+					}
+					
+					return false;
+				},
+				
+				function() {
+					var follows = [
+						[{ token: "keyword", values: ["class", "object", "extends", "new", "type", "trait"] }, { token: "default" }],
+						[{ token: "operator", values: [":"] }, sunlight.util.whitespace],
+						[{ token: "operator", values: ["#"] }],
+						[{ token: "keyword", values: ["type"] }, { token: "default" }, { token: "ident" }, sunlight.util.whitespace, { token: "operator", values: ["="] }, sunlight.util.whitespace]
+					];
+					
+					var between = [
+						//generics
+						{ opener: { token: "punctuation", values: ["["] }, closer: { token: "punctuation", values: ["]"] } }
+					];
+					
+					return function(context) {
+						if (/^[A-Z]([A-Z0-9]\w*)?$/.test(context.tokens[context.index].value)) {
+							//generic type names are assumed to start with a capital letter optionally followed by a number or another capital letter
+							//e.g. A, T1, TFrom, etc.
+							return false;
+						}
+						
+						var i;
+						for (i = 0; i < follows.length; i++) {
+							if (sunlight.util.createProceduralRule(context.index - 1, -1, follows[i], false)(context.tokens)) {
+								return true;
+							}
+						}
+						
+						for (i = 0; i < between.length; i++) {
+							if (sunlight.util.createBetweenRule(context.index, between[i].opener, between[i].closer, false)(context.tokens)) {
+								return true;
+							}
+						}
+						
+						return false;
+					};
+				}()
+				
 			]
 		},
 		
 		contextItems: {
 			literalXmlOpenTag: null,
 			literalXmlNestingLevel: 0,
-			caseClasses: []
+			userDefinedTypes: []
 		},
 
 		operators: [
-			"::", "@", "#", ":<", "%>", ":>", "->", "<=", "=", ":", "_"
+			"++", "+=", "+",
+			"--", "-=", "->", "-",
+			"*=", "*",
+			"^=", "^^", "^",
+			"~>", "~",
+			"!=", "!",
+			"&&", "&=", "&",
+			"||", "|=", "|",
+			
+			">>>", ">>=", ">>", ">",
+			"<<=", "<<", "<~", "<=", "<%", "<",
+			
+			"%>", "%=", "%",
+			
+			"::", ":<", ":>", ":",
+			
+			"==", "=",
+		
+			"@", "#", "_", "."
 		]
 
 	});

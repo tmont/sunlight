@@ -243,6 +243,43 @@ class Brainfuck[T](func:Func[T]) {
 
 	<script type="text/javascript"  src="test.js"></script>
 	<script type="text/javascript">//<![CDATA[
-		//assertExists("comment", "--comment 1", "-- comment");
+		assertExists("keyword", "object", "object keyword");
+		assertExists("keyword", "case", "case keyword");
+		assertExists("keyword", "class", "class keyword");
+		assertExists("keyword", "private", "private keyword");
+		assertExists("keyword", "val", "val keyword");
+		assertExists("keyword", "def", "def keyword");
+		assertExists("keyword", "if", "if keyword");
+		assertExists("keyword", "match", "match keyword");
+		assertExists("keyword", "new", "new keyword");
+		assertExists("keyword", "type", "type keyword");
+		assertExists("keyword", "extends", "extends keyword");
+		
+		assertExists("named-ident", "Pair", "built in type");
+		assertExists("named-ident", "Answer", "type name");
+		assertExists("named-ident", "Term", "trait name");
+		assertExists("named-ident", "AddressBook", "class name");
+		assertExists("named-ident", "addressbook", "object name");
+		assertExists("named-ident", "List", "built in type");
+		
+		assertExists("tagName", "tr", "embedded xml");
+		assertExists("tagName", "td", "embedded xml");
+		assertExists("tagName", "table", "embedded xml");
+		assertExists("operator", "</", "embedded xml");
+		assertExists("attribute", "cellpadding", "embedded xml");
+		assertExists("string", "\"text/css\"", "embedded xml");
+		
+		assertExists("ident", "T", "generic type name");
+		assertExists("ident", "A", "generic type name");
+		
+		assertExists("annotation", "@tailrec", "@tailrec annotation");
+		assertExists("annotation", "@switch", "@switch annotation");
+		
+		assertExists("comment", "/** An AddressBook takes a variable number of arguments\n   *  which are accessed as a Sequence\n   */", "multi line comment");
+		
+		
+		
+		assertExists("string", "\"My Address Book\"", "string in embedded xml");
+		assertExists("string", "\"\"\"table { border-right: 1px solid #cccccc; }\n        th { background-color: #cccccc; }\n        td { border-left: 1px solid #acacac; }\n        td { border-bottom: 1px solid #acacac;\"\"\"", "raw string in embedded xml");
 	//]]></script>
 </html>

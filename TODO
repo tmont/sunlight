@@ -29,7 +29,6 @@ LANGUAGES
 - PostgreSQL
 - Oracle
 - powershell
-- scala: http://www.scala-lang.org/node/198
 - flash
 - lua
 - objective-c
@@ -38,6 +37,7 @@ LANGUAGES
 WEB
 - add erlang to demo
 - add diff to demo
+- add scala to demo
 - update nested demo
 - remove html demo
 - document continuations for incomplete parses on custom rules

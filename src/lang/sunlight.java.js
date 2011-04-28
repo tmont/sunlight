@@ -227,7 +227,6 @@
 					}
 					
 					//go backward and make sure that there are only idents and dots before the new keyword
-					//"previous" is used to make sure that method declarations like "public new Object Value()..." are treated correctly
 					var token, index = context.index, previous = context.tokens[index];
 					while ((token = context.tokens[--index]) !== undefined) {
 						if (token.name === "keyword" && token.value === "new") {
@@ -309,7 +308,6 @@
 						[{ token: "ident" }, sunlight.util.whitespace, { token: "keyword", values: ["extends", "implements"] }, sunlight.util.whitespace],
 				
 						//method/property return values
-						//new: public new Foo Method() { } and new Foo();
 						//class/interface names
 						[{ token: "keyword", values: ["class", "interface", "enum", "public", "private", "protected", "static", "final"] }, sunlight.util.whitespace],
 						
