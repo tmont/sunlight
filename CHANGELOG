@@ -3,6 +3,8 @@
 - Enhancements
 	- new languages: erlang
 	- combined xml and html
+	- implemented embedded languages
+	- added sunlight.util.last()
 
 1.6 2011-04-23
 --------------

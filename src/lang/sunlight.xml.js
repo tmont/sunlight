@@ -133,7 +133,6 @@
 					}
 					
 					if (context.reader.current() === "{") {
-						//context.items.scalaBracketNestingLevel = 1;
 						return true;
 					}
 					

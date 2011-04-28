@@ -38,3 +38,4 @@ WEB
 - document new language property of the token object
 - document options property on parser context
 - document embeddedLanguages option
+- document last utility

@@ -31,14 +31,9 @@
 		}
 	}
 	
-	var Stack = function() {};
-	Stack.prototype = new Array();
-	Stack.prototype.peek = function() {
-		if (this.length === 0) {
-			return null;
-		}
-		
-		return this[this.length - 1];
+	//gets the last character in a string or the last element in an array
+	var last = function(thing) {
+		return thing.charAt ? thing.charAt(thing.length - 1) : thing[thing.length - 1];
 	};
 
 	//array.contains()
@@ -57,16 +52,12 @@
 	};
 
 	//non-recursively merges one object into the other
-	var merge = function(defaultObject, objectToMerge, doNotReplace) {
+	var merge = function(defaultObject, objectToMerge) {
 		if (!objectToMerge) {
 			return defaultObject;
 		}
 
 		for (var key in objectToMerge) {
-			if (defaultObject[key] && doNotReplace) {
-				continue;
-			}
-			
 			defaultObject[key] = objectToMerge[key];
 		}
 
@@ -224,6 +215,7 @@
 			count = count || 1;
 
 			var value = "", num = 1;
+			//TODO use substring()
 			while (num <= count && text.charAt(index + num) !== "") {
 				value += text.charAt(index + num++);
 			}
@@ -265,12 +257,13 @@
 						line += newlineCount;
 						column = 1;
 					}
-
-					if (value.charAt(value.length - 1) === "\n") {
+					
+					var lastChar = last(value);
+					if (lastChar === "\n") {
 						nextReadBeginsLine = true;
 					}
 
-					currentChar = value.charAt(value.length - 1);
+					currentChar = lastChar;
 				} else {
 					index = length;
 					currentChar = EOF;
@@ -400,17 +393,8 @@
 				if (embeddedLanguage.switchTo(context)) {
 					embeddedLanguage.oldItems = clone(context.items);
 					context.embeddedLanguageStack.push(embeddedLanguage);
-					
-					//console.group();
-					//console.dir(embeddedLanguage);
-					//console.log("pushed embedded language: %s", embeddedLanguage.language);
-					//console.log(context.reader.toString());
-					
 					context.language = languages[embeddedLanguage.language];
-					//console.dir(clone(context.items));
 					context.items = merge(context.items, clone(context.language.contextItems));
-					//console.dir(clone(context.items));
-					//console.groupEnd();
 					break;
 				}
 			}
@@ -418,23 +402,15 @@
 		
 		//called after processing the current
 		var switchBackFromEmbeddedLanguageIfNecessary = function(context) {
-			var current = context.embeddedLanguageStack.peek();
+			var current = last(context.embeddedLanguageStack);
 			
 			if (current && current.switchBack(context)) {
 				context.language = languages[current.parentLanguage];
 				var lang = context.embeddedLanguageStack.pop();
-				//console.group();
-				//console.dir(lang);
-				
-				//console.log("popped embedded language: %s", lang.language);
-				//console.log("reverted to: %s", context.language.name);
-				//console.log(context.reader.toString());
 				
 				//restore old items
 				context.items = clone(lang.oldItems);
 				lang.oldItems = {};
-				//console.dir(clone(context.items));
-				//console.groupEnd();
 			}
 		};
 		
@@ -579,7 +555,7 @@
 				getAllTokens: function() { return tokens.slice(0); },
 				count: function() { return tokens.length; },
 				options: options,
-				embeddedLanguageStack: new Stack(),
+				embeddedLanguageStack: [],
 				
 				defaultData: {
 					text: "",
@@ -1017,6 +993,7 @@
 		},
 
 		util: {
+			last: last,
 			eol: isIe ? "\r" : "\n",
 			escapeSequences: ["\\n", "\\t", "\\r", "\\\\", "\\v", "\\f"],
 			contains: contains,
