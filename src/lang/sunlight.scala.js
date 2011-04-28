@@ -9,6 +9,8 @@
 	}
 
 	sunlight.registerLanguage("scala", {
+		//doNotParse: /(?!x)x/,
+		
 		keywords: [
 			"abstract","case","catch","class","def","do","else","extends","false","final","finally","forSome","for",
 			"if","implicit","import","lazy","match","new","null","object","override","package","private","protected",
@@ -22,21 +24,13 @@
 						return false;
 					}
 					
-					//preceded by whitespace
 					if (context.defaultData.text !== "") {
+						//preceded by whitespace
 						return true;
 					}
 					
 					var prevToken = context.token(context.count() - 1);
-					if (!prevToken) {
-						return true;
-					}
-					
-					if (prevToken && prevToken.name === "punctuation" && sunlight.util.contains(["(", "{"], prevToken.value)) {
-						return true;
-					}
-					
-					return false;
+					return prevToken && prevToken.name === "punctuation" && sunlight.util.contains(["(", "{"], prevToken.value);
 				},
 				
 				switchBack: function(context) {
@@ -45,21 +39,20 @@
 						return false;
 					}
 					
-					if (prevToken.name === "ident") {
+					if (prevToken.name === "tagName") {
 						if (!context.items.literalXmlOpenTag) {
 							context.items.literalXmlOpenTag = prevToken.value;
 						}
-					}
-					
-					switch (prevToken.value) {
-						case "<":
-							context.items.literalXmlNestingLevel++;
-							break;
-						case "</":
-						case "/>":
-							context.items.literalXmlNestingLevel--;
-							break;
-							
+					} else if (prevToken.name === "operator") {
+						switch (prevToken.value) {
+							case "<":
+								context.items.literalXmlNestingLevel++;
+								break;
+							case "</":
+							case "/>":
+								context.items.literalXmlNestingLevel--;
+								break;
+						}
 					}
 					
 					if (context.items.literalXmlOpenTag && context.items.literalXmlNestingLevel === 0 && (prevToken.value === ">" || prevToken.value === "/>")) {
@@ -75,22 +68,18 @@
 			string: [ ["\"", "\"", ["\\\\", "\\\""]], ["\"\"\"", "\"\"\""] ],
 			"char": [ ["'", "'", ["\\\\", "\\'"]] ],
 			quotedIdent: [ ["`", "`", ["\\`", "\\\\"]] ],
-			comment: [ ["//", "\n", null, true], ["/*", "*/"] ]
+			comment: [ ["//", "\n", null, true], ["/*", "*/"] ],
+			annotation: [ ["@", { length: 1, regex: /[\s\(]/ }, null, true] ]
 		},
-		
-		customTokens: {
-		},
-		
-		customParseRules: [
-		],
 		
 		identFirstLetter: /[A-Za-z]/,
 		identAfterFirstLetter: /[\w-]/,
 
 		namedIdentRules: {
 			follows: [
-				[{ token: "keyword", values: ["class"] }, { token: "default" }],
-				[{ token: "ident" }, sunlight.util.whitespace, { token: "operator", values: [":"] }, sunlight.util.whitespace],
+				[{ token: "keyword", values: ["class", "object", "extends", "new"] }, { token: "default" }],
+				[{ token: "operator", values: [":"] }, sunlight.util.whitespace],
+				[{ token: "operator", values: ["#"] }]
 			]
 		},
 		
@@ -100,11 +89,20 @@
 		},
 
 		operators: [
-			"@", "#", ":<", "%>", ":>", "->", "<=", "=", ":", "_"
+			"::", "@", "#", ":<", "%>", ":>", "->", "<=", "=", ":", "_"
 		]
 
 	});
 	
-	sunlight.globalOptions.enableScalaXmlInterpolation = true;
+	sunlight.globalOptions.enableScalaXmlInterpolation = false;
+	
+	sunlight.bind("beforeHighlight", function(context) {
+		if (context.language.name === "scala") {
+			this.options.enableScalaXmlInterpolation = true;
+		}
+	});
+	sunlight.bind("afterHighlight", function(context) {
+		this.options.enableScalaXmlInterpolation = false;
+	});
 	
 }(this["Sunlight"]));

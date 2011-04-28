@@ -197,6 +197,7 @@ span.sunlight-highlighted * {
 }
 .sunlight-xmlDocCommentMeta,
 .sunlight-java .sunlight-annotation,
+.sunlight-scala .sunlight-annotation,
 .sunlight-docComment {
 	color: #808080 !important;
 }
@@ -209,8 +210,7 @@ span.sunlight-highlighted * {
 
 
 
-/* html/xml */
-.sunlight-html .sunlight-string,
+/* xml */
 .sunlight-xml .sunlight-string {
 	color: #990099 !important;
 }
@@ -222,10 +222,7 @@ span.sunlight-highlighted * {
 	color: #000000 !important;
 	border: 1px solid #000000 !important;
 }
-
-
-/* html */
-.sunlight-html .sunlight-doctype {
+.sunlight-xml .sunlight-doctype {
 	color: #2B91AF !important;
 }
 

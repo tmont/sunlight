@@ -57,16 +57,24 @@
 	};
 
 	//non-recursively merges one object into the other
-	var merge = function(defaultObject, objectToMerge) {
+	var merge = function(defaultObject, objectToMerge, doNotReplace) {
 		if (!objectToMerge) {
 			return defaultObject;
 		}
 
 		for (var key in objectToMerge) {
+			if (defaultObject[key] && doNotReplace) {
+				continue;
+			}
+			
 			defaultObject[key] = objectToMerge[key];
 		}
 
 		return defaultObject;
+	};
+	
+	var clone = function(object) {
+		return merge({}, object);
 	};
 
 	//http://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript/3561711#3561711
@@ -385,24 +393,48 @@
 			};
 		};
 		
-		var toggleEmbeddedLanguageIfNecessary = function(context) {
-			var current = context.embeddedLanguageStack.peek();
-			
-			//if we are already embedded, should we switch back?
-			if (current && current.switchBack(context)) {
-				context.language = languages[current.parentLanguage];
-				context.embeddedLanguageStack.pop();
-			}
-			
-			//should we switch to an embedded language?
+		//called before processing the current
+		var switchToEmbeddedLanguageIfNecessary = function(context) {
 			for (var i = 0, embeddedLanguage; i < context.language.embeddedLanguages.length; i++) {
-				embeddedLanguage = context.language.embeddedLanguages[i];
+				embeddedLanguage = clone(context.language.embeddedLanguages[i]);
 				if (embeddedLanguage.switchTo(context)) {
+					embeddedLanguage.oldItems = clone(context.items);
 					context.embeddedLanguageStack.push(embeddedLanguage);
+					
+					//console.group();
+					//console.dir(embeddedLanguage);
+					//console.log("pushed embedded language: %s", embeddedLanguage.language);
+					//console.log(context.reader.toString());
+					
 					context.language = languages[embeddedLanguage.language];
-					context.items = merge(context.items, context.language.contextItems);
+					//console.dir(clone(context.items));
+					context.items = merge(context.items, clone(context.language.contextItems));
+					//console.dir(clone(context.items));
+					//console.groupEnd();
 					break;
 				}
+			}
+		};
+		
+		//called after processing the current
+		var switchBackFromEmbeddedLanguageIfNecessary = function(context) {
+			var current = context.embeddedLanguageStack.peek();
+			
+			if (current && current.switchBack(context)) {
+				context.language = languages[current.parentLanguage];
+				var lang = context.embeddedLanguageStack.pop();
+				//console.group();
+				//console.dir(lang);
+				
+				//console.log("popped embedded language: %s", lang.language);
+				//console.log("reverted to: %s", context.language.name);
+				//console.log(context.reader.toString());
+				
+				//restore old items
+				context.items = clone(lang.oldItems);
+				lang.oldItems = {};
+				//console.dir(clone(context.items));
+				//console.groupEnd();
 			}
 		};
 		
@@ -524,8 +556,6 @@
 					return parseDefault(context);
 				}
 				
-				toggleEmbeddedLanguageIfNecessary(context);
-				
 				return parseCustomRules(context)
 					|| parseCustomTokens(context)
 					|| parseKeyword(context)
@@ -544,7 +574,7 @@
 			var context = {
 				reader: createCodeReader(unhighlightedCode),
 				language: language,
-				items: language.contextItems,
+				items: clone(language.contextItems),
 				token: function(index) { return tokens[index]; },
 				getAllTokens: function() { return tokens.slice(0); },
 				count: function() { return tokens.length; },
@@ -576,6 +606,7 @@
 			}
 
 			while (!context.reader.isEof()) {
+				switchToEmbeddedLanguageIfNecessary(context);
 				var token = parseNextToken(context);
 
 				//flush default data if needed (in pretty much all languages this is just whitespace)
@@ -594,6 +625,7 @@
 					}
 				}
 
+				switchBackFromEmbeddedLanguageIfNecessary(context);
 				context.reader.read();
 			}
 

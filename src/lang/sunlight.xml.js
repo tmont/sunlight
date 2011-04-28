@@ -5,6 +5,7 @@
 	}
 
 	sunlight.registerLanguage("xml", {
+		//doNotParse: /(?!x)x/,
 		caseInsenstive: true,
 		
 		scopes: {
@@ -13,6 +14,8 @@
 			cdata: [ ["<![CDATA[", "]]>"] ],
 			doctype: [ ["<!DOCTYPE", ">"] ]
 		},
+		
+		punctuation: /(?!x)x/,
 		
 		customTokens: {
 			xmlOpenTag: { values: ["<?xml"], boundary: "\\b" },
@@ -130,7 +133,7 @@
 					}
 					
 					if (context.reader.current() === "{") {
-						context.items.scalaBracketNestingLevel = 1;
+						//context.items.scalaBracketNestingLevel = 1;
 						return true;
 					}
 					
@@ -138,15 +141,16 @@
 				},
 				
 				switchBack: function(context) {
-					var current = context.reader.current();
+					var prevToken = context.token(context.count() - 1);
 					
-					if (current === "{") {
-						context.items.scalaBracketNestingLevel++;
-					} else if (current === "}") {
-						context.items.scalaBracketNestingLevel--;
-						
-						if (context.items.scalaBracketNestingLevel === 0) {
-							return true;
+					if (prevToken.name === "punctuation") {
+						if (prevToken.value === "{") {
+							context.items.scalaBracketNestingLevel++;
+						} else if (prevToken.value === "}") {
+							context.items.scalaBracketNestingLevel--;
+							if (context.items.scalaBracketNestingLevel === 0) {
+								return true;
+							}
 						}
 					}
 					
