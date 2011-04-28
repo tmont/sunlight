@@ -30,6 +30,11 @@ LANGUAGES
 - Oracle
 - powershell
 - scala: http://www.scala-lang.org/node/198
+- diff
+- flash
+- lua
+- objective-c
+- yaml
 
 WEB
 - document continuations for incomplete parses on custom rules
