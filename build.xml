@@ -88,6 +88,7 @@
 			<fileset dir="${temp.dir}" includes="sunlight.batch.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.haskell.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.erlang.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight.diff.js"/>
 		</concat>
 	
 		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${deploy.dir}">
@@ -121,6 +122,7 @@
 			<include name="sunlight.batch.js"/>
 			<include name="sunlight.haskell.js"/>
 			<include name="sunlight.erlang.js"/>
+			<include name="sunlight.diff.js"/>
 		</yui-compressor>
 		
 		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${plugins.dir}">

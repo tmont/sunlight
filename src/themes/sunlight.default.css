@@ -100,21 +100,24 @@ span.sunlight-highlighted * {
 .sunlight-rawString,
 .sunlight-binaryString,
 .sunlight-rawLongString,
-.sunlight-binaryLongString {
+.sunlight-binaryLongString,
+.sunlight-diff .sunlight-removed {
 	color: #990000 !important;
 }
 
 .sunlight-ident,
 .sunlight-operator,
 .sunlight-punctuation,
-.sunlight-delimiter {
+.sunlight-delimiter,
+.sunlight-diff .sunlight-unchanged {
 	color: #000000 !important;
 }
 
 .sunlight-comment,
 .sunlight-xmlDocCommentContent,
 .sunlight-nginx .sunlight-ssiCommand,
-.sunlight-sln .sunlight-formatDeclaration {
+.sunlight-sln .sunlight-formatDeclaration,
+.sunlight-diff .sunlight-added {
 	color: #009900 !important;
 }
 .sunlight-number,
@@ -133,7 +136,8 @@ span.sunlight-highlighted * {
 .sunlight-haskell .sunlight-class,
 .sunlight-haskell .sunlight-type,
 .sunlight-lisp .sunlight-declarationSpecifier,
-.sunlight-erlang .sunlight-userDefinedFunction {
+.sunlight-erlang .sunlight-userDefinedFunction,
+.sunlight-diff .sunlight-header {
 	color: #2B91AF !important;
 }
 .sunlight-keyword,
@@ -144,7 +148,8 @@ span.sunlight-highlighted * {
 .sunlight-ruby .sunlight-specialOperator,
 .sunlight-erlang .sunlight-moduleAttribute,
 .sunlight-xml .sunlight-tagName,
-.sunlight-xml .sunlight-operator {
+.sunlight-xml .sunlight-operator,
+.sunlight-diff .sunlight-modified {
 	color: #0000FF !important;
 }
 .sunlight-shortOpenTag,
@@ -156,9 +161,6 @@ span.sunlight-highlighted * {
 	background-color: #FFFF99 !important;
 	color: #000000 !important;
 }
-.sunlight-content {
-	color: #000000 !important;
-}
 .sunlight-function,
 .sunlight-globalFunction,
 .sunlight-ruby .sunlight-specialFunction,
@@ -166,7 +168,8 @@ span.sunlight-highlighted * {
 .sunlight-lisp .sunlight-macro,
 .sunlight-lisp .sunlight-specialForm,
 .sunlight-lisp .sunlight-type,
-.sunlight-sln .sunlight-sectionName {
+.sunlight-sln .sunlight-sectionName,
+.sunlight-diff .sunlight-rangeInfo {
 	color: #B069AF !important;
 }
 
@@ -191,7 +194,9 @@ span.sunlight-highlighted * {
 }
 .sunlight-csharp .sunlight-pragma,
 .sunlight-cpp .sunlight-preprocessorDirective,
-.sunlight-vb .sunlight-compilerDirective {
+.sunlight-vb .sunlight-compilerDirective,
+.sunlight-diff .sunlight-mergeHeader,
+.sunlight-diff .sunlight-noNewLine {
 	color: #999999 !important;
 	font-style: italic !important;
 }
