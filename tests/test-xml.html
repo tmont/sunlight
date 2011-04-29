@@ -1,8 +1,13 @@
+<!doctype html>
 <html>
 
 	<head>
 		<script type="text/javascript" src="../src/sunlight.js"></script>
+		<script type="text/javascript" src="../src/plugins/sunlight-plugin.linenumbers.js"></script>
 		<script type="text/javascript" src="../src/lang/sunlight.xml.js"></script>
+		<script type="text/javascript" src="../src/lang/sunlight.php.js"></script>
+		<script type="text/javascript" src="../src/lang/sunlight.css.js"></script>
+		<script type="text/javascript" src="../src/lang/sunlight.javascript.js"></script>
 		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.default.css" />
 	</head>
 
@@ -28,6 +33,55 @@
 		&lt;/nested&gt;
 	&lt;/section&gt;
 &lt;/config&gt;</pre>
+
+<pre id="embedded-test" class="sunlight-highlight-xml">
+&lt;html&gt;
+	&lt;head&gt;
+		&lt;style type=&quot;text/css&quot;&gt;
+			@font-face {
+				font-family: Custom;
+				src: url(/fonts/custom.ttf);
+			}
+			
+			body {
+				background-color: black;
+				font-family: &quot;Courier New&quot;;
+				width: 100%;
+				min-height: 200px;
+			}
+			
+			.attention {
+				color: red;
+				border: 2px solid #000000;
+			}
+		&lt;/style&gt;
+		&lt;script type=&quot;text/javascript&quot;&gt;
+			window.onload = function() {
+				try {
+					var xhr = new XMLHttpRequest();
+					xhr.open("GET", "/ajax.php", true);
+					xhr.onreadystatechange = function(e) {
+						if (xhr.readyState === 4 && xhr.status === 200) {
+							document.getElementById("foo").innerHTML = xhr.responseText;
+						}
+					};
+					
+					xhr.send(null);
+				} catch (e) {}
+			};
+		&lt;/script&gt;
+	&lt;/head&gt;
+	
+	&lt;body&gt;
+		&lt;?php
+			//debug stuff
+			print_r($_GET);
+			
+			echo 'Hello ' . $_GET['username'] . '&lt;br /&gt;';
+		?&gt;
+	&lt;/body&gt;
+&lt;/html&gt;
+</pre>
 	</body>
 
 	<script type="text/javascript"  src="test.js"></script>

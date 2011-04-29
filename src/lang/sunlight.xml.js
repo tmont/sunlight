@@ -15,6 +15,7 @@
 		},
 		
 		punctuation: /(?!x)x/,
+		numberParser: function() {},
 		
 		customTokens: {
 			xmlOpenTag: { values: ["<?xml"], boundary: "\\b" },
@@ -125,6 +126,88 @@
 		],
 		
 		embeddedLanguages: {
+			css: {
+				switchTo: function(context) {
+					var prevToken = context.token(context.count() - 1);
+					if (!prevToken) {
+						return false;
+					}
+					
+					if (prevToken.name !== "operator" || prevToken.value !== ">") {
+						return false;
+					}
+					
+					//look backward for a tag name, if it's "style", then we go to css mode
+					var index = context.count() - 1;
+					while (prevToken = context.token(--index)) {
+						if (prevToken.name === "tagName") {
+							if (prevToken.value === "style") {
+								//make sure it's not a closing tag
+								prevToken = context.token(--index);
+								if (prevToken && prevToken.name === "operator" && prevToken.value === "<") {
+									return true;
+								}
+							}
+							
+							break;
+						}
+					}
+					
+					return false;
+				},
+				
+				switchBack: function(context) {
+					return context.reader.peek(7) === "</style";
+				}
+			},
+			
+			javascript: {
+				switchTo: function(context) {
+					var prevToken = context.token(context.count() - 1);
+					if (!prevToken) {
+						return false;
+					}
+					
+					if (prevToken.name !== "operator" || prevToken.value !== ">") {
+						return false;
+					}
+					
+					//look backward for a tag name, if it's "script", then we go to javascript mode
+					var index = context.count() - 1;
+					while (prevToken = context.token(--index)) {
+						if (prevToken.name === "tagName") {
+							if (prevToken.value === "script") {
+								//make sure it's not a closing tag
+								prevToken = context.token(--index);
+								if (prevToken && prevToken.name === "operator" && prevToken.value === "<") {
+									return true;
+								}
+							}
+							
+							break;
+						}
+					}
+					
+					return false;
+				},
+				
+				switchBack: function(context) {
+					return context.reader.peek(8) === "</script";
+				}
+			},
+			
+			php: {
+				switchTo: function(context) {
+					var peek4 = context.reader.peek(4);
+					return context.reader.current() === "<" && (peek4 === "?php" || /^\?(?!xml)/.test(peek4));
+				},
+				
+				switchBack: function(context) {
+					var prevToken = context.token(context.count() - 1);
+					return prevToken && prevToken.name === "closeTag";
+				}
+			},
+			
 			scala: {
 				switchTo: function(context) {
 					if (!context.options.enableScalaXmlInterpolation) {

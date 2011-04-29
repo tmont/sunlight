@@ -389,7 +389,13 @@
 		//called before processing the current
 		var switchToEmbeddedLanguageIfNecessary = function(context) {
 			for (var i = 0, embeddedLanguage; i < context.language.embeddedLanguages.length; i++) {
+				if (!languages[context.language.embeddedLanguages[i].language]) {
+					//unregistered language
+					continue;
+				}
+				
 				embeddedLanguage = clone(context.language.embeddedLanguages[i]);
+				
 				if (embeddedLanguage.switchTo(context)) {
 					embeddedLanguage.oldItems = clone(context.items);
 					context.embeddedLanguageStack.push(embeddedLanguage);
