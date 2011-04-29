@@ -4,11 +4,27 @@
 		throw "Include sunlight.js before including language files";
 	}
 
+	function isInsideOpenBracket(context) {
+		var token, index = context.count();
+		while (token = context.token(--index)) {
+			if (token.name === "operator") {
+				if (token.value === ">" || token.value === "/>" || token.value === "</") {
+					return false;
+				}
+			}
+			
+			if (token.name === "tagName" || token.name === "xmlOpenTag") {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	sunlight.registerLanguage("xml", {
 		caseInsenstive: true,
 		
 		scopes: {
-			string: [ ["\"", "\""], ["'", "'"] ],
 			comment: [ ["<!--", "-->"] ],
 			cdata: [ ["<![CDATA[", "]]>"] ],
 			doctype: [ ["<!DOCTYPE", ">"] ]
@@ -48,6 +64,30 @@
 				return context.createToken("tagName", tagName, line, column);
 			},
 			
+			//strings (attribute values)
+			function(context) {
+				var delimiter = context.reader.current();
+				if (delimiter !== "\"" && delimiter !== "'") {
+					return null;
+				}
+				
+				if (!isInsideOpenBracket(context)) {
+					return null;
+				}
+				
+				//read until the delimiter
+				var stringValue = delimiter, peek, line = context.reader.getLine(), column = context.reader.getColumn();
+				while (peek = context.reader.peek()) {
+					stringValue += context.reader.read();
+					
+					if (peek === delimiter) {
+						break;
+					}
+				}
+				
+				return context.createToken("string", stringValue, line, column);
+			},
+			
 			//attributes
 			function(context) {
 				var current = context.reader.current();
@@ -57,21 +97,7 @@
 				
 				//must be between < and >
 				
-				//look backward for a tag name
-				var token, index = context.count();
-				while (token = context.token(--index)) {
-					if (token.name === "operator") {
-						if (token.value === ">" || token.value === "/>" || token.value === "</") {
-							return null;
-						}
-					}
-					
-					if (token.name === "tagName" || token.name === "xmlOpenTag") {
-						break;
-					}
-				}
-				
-				if (!token) {
+				if (!isInsideOpenBracket(context)) {
 					return null;
 				}
 				

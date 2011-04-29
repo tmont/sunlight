@@ -1,5 +1,7 @@
 1.7 2011-04-xx
 --------------
+- Bugfixes
+	- fixed string detection in XML (only allowed inside of tags as attribute values)
 - Enhancements
 	- new languages: erlang, diff, scala
 	- combined xml and html into xml
@@ -10,6 +12,7 @@
 	- more internal php functions
 	- more internal php constants
 	- CSS !important flags are now highlighted
+	- highlight type names after the "is" keyword in C#
 - Breaking Changes
 	- html is gone (replaced by xml)
 
