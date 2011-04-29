@@ -43,11 +43,17 @@
 			<tarfileset dir="${basedir}" includes="src/**,tests/**,CHANGELOG,COPYING,README" prefix="${package.source}"/>
 		</tar>
 		
-		<!-- compressed files files -->
+		<!-- compressed files -->
 		<tar destfile="${build.dist}/${package.release}.tar.gz" compression="gzip">
 			<tarfileset dir="${deploy.dir}" includes="*/**" prefix="${package.release}"/>
 			<tarfileset dir="${basedir}" includes="CHANGELOG,COPYING,README" prefix="${package.release}"/>
 		</tar>
+		
+		<!-- stuff for website -->
+		<mkdir dir="${build.dir}/web"/>
+		<copy file="${deploy.dir}/sunlight-all-min.js" tofile="${build.dir}/web/sunlight-${product.version}.js" />
+		<copy file="${deploy.dir}/themes/sunlight.default.css" tofile="${build.dir}/web/sunlight.default-${product.version}.css" />
+		<copy file="${deploy.dir}/themes/sunlight.dark.css" tofile="${build.dir}/web/sunlight.dark-${product.version}.css" />
 	</target>
 	
 	<target name="clean" depends="init" description="Deletes directories and files created by the build sequence">
