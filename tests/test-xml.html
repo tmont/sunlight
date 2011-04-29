@@ -61,7 +61,7 @@
 					var xhr = new XMLHttpRequest();
 					xhr.open("GET", "/ajax.php", true);
 					xhr.onreadystatechange = function(e) {
-						if (xhr.readyState === 4 && xhr.status === 200) {
+						if (xhr.readyState === 4 &amp;&amp; xhr.status === 200) {
 							document.getElementById("foo").innerHTML = xhr.responseText;
 						}
 					};
@@ -77,7 +77,7 @@
 			//debug stuff
 			print_r($_GET);
 			
-			echo 'Hello ' . $_GET['username'] . '&lt;br /&gt;';
+			echo 'Hello ' . (@$_GET['username'] ?: '&lt;no username given&gt;') . '&lt;br /&gt;';
 		?&gt;
 	&lt;/body&gt;
 &lt;/html&gt;
@@ -116,5 +116,13 @@
 		assertExists("operator", "/>", "</ operator");
 		assertExists("operator", ":", "namespace operator");
 		assertExists("operator", "=", "= operator");
+		
+		
+		//embedded stuff
+		assertExists("variable", "$_GET", "php variable", "embedded-test");
+		assertExists("keyword", "function", "javascript keyword", "embedded-test");
+		assertExists("rule", "@font-face", "css rule", "embedded-test");
+		assertExists("tagName", "style", "xml tag", "embedded-test");
+		
 	//]]></script>
 </html>
