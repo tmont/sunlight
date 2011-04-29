@@ -28,11 +28,11 @@
 	overflow-x: auto;
 	overflow-y: hidden; /* ie requires this wtf? */
 }
-span.sunlight-highlighted {
+.sunlight-highlighted {
 	z-index: 1;
 	position: relative;
 }
-span.sunlight-highlighted * {
+.sunlight-highlighted * {
 	background: transparent;
 }
 .sunlight-line-number-margin {
