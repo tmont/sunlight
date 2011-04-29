@@ -32,11 +32,4 @@ LANGUAGES
 - yaml
 
 WEB
-- update nested demo
 - document continuations for incomplete parses on custom rules
-- document changes to analyzerContext (resetNodes)
-- document changes to generated DOM tree
-- document new language property of the token object
-- document options property on parser context
-- document embeddedLanguages option
-- document last utility
