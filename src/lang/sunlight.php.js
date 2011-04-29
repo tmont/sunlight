@@ -74,8 +74,8 @@
 			
 			languageConstruct: { 
 				values: [
-					"isset", "array", "unset", "list", "echo", "include", "include_once", 
-					"require", "require_once", "print", "empty", "return", "die", "eval", "exit"
+					"isset", "array", "unset", "list", "echo", "include_once", "include",
+					"require_once", "require", "print", "empty", "return", "die", "eval", "exit"
 				],
 				
 				boundary: "\\b"
