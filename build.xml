@@ -4,7 +4,7 @@
 	
 	<property name="product.name" value="Sunlight"/>
 	<property name="product.shortname" value="sunlight"/>
-	<property name="product.version" value="1.6"/>
+	<property name="product.version" value="1.7"/>
 	
 	<property name="build.dir" value="${basedir}/build"/>
 	<property name="build.dist" value="${build.dir}/dist"/>
@@ -43,11 +43,17 @@
 			<tarfileset dir="${basedir}" includes="src/**,tests/**,CHANGELOG,COPYING,README" prefix="${package.source}"/>
 		</tar>
 		
-		<!-- compressed files files -->
+		<!-- compressed files -->
 		<tar destfile="${build.dist}/${package.release}.tar.gz" compression="gzip">
 			<tarfileset dir="${deploy.dir}" includes="*/**" prefix="${package.release}"/>
 			<tarfileset dir="${basedir}" includes="CHANGELOG,COPYING,README" prefix="${package.release}"/>
 		</tar>
+		
+		<!-- stuff for website -->
+		<mkdir dir="${build.dir}/web"/>
+		<copy file="${deploy.dir}/sunlight-all-min.js" tofile="${build.dir}/web/sunlight-${product.version}.js" />
+		<copy file="${deploy.dir}/themes/sunlight.default.css" tofile="${build.dir}/web/sunlight.default-${product.version}.css" />
+		<copy file="${deploy.dir}/themes/sunlight.dark.css" tofile="${build.dir}/web/sunlight.dark-${product.version}.css" />
 	</target>
 	
 	<target name="clean" depends="init" description="Deletes directories and files created by the build sequence">
@@ -70,7 +76,6 @@
 			<fileset dir="${temp.dir}" includes="sunlight.php.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.mysql.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.xml.js"/>
-			<fileset dir="${temp.dir}" includes="sunlight.html.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.css.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.bash.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.tsql.js"/>
@@ -88,6 +93,9 @@
 			<fileset dir="${temp.dir}" includes="sunlight.sln.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.batch.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.haskell.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight.erlang.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight.diff.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight.scala.js"/>
 		</concat>
 	
 		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${deploy.dir}">
@@ -103,7 +111,6 @@
 			<include name="sunlight.php.js"/>
 			<include name="sunlight.mysql.js"/>
 			<include name="sunlight.xml.js"/>
-			<include name="sunlight.html.js"/>
 			<include name="sunlight.css.js"/>
 			<include name="sunlight.bash.js"/>
 			<include name="sunlight.tsql.js"/>
@@ -121,6 +128,9 @@
 			<include name="sunlight.sln.js"/>
 			<include name="sunlight.batch.js"/>
 			<include name="sunlight.haskell.js"/>
+			<include name="sunlight.erlang.js"/>
+			<include name="sunlight.diff.js"/>
+			<include name="sunlight.scala.js"/>
 		</yui-compressor>
 		
 		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${plugins.dir}">

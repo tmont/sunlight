@@ -22,11 +22,11 @@
 	overflow-x: auto;
 	overflow-y: hidden; /* ie requires this wtf? */
 }
-span.sunlight-highlighted {
+.sunlight-highlighted {
 	z-index: 1;
 	position: relative;
 }
-span.sunlight-highlighted * {
+.sunlight-highlighted * {
 	background: transparent;
 }
 .sunlight-line-number-margin {
@@ -100,25 +100,29 @@ span.sunlight-highlighted * {
 .sunlight-rawString,
 .sunlight-binaryString,
 .sunlight-rawLongString,
-.sunlight-binaryLongString {
+.sunlight-binaryLongString,
+.sunlight-diff .sunlight-removed {
 	color: #990000 !important;
 }
 
 .sunlight-ident,
 .sunlight-operator,
 .sunlight-punctuation,
-.sunlight-delimiter {
+.sunlight-delimiter,
+.sunlight-diff .sunlight-unchanged {
 	color: #000000 !important;
 }
 
 .sunlight-comment,
 .sunlight-xmlDocCommentContent,
 .sunlight-nginx .sunlight-ssiCommand,
-.sunlight-sln .sunlight-formatDeclaration {
+.sunlight-sln .sunlight-formatDeclaration,
+.sunlight-diff .sunlight-added {
 	color: #009900 !important;
 }
 .sunlight-number,
-.sunlight-guid {
+.sunlight-guid,
+.sunlight-cdata {
 	color: #CC6600 !important;
 }
 
@@ -131,7 +135,9 @@ span.sunlight-highlighted * {
 .sunlight-httpd .sunlight-context,
 .sunlight-haskell .sunlight-class,
 .sunlight-haskell .sunlight-type,
-.sunlight-lisp .sunlight-declarationSpecifier {
+.sunlight-lisp .sunlight-declarationSpecifier,
+.sunlight-erlang .sunlight-userDefinedFunction,
+.sunlight-diff .sunlight-header {
 	color: #2B91AF !important;
 }
 .sunlight-keyword,
@@ -139,7 +145,11 @@ span.sunlight-highlighted * {
 .sunlight-css
 .sunlight-element,
 .sunlight-bash .sunlight-command,
-.sunlight-ruby .sunlight-specialOperator {
+.sunlight-ruby .sunlight-specialOperator,
+.sunlight-erlang .sunlight-moduleAttribute,
+.sunlight-xml .sunlight-tagName,
+.sunlight-xml .sunlight-operator,
+.sunlight-diff .sunlight-modified {
 	color: #0000FF !important;
 }
 .sunlight-shortOpenTag,
@@ -147,11 +157,9 @@ span.sunlight-highlighted * {
 .sunlight-closeTag,
 .sunlight-xmlOpenTag,
 .sunlight-xmlCloseTag,
-.sunlight-label {
+.sunlight-label,
+.sunlight-css .sunlight-importantFlag {
 	background-color: #FFFF99 !important;
-	color: #000000 !important;
-}
-.sunlight-content {
 	color: #000000 !important;
 }
 .sunlight-function,
@@ -161,7 +169,8 @@ span.sunlight-highlighted * {
 .sunlight-lisp .sunlight-macro,
 .sunlight-lisp .sunlight-specialForm,
 .sunlight-lisp .sunlight-type,
-.sunlight-sln .sunlight-sectionName {
+.sunlight-sln .sunlight-sectionName,
+.sunlight-diff .sunlight-rangeInfo {
 	color: #B069AF !important;
 }
 
@@ -176,7 +185,8 @@ span.sunlight-highlighted * {
 }
 .sunlight-regexLiteral,
 .sunlight-lisp .sunlight-operator,
-.sunlight-6502asm .sunlight-pseudoOp {
+.sunlight-6502asm .sunlight-pseudoOp,
+.sunlight-erlang .sunlight-macro {
 	color: #FF00B2 !important;
 }
 .sunlight-specialVariable {
@@ -185,51 +195,40 @@ span.sunlight-highlighted * {
 }
 .sunlight-csharp .sunlight-pragma,
 .sunlight-cpp .sunlight-preprocessorDirective,
-.sunlight-vb .sunlight-compilerDirective {
+.sunlight-vb .sunlight-compilerDirective,
+.sunlight-diff .sunlight-mergeHeader,
+.sunlight-diff .sunlight-noNewLine {
 	color: #999999 !important;
 	font-style: italic !important;
 }
 .sunlight-xmlDocCommentMeta,
 .sunlight-java .sunlight-annotation,
+.sunlight-scala .sunlight-annotation,
 .sunlight-docComment {
 	color: #808080 !important;
 }
 .sunlight-quotedIdent,
 .sunlight-lisp .sunlight-keywordArgument,
-.sunlight-haskell .sunlight-infixOperator {
+.sunlight-haskell .sunlight-infixOperator,
+.sunlight-erlang .sunlight-quotedAtom {
 	color: #999900 !important;
 }
 
 
 
-/* html/xml */
-.sunlight-html .sunlight-string,
+/* xml */
 .sunlight-xml .sunlight-string {
 	color: #990099 !important;
 }
-.sunlight-cdata {
-	color: #CC6600 !important;
-}
-.sunlight-html .sunlight-ident,
-.sunlight-html .sunlight-operator,
-.sunlight-xml .sunlight-ident,
-.sunlight-xml .sunlight-operator {
-	color: #0000FF !important;
-}
-.sunlight-html .sunlight-named-ident,
-.sunlight-xml .sunlight-named-ident {
+.sunlight-xml .sunlight-attribute {
 	color: #FF0000 !important;
 }
-.sunlight-html .sunlight-entity,
 .sunlight-xml .sunlight-entity {
 	background-color: #EEEEEE !important;
 	color: #000000 !important;
 	border: 1px solid #000000 !important;
 }
-
-
-/* html */
-.sunlight-html .sunlight-doctype {
+.sunlight-xml .sunlight-doctype {
 	color: #2B91AF !important;
 }
 
@@ -319,4 +318,9 @@ span.sunlight-highlighted * {
 /* lisp */
 .sunlight-lisp .sunlight-macro {
 	font-style: italic !important;
+}
+
+/* erlang */
+.sunlight-erlang .sunlight-atom {
+	font-weight: bold !important;
 }

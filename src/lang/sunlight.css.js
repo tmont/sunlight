@@ -303,6 +303,49 @@
 			}
 		],
 		
+		//same as default, but allows % 
+		numberParser: function(context) {
+			var current = context.reader.current(), 
+				number, 
+				line = context.reader.getLine(), 
+				column = context.reader.getColumn(),
+				allowDecimal = true;
+
+			if (!/\d/.test(current)) {
+				//is it a decimal followed by a number?
+				if (current !== "." || !/\d/.test(context.reader.peek())) {
+					return null;
+				}
+
+				//decimal without leading zero
+				number = current + context.reader.read();
+				allowDecimal = false;
+			} else {
+				number = current;
+				if (current === "0" && context.reader.peek() !== ".") {
+					//hex or octal
+					allowDecimal = false;
+				}
+			}
+
+			var peek;
+			while ((peek = context.reader.peek()) !== context.reader.EOF) {
+				if (!/[A-Za-z0-9%]/.test(peek)) {
+					if (peek === "." && allowDecimal && /\d$/.test(context.reader.peek(2))) {
+						number += context.reader.read();
+						allowDecimal = false;
+						continue;
+					}
+					
+					break;
+				}
+
+				number += context.reader.read();
+			}
+
+			return context.createToken("number", number, line, column);
+		},
+		
 		customTokens: {
 			rule: {
 				values: [
@@ -316,6 +359,11 @@
 
 			microsoftFilterPrefix: {
 				values: ["progid:DXImageTransform.Microsoft"],
+				boundary: "\\b"
+			},
+			
+			importantFlag: {
+				values: ["!important"],
 				boundary: "\\b"
 			}
 		},

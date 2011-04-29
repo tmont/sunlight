@@ -32,7 +32,9 @@ namespace My.Namespace {
 		protected internal class InternalClass&lt;TClass2, out TClass3&gt; : ICloneable where TClass2Constraint : class, IAfterClassConstraint, ISecondConstraint { 
 			void Iterate(ICollection&lt;object&gt; foos) {
 				foreach (var foo in foos) {
-					this.SomeMethod(ref foo, out foo);
+					if (foo is MyNamespace.TypeAfterIs) {
+						this.SomeMethod(ref foo, out foo);
+					}
 				}
 			}
 		}
@@ -163,6 +165,7 @@ public class Foo { }</pre>
 		assertExists("keyword", "value", "value contextual keyword");
 		assertExists("keyword", "yield return", "yield return");
 		assertExists("keyword", "extern alias", "extern alias");
+		assertExists("keyword", "is", "is keyword");
 		
 		assertExists("named-ident", "UsingAlias", "using alias");
 		assertExists("named-ident", "ValueHandlerFactoryBase", "class name");
@@ -192,6 +195,7 @@ public class Foo { }</pre>
 		assertExists("named-ident", "TanningBooth", "class that starts with T");
 		assertExists("named-ident", "InvalidOperationException", "new()'d class");
 		assertExists("named-ident", "GenericMethodDefinition", "generic method definition during invocation");
+		assertExists("named-ident", "TypeAfterIs", "type name after is keyword");
 		
 		assertExists("pragma", "#if NET_20", "#if pragma");
 		assertExists("pragma", "#endif", "#endif pragma");
@@ -233,6 +237,7 @@ public class Foo { }</pre>
 		assertExists("ident", "TAlsoNotNamed", "type definition in default()");
 		assertExists("ident", "notACast", "if (notACast) doSomething()");
 		assertExists("ident", "NotAnAttribute", "namespace of fully qualified attribute");
+		assertExists("ident", "MyNamespace", "namespace of fully qualified type after is keyword");
 		
 		assertExists("comment", "/* multi\n\t\t\tline comment\n\t\t\t*/", "multi line comment");
 		assertExists("comment", "//neither foo below should be a named ident", "single line comment");

@@ -1,3 +1,25 @@
+1.7 2011-04-29
+--------------
+- Bugfixes
+	- fixed string detection in XML (only allowed inside of tags as attribute values)
+- Enhancements
+	- new languages: erlang, diff, scala
+	- combined xml and html into xml
+	- implemented embedded languages
+		- xml within scala
+		- php/css/javascript within xml
+	- added sunlight.util.last()
+	- more internal php functions
+	- more internal php constants
+	- CSS !important flags are now highlighted
+	- highlight type names after the "is" keyword in C#
+- Breaking Changes
+	- html is gone (replaced by xml)
+	- xml tokens changed
+		- ident => tagName
+		- named-ident => attribute
+		- content => default
+
 1.6 2011-04-23
 --------------
 - Enhancements

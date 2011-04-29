@@ -46,7 +46,7 @@ a:fake-pseudo-class {
 	-moz-background-inline-policy: -moz-initial;
 	-o-device-pixel-ratio: meh;
 	-webkit-background-origin: lolwut;
-	-ms-accelerator: snoo-snoo;
+	-ms-accelerator: snoo-snoo !important;
 	zoom: 1; /* IE crap */
 	vertical-align: middle;
 }
@@ -87,10 +87,14 @@ pseudotest1:before, pseudotest2:after {
 		assertExists("ident", "fixed", "property value fixed");
 		assertExists("ident", "solid", "property value solid");
 		
+		assertExists("importantFlag", "!important", "!important");
+		
 		assertExists("class", "warning", "class selector");
 		assertExists("class", "myClass", "class selector");
 		assertExists("class", "shouldBeNamed", "class selector");
 		
+		assertExists("number", "100%", "number with %");
+		assertExists("number", "2px", "number with px suffix");
 		
 		assertExists("number", "0.0", "decimal number");
 		assertExists("hexColor", "#FF0000", "hex color");

@@ -24,6 +24,17 @@
         F.prototype = o;
         return new F();
     };
+	
+	var appendAll = function(parent, children) {
+		for (var i = 0; i < children.length; i++) {
+			parent.appendChild(children[i]);
+		}
+	}
+	
+	//gets the last character in a string or the last element in an array
+	var last = function(thing) {
+		return thing.charAt ? thing.charAt(thing.length - 1) : thing[thing.length - 1];
+	};
 
 	//array.contains()
 	var contains = function(arr, value, caseInsensitive) {
@@ -51,6 +62,10 @@
 		}
 
 		return defaultObject;
+	};
+	
+	var clone = function(object) {
+		return merge({}, object);
 	};
 
 	//http://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript/3561711#3561711
@@ -200,6 +215,7 @@
 			count = count || 1;
 
 			var value = "", num = 1;
+			//TODO use substring()
 			while (num <= count && text.charAt(index + num) !== "") {
 				value += text.charAt(index + num++);
 			}
@@ -241,12 +257,13 @@
 						line += newlineCount;
 						column = 1;
 					}
-
-					if (value.charAt(value.length - 1) === "\n") {
+					
+					var lastChar = last(value);
+					if (lastChar === "\n") {
 						nextReadBeginsLine = true;
 					}
 
-					currentChar = value.charAt(value.length - 1);
+					currentChar = lastChar;
 				} else {
 					index = length;
 					currentChar = EOF;
@@ -369,6 +386,40 @@
 			};
 		};
 		
+		//called before processing the current
+		var switchToEmbeddedLanguageIfNecessary = function(context) {
+			for (var i = 0, embeddedLanguage; i < context.language.embeddedLanguages.length; i++) {
+				if (!languages[context.language.embeddedLanguages[i].language]) {
+					//unregistered language
+					continue;
+				}
+				
+				embeddedLanguage = clone(context.language.embeddedLanguages[i]);
+				
+				if (embeddedLanguage.switchTo(context)) {
+					embeddedLanguage.oldItems = clone(context.items);
+					context.embeddedLanguageStack.push(embeddedLanguage);
+					context.language = languages[embeddedLanguage.language];
+					context.items = merge(context.items, clone(context.language.contextItems));
+					break;
+				}
+			}
+		};
+		
+		//called after processing the current
+		var switchBackFromEmbeddedLanguageIfNecessary = function(context) {
+			var current = last(context.embeddedLanguageStack);
+			
+			if (current && current.switchBack(context)) {
+				context.language = languages[current.parentLanguage];
+				var lang = context.embeddedLanguageStack.pop();
+				
+				//restore old items
+				context.items = clone(lang.oldItems);
+				lang.oldItems = {};
+			}
+		};
+		
 		var parseNextToken = function() {
 			var isIdentMatch = function(context) {
 				return context.language.identFirstLetter && context.language.identFirstLetter.test(context.reader.current());
@@ -413,15 +464,13 @@
 				}
 
 				var ident = context.reader.current();
-				var peek = context.reader.peek();
-				var line = context.reader.getLine(), column = context.reader.getColumn();
-				while (peek !== context.reader.EOF) {
+				var peek, line = context.reader.getLine(), column = context.reader.getColumn();
+				while ((peek = context.reader.peek()) !== context.reader.EOF) {
 					if (!context.language.identAfterFirstLetter.test(peek)) {
 						break;
 					}
 
 					ident += context.reader.read();
-					peek = context.reader.peek();
 				}
 
 				return context.createToken("ident", ident, line, column);
@@ -445,8 +494,10 @@
 					var specificScopes = context.language.scopes[tokenName];
 					for (var j = 0, opener, line, column, continuation; j < specificScopes.length; j++) {
 						opener = specificScopes[j][0];
+						
+						var value = current + context.reader.peek(opener.length - 1);
 
-						if (opener !== current + context.reader.peek(opener.length - 1)) {
+						if (opener !== value && (!context.language.caseInsensitive || value.toUpperCase() !== opener.toUpperCase())) {
 							continue;
 						}
 
@@ -497,16 +548,19 @@
 			}
 		}();
 
-		var tokenize = function(unhighlightedCode, language, partialContext) {
+		var tokenize = function(unhighlightedCode, language, partialContext, options) {
 			fireEvent("beforeTokenize", this, { code: unhighlightedCode, language: language });
 			var tokens = [];
 			var context = {
 				reader: createCodeReader(unhighlightedCode),
 				language: language,
-				items: language.contextItems,
+				items: clone(language.contextItems),
 				token: function(index) { return tokens[index]; },
 				getAllTokens: function() { return tokens.slice(0); },
 				count: function() { return tokens.length; },
+				options: options,
+				embeddedLanguageStack: [],
+				
 				defaultData: {
 					text: "",
 					line: 1,
@@ -517,7 +571,8 @@
 						name: name,
 						line: line,
 						value: isIe ? value.replace(/\n/g, "\r") : value,
-						column: column
+						column: column,
+						language: this.language.name
 					};
 				}
 			};
@@ -531,6 +586,7 @@
 			}
 
 			while (!context.reader.isEof()) {
+				switchToEmbeddedLanguageIfNecessary(context);
 				var token = parseNextToken(context);
 
 				//flush default data if needed (in pretty much all languages this is just whitespace)
@@ -549,6 +605,7 @@
 					}
 				}
 
+				switchBackFromEmbeddedLanguageIfNecessary(context);
 				context.reader.read();
 			}
 
@@ -561,9 +618,8 @@
 			return context;
 		};
 
-		var createAnalyzerContext = function(unhighlightedCode, language, partialContext, options) {
+		var createAnalyzerContext = function(parserContext, partialContext, options) {
 			var nodes = [];
-			var parserContext = tokenize(unhighlightedCode, language, partialContext);
 			var prepareText = function() {
 				var nbsp = String.fromCharCode(0xa0);
 				var tab = new Array(options.tabWidth + 1).join(nbsp);
@@ -575,12 +631,13 @@
 			return {
 				tokens: (partialContext.tokens || []).concat(parserContext.getAllTokens()),
 				index: partialContext.index ? partialContext.index + 1 : 0,
-				language: language,
+				language: null,
 				options: options,
 				continuation: parserContext.continuation,
 				addNode: function(node) { nodes.push(node); },
 				createTextNode: function(text) { return document.createTextNode(prepareText(text)); },
 				getNodes: function() { return nodes; },
+				resetNodes: function() { nodes = []; },
 				items: parserContext.items
 			};
 		};
@@ -595,31 +652,70 @@
 				language = languages[DEFAULT_LANGUAGE];
 			}
 
-			//invoke beforeHighlight event
 			fireEvent("beforeHighlight", this, { code: unhighlightedCode, language: language, previousContext: partialContext });
 			
-			var analyzerContext = createAnalyzerContext(unhighlightedCode, language, partialContext, this.options);
-			var analyzer = language.analyzer;
+			var analyzerContext = createAnalyzerContext(
+				tokenize(unhighlightedCode, language, partialContext, this.options),
+				partialContext, 
+				this.options
+			);
 			
-			fireEvent("beforeAnalyze", this, { analyzerContext: analyzerContext });
-			for (var i = partialContext.index ? partialContext.index + 1 : 0, tokenName, func, exit; i < analyzerContext.tokens.length; i++) {
-				analyzerContext.index = i;
-				tokenName = analyzerContext.tokens[i].name;
-				func = "handle_" + tokenName;
-
-				analyzer[func] ? analyzer[func](analyzerContext) : analyzer.handleToken(analyzerContext);
-			}
-			fireEvent("afterAnalyze", this, { analyzerContext: analyzerContext });
+			analyze(analyzerContext, partialContext.index ? partialContext.index + 1 : 0);
 			
 			fireEvent("afterHighlight", this, { analyzerContext: analyzerContext });
 
 			return analyzerContext;
+		};
+		
+		var createContainer = function(ctx) {
+			var container = document.createElement("span");
+			container.className = ctx.options.classPrefix + ctx.language.name;
+			return container;
+		}
+		
+		var analyze = function(analyzerContext, startIndex) {
+			fireEvent("beforeAnalyze", this, { analyzerContext: analyzerContext });
+			
+			if (analyzerContext.tokens.length > 0) {
+				analyzerContext.language = languages[analyzerContext.tokens[0].language] || languages[DEFAULT_LANGUAGE];;
+				var nodes = [], lastIndex = 0, container = createContainer(analyzerContext);
+				
+				for (var i = startIndex, tokenName, func, language, analyzer; i < analyzerContext.tokens.length; i++) {
+					language = languages[analyzerContext.tokens[i].language] || languages[DEFAULT_LANGUAGE];
+					if (language.name !== analyzerContext.language.name) {
+						appendAll(container, analyzerContext.getNodes());
+						analyzerContext.resetNodes();
+						
+						nodes.push(container);
+						analyzerContext.language = language;
+						container = createContainer(analyzerContext);
+					}
+					
+					analyzerContext.index = i;
+					tokenName = analyzerContext.tokens[i].name;
+					func = "handle_" + tokenName;
+
+					analyzer = analyzerContext.language.analyzer;
+					analyzer[func] ? analyzer[func](analyzerContext) : analyzer.handleToken(analyzerContext);
+				}
+				
+				//append the last nodes, and add the final nodes to the context
+				appendAll(container, analyzerContext.getNodes());
+				nodes.push(container);
+				analyzerContext.resetNodes();
+				for (var i = 0; i < nodes.length; i++) {
+					analyzerContext.addNode(nodes[i]);
+				}
+			}
+			
+			fireEvent("afterAnalyze", this, { analyzerContext: analyzerContext });
 		};
 
 		return {
 			//matches the language of the node to highlight
 			matchSunlightNode: function() {
 				var regex;
+				
 				return function(node) {
 					if (!regex) {
 						regex = new RegExp("(?:\\s|^)" + this.options.classPrefix + "highlight-(\\S+)(?:\\s|$)");
@@ -654,23 +750,21 @@
 				var languageId = match[1];
 				var currentNodeCount = 0;
 				fireEvent("beforeHighlightNode", this, { node: node });
-				for (var j = 0, span, nodes, k, partialContext; j < node.childNodes.length; j++) {
+				for (var j = 0, nodes, k, partialContext; j < node.childNodes.length; j++) {
 					if (node.childNodes[j].nodeType === 3) {
 						//text nodes
-						span = document.createElement("span");
-
-						span.className = this.options.classPrefix + "highlighted " + this.options.classPrefix + languageId;
 						partialContext = highlightText.call(this, node.childNodes[j].nodeValue, languageId, partialContext);
 						HIGHLIGHTED_NODE_COUNT++;
 						currentNodeCount = currentNodeCount || HIGHLIGHTED_NODE_COUNT;
 
 						nodes = partialContext.getNodes();
-						for (k = 0; k < nodes.length; k++) {
-							span.appendChild(nodes[k]);
-						}
 
-						node.replaceChild(span, node.childNodes[j]);
-					} else {
+						node.replaceChild(nodes[0], node.childNodes[j]);
+						for (k = 1; k < nodes.length; k++) {
+							node.insertBefore(nodes[k], nodes[k - 1].nextSibling);
+						}
+					} else if (node.childNodes[j].nodeType === 1) {
+						//element nodes
 						highlightRecursive.call(this, node.childNodes[j]);
 					}
 				}
@@ -803,7 +897,8 @@
 		numberParser: defaultNumberParser,
 		caseInsensitive: false,
 		doNotParse: /\s/,
-		analyzerContextItems: {}
+		contextItems: {},
+		embeddedLanguages: {}
 	};
 	
 	//event handling: an interface to extend sunlight in an unobtrusive way
@@ -843,7 +938,7 @@
 
 	//public facing object
 	window.Sunlight = {
-		version: "1.6",
+		version: "1.7",
 		Highlighter: highlighterConstructor,
 		createAnalyzer: function() { return create(defaultAnalyzer); },
 		globalOptions: globalOptions,
@@ -874,9 +969,24 @@
 					languageData.caseInsensitive
 				);
 			}
+			
+			//convert the embedded language object to an easier-to-use array
+			var embeddedLanguages = [];
+			for (var languageName in languageData.embeddedLanguages) {
+				embeddedLanguages.push({
+					parentLanguage: languageData.name,
+					language: languageName,
+					switchTo: languageData.embeddedLanguages[languageName].switchTo,
+					switchBack: languageData.embeddedLanguages[languageName].switchBack
+				});
+			}
+			
+			languageData.embeddedLanguages = embeddedLanguages;
 
 			languages[languageData.name] = languageData;
 		},
+		
+		isRegistered: function(languageId) { return languages[languageId] !== undefined; },
 		
 		bind: function(event, callback) {
 			if (!events[event]) {
@@ -887,6 +997,7 @@
 		},
 
 		util: {
+			last: last,
 			eol: isIe ? "\r" : "\n",
 			escapeSequences: ["\\n", "\\t", "\\r", "\\\\", "\\v", "\\f"],
 			contains: contains,
