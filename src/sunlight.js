@@ -464,15 +464,13 @@
 				}
 
 				var ident = context.reader.current();
-				var peek = context.reader.peek();
-				var line = context.reader.getLine(), column = context.reader.getColumn();
-				while (peek !== context.reader.EOF) {
+				var peek, line = context.reader.getLine(), column = context.reader.getColumn();
+				while ((peek = context.reader.peek()) !== context.reader.EOF) {
 					if (!context.language.identAfterFirstLetter.test(peek)) {
 						break;
 					}
 
 					ident += context.reader.read();
-					peek = context.reader.peek();
 				}
 
 				return context.createToken("ident", ident, line, column);

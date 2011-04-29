@@ -155,7 +155,7 @@
 			css: {
 				switchTo: function(context) {
 					var prevToken = context.token(context.count() - 1);
-					if (!prevToken) {
+					if (!prevToken || context.reader.current() + context.reader.peek(6) === "</style") {
 						return false;
 					}
 					
@@ -190,7 +190,7 @@
 			javascript: {
 				switchTo: function(context) {
 					var prevToken = context.token(context.count() - 1);
-					if (!prevToken) {
+					if (!prevToken || context.reader.current() + context.reader.peek(7) === "</script") {
 						return false;
 					}
 					
