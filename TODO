@@ -7,10 +7,7 @@ PARSING
 
 MISSING KEYWORDS
 - CSS property values (none, solid, inset, etc.)
-- CSS !important
 - nginx 3rd party modules: http://wiki.nginx.org/3rdPartyModules#Known_modules
-- PHP constants like PREG_OFFSET_CAPTURE
-- moar php functions! (preg_match and friends...)
 
 TESTING
 

@@ -157,7 +157,8 @@ span.sunlight-highlighted * {
 .sunlight-closeTag,
 .sunlight-xmlOpenTag,
 .sunlight-xmlCloseTag,
-.sunlight-label {
+.sunlight-label,
+.sunlight-css .sunlight-importantFlag {
 	background-color: #FFFF99 !important;
 	color: #000000 !important;
 }

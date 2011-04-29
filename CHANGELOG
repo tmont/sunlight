@@ -2,9 +2,16 @@
 --------------
 - Enhancements
 	- new languages: erlang, diff, scala
-	- combined xml and html
+	- combined xml and html into xml
 	- implemented embedded languages
+		- xml within scala
+		- php/css/javascript within xml
 	- added sunlight.util.last()
+	- more internal php functions
+	- more internal php constants
+	- CSS !important flags are now highlighted
+- Breaking Changes
+	- html is gone (replaced by xml)
 
 1.6 2011-04-23
 --------------

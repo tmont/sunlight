@@ -31,7 +31,7 @@
 				}
 				
 				var prevToken = context.token(context.count() - 1);
-				if (prevToken.name !== "operator" || !sunlight.util.contains(["<", "</"], prevToken.value)) {
+				if (!prevToken || prevToken.name !== "operator" || !sunlight.util.contains(["<", "</"], prevToken.value)) {
 					return null;
 				}
 				
