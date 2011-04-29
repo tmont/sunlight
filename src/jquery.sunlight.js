@@ -4,7 +4,7 @@
  * (c) 2011 Tommy Montgomery http://tommymontgomery.com/
  * licensed under WTFPL http://sam.zoy.org/wtfpl/
  */
-(function($, window, undefined){
+(function($, window){
 	
 	$.fn.sunlight = function(options) {
 		var highlighter = new window.Sunlight.Highlighter(options);
@@ -15,4 +15,4 @@
 		return this;
 	};
 	
-}(jQuery, window));
+}(jQuery, this));
