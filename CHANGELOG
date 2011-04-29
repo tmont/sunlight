@@ -1,4 +1,4 @@
-1.7 2011-04-xx
+1.7 2011-04-29
 --------------
 - Bugfixes
 	- fixed string detection in XML (only allowed inside of tags as attribute values)
@@ -15,6 +15,10 @@
 	- highlight type names after the "is" keyword in C#
 - Breaking Changes
 	- html is gone (replaced by xml)
+	- xml tokens changed
+		- ident => tagName
+		- named-ident => attribute
+		- content => default
 
 1.6 2011-04-23
 --------------
