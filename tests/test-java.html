@@ -12,6 +12,7 @@
 import java.text.*;
 import java.io.BufferedStreamReader;
 import java.lang.annotation.*;
+import java.lang.StackTraceElement;
 
 public class MyClass extends ExtendedClass implements Interfacable1, Interfacable2, Interfacable3 {
 	private int foo;
@@ -22,6 +23,9 @@ public class MyClass extends ExtendedClass implements Interfacable1, Interfacabl
 		this.foo = (CastingTest1)foo;
 		this.foo = ((CastingTest2)this).doStuff();
 		if (notACast) methodCall();
+		if (this.foo instanceof java.lang.CharSequence) {
+			throw new Exception();
+		}
 	}
 	
 	/**
@@ -169,6 +173,8 @@ public enum Planet {
 		assertExists("named-ident", "CheckedException1", "checked exception 1");
 		assertExists("named-ident", "CheckedException2", "checked exception 2");
 		assertExists("named-ident", "CheckedException3", "checked exception 3");
+		assertExists("named-ident", "CharSequence", "fully qualified type name after instanceof");
+		assertExists("named-ident", "StackTraceElement", "fully qualified type name after import");
 		
 		assertExists("ident", "parameter1", "method parameter");
 		assertExists("ident", "arrayParameter", "method parameter");

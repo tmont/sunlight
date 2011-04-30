@@ -2,6 +2,7 @@
 --------------
 - Enhancements
 	- new languages: actionscript
+	- Java: highlight type names after "instanceof" and "import"
 
 1.7 2011-04-29
 --------------
