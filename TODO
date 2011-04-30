@@ -32,4 +32,3 @@ LANGUAGES
 - yaml
 
 WEB
-- document continuations for incomplete parses on custom rules
