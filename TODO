@@ -29,6 +29,7 @@ LANGUAGES
 - lua
 - objective-c
 - yaml
+- prolog
 
 WEB
 - add actionscript to demo
