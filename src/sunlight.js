@@ -20,10 +20,10 @@
 
 	//http://javascript.crockford.com/prototypal.html
 	var create = function(o) {
-        function F() {}
-        F.prototype = o;
-        return new F();
-    };
+		function F() {}
+		F.prototype = o;
+		return new F();
+	};
 	
 	var appendAll = function(parent, children) {
 		for (var i = 0; i < children.length; i++) {
