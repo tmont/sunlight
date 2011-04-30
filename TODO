@@ -26,9 +26,9 @@ LANGUAGES
 - PostgreSQL
 - Oracle
 - powershell
-- flash
 - lua
 - objective-c
 - yaml
 
 WEB
+- add actionscript to demo
