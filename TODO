@@ -25,7 +25,6 @@ FUNCTIONALITY - 2.0
 LANGUAGES
 - PostgreSQL
 - Oracle
-- powershell
 - lua
 - objective-c
 - yaml
@@ -33,3 +32,4 @@ LANGUAGES
 
 WEB
 - add actionscript to demo
+- add powershell to demo

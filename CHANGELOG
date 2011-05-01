@@ -1,7 +1,7 @@
 1.8 2011-0x-xx
 --------------
 - Enhancements
-	- new languages: actionscript
+	- new languages: actionscript, powershell
 	- Java: highlight type names after "instanceof" and "import"
 
 1.7 2011-04-29
