@@ -100,7 +100,7 @@
 					}
 					
 					//must be first thing on the line that's not a continuation (preceded by "`" operator)
-					if (prevToken.name === "default" && prevToken.value.indexOf("\n") >= 0) {
+					if (prevToken.name === "default" && prevToken.value.indexOf(sunlight.util.eol) >= 0) {
 						prevToken = context.tokens[context.index - 2];
 						if (prevToken && prevToken.name === "operator" && prevToken.value === "`") {
 							return false;

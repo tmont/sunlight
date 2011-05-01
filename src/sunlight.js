@@ -660,7 +660,7 @@
 			
 			var analyzerContext = createAnalyzerContext(
 				tokenize(unhighlightedCode, language, partialContext, this.options),
-				partialContext, 
+				partialContext,
 				this.options
 			);
 			

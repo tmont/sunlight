@@ -262,7 +262,7 @@
 								default:
 									return false;
 							}
-						} else if (token.name === "default" && token.value.indexOf("\n") >= 0) {
+						} else if (token.name === "default" && token.value.indexOf(sunlight.util.eol) >= 0) {
 							//apparently they must be on the same line...?
 							return false;
 						}

@@ -57,48 +57,48 @@
 		
 		customParseRules: [
 			//global functions: //http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/package-detail.html
-				function() {
-					var functions = sunlight.util.createHashMap([
-						"Array", "Boolean", "decodeURIComponent", "decodeURI", "encodeURIComponent", "encodeURI",
-						"escape", "int", "isFinite", "isNaN", "isXMLName", "Number", "Object", "parseFloat", 
-						"parseInt", "String", "trace", "uint", "unescape", "Vector", "XML", "XMLList"
-					], "\\b", false);
-					
-					return function(context) {
-						if (!/[A-Za-z]/.test(context.reader.current())) {
-							//short circuit
-							return null;
-						}
-						
-						//if it follows "new" or ":", then it's not a function
-						var prevToken = context.token(context.count() - 1);
-						if (prevToken && ((prevToken.name === "keyword" && prevToken.value === "new") || (prevToken.name === "operator" && prevToken.value === ":"))) {
-							return null;
-						}
-						
-						var token = sunlight.util.matchWord(context, functions, "globalFunction", true);
-						if (!token) {
-							return null;
-						}
-						
-						//make sure that a "(" follows it
-						var peek, count = token.value.length;
-						while ((peek = context.reader.peek(count)) && peek.length === count) {
-							if (!/\s$/.test(peek)) {
-								if (sunlight.util.last(peek) === "(") {
-									token.line = context.reader.getLine();
-									token.column = context.reader.getColumn();
-									context.reader.read(token.value.length - 1);
-									return token;
-								}
-								
-								break;
-							}
-						}
-						
+			function() {
+				var functions = sunlight.util.createHashMap([
+					"Array", "Boolean", "decodeURIComponent", "decodeURI", "encodeURIComponent", "encodeURI",
+					"escape", "int", "isFinite", "isNaN", "isXMLName", "Number", "Object", "parseFloat", 
+					"parseInt", "String", "trace", "uint", "unescape", "Vector", "XML", "XMLList"
+				], "\\b", false);
+				
+				return function(context) {
+					if (!/[A-Za-z]/.test(context.reader.current())) {
+						//short circuit
 						return null;
-					};
-				}(),
+					}
+					
+					//if it follows "new" or ":", then it's not a function
+					var prevToken = context.token(context.count() - 1);
+					if (prevToken && ((prevToken.name === "keyword" && prevToken.value === "new") || (prevToken.name === "operator" && prevToken.value === ":"))) {
+						return null;
+					}
+					
+					var token = sunlight.util.matchWord(context, functions, "globalFunction", true);
+					if (!token) {
+						return null;
+					}
+					
+					//make sure that a "(" follows it
+					var peek, count = token.value.length;
+					while ((peek = context.reader.peek(count)) && peek.length === count) {
+						if (!/\s$/.test(peek)) {
+							if (sunlight.util.last(peek) === "(") {
+								token.line = context.reader.getLine();
+								token.column = context.reader.getColumn();
+								context.reader.read(token.value.length - 1);
+								return token;
+							}
+							
+							break;
+						}
+					}
+					
+					return null;
+				};
+			}(),
 				
 			//regex literal, stolen from javascript
 			function(context) {
