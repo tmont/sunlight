@@ -1,5 +1,7 @@
 1.8 2011-0x-xx
 --------------
+- Bugfixes
+	- C++: fixed syntax error in IE (trailing comma)
 - Enhancements
 	- new languages: actionscript, powershell
 	- Java: highlight type names after "instanceof" and "import"
