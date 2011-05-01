@@ -350,7 +350,7 @@
 			],
 			
 			follows: [
-				[{ token: "keyword", values: ["enum", "struct", "union"] }, sunlight.util.whitespace],
+				[{ token: "keyword", values: ["enum", "struct", "union"] }, sunlight.util.whitespace]
 			],
 			
 			precedes: [
