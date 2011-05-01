@@ -38,6 +38,10 @@
 
 	//array.contains()
 	var contains = function(arr, value, caseInsensitive) {
+		if (arr.indexOf && !caseInsensitive) {
+			return arr.indexOf(value) >= 0;
+		}
+		
 		for (var i = 0; i < arr.length; i++) {
 			if (arr[i] === value) {
 				return true;
