@@ -48,6 +48,16 @@ write-host "-END OF REPORT-"
 #prints all powershell keywords
 [type]::gettype("System.Management.Automation.KeywordTokenReader")|`
 %{$_.InvokeMember("_keywordTokens", "NonPublic,Static,GetField", $null, $_,@())}
+
+#http://weblogs.asp.net/steveschofield/archive/2007/01/25/basic-powershell-examples-couple-useful-commands.aspx
+$request = [Fully.Qualified.WebRequest]::Create("http://www.iislogs.com/testlink.aspx")
+$response = $request.GetResponse()
+$requestStream = $response.GetResponseStream()
+$readStream = new-object System.IO.StreamReader $requestStream
+new-variable db
+$db = $readStream.ReadToEnd()
+$readStream.Close()
+$response.Close()
 </pre>
 	</body>
 
@@ -62,6 +72,7 @@ write-host "-END OF REPORT-"
 		assertExists("named-ident", "write-host", "cmdlet");
 		assertExists("named-ident", "Get-WmiObject", "cmdlet");
 		assertExists("named-ident", "type", "type coercion");
+		assertExists("named-ident", "WebRequest", "type coercion");
 		
 		assertExists("switch", "-namespace", "switch");
 		assertExists("switch", "-computerName", "switch at start of line after continuation");
@@ -77,6 +88,8 @@ write-host "-END OF REPORT-"
 		assertExists("specialOperator", "-or", "-or special operator");
 		
 		assertExists("ident", "win32_OperatingSystem", "switch value");
+		assertExists("ident", "Fully", "fully qualified type name in brackets");
+		assertExists("ident", "Qualified", "fully qualified type name in brackets");
 		
 		assertExists("string", "\"root\\CIMV2\"", "string");
 		

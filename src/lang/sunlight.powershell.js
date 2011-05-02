@@ -63,6 +63,7 @@
 			//variables
 			function() {
 				//Get-Help about_automatic_variables
+				//all uppercase because they're not case sensitive
 				var specialVariables = [
 					"$$", "$?", "$^", "$_", "$ARGS", "$CONSOLEFILENAME", "$ERROR", "$EVENT", "$EVENTSUBSCRIBER",
 					"$EXECUTIONCONTEXT", "$FALSE", "$FOREACH", "$HOME", "$HOST", "$INPUT", "$LASTEXITCODE", 
@@ -116,12 +117,22 @@
 					}
 					
 					return false;
-				}
-			],
-			
-			between: [
+				},
+				
 				//type coercion
-				{ opener: { token: "punctuation", values: ["["] }, closer: { token: "punctuation", values: ["]"] } }
+				function(context) {
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
+						return false;
+					}
+					
+					var isBetween = sunlight.util.createBetweenRule(context.index, { token: "punctuation", values: ["["] }, { token: "punctuation", values: ["]"] });
+					if (!isBetween(context.tokens)) {
+						return false;
+					}
+					
+					return true;
+				}
 			]
 		},
 		
