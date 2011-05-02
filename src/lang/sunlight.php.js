@@ -10,7 +10,7 @@
 		var link = document.createElement("a");
 		link.className = context.options.classPrefix + suffix;
 		link.setAttribute("href", "http://php.net/" + word);
-		link.appendChild(context.createTextNode(word));
+		link.appendChild(context.createTextNode(context.tokens[context.index]));
 		context.addNode(link);
 	}
 	

@@ -151,10 +151,10 @@
 }
 .sunlight-keyword,
 .sunlight-languageConstruct,
+.sunlight-specialOperator,
 .sunlight-xml .sunlight-tagName,
 .sunlight-xml .sunlight-operator,
 .sunlight-bash .sunlight-command,
-.sunlight-ruby .sunlight-specialOperator,
 .sunlight-erlang .sunlight-moduleAttribute {
 	color: #A3CCF7 !important;
 	font-weight: bold !important;
@@ -176,6 +176,7 @@
 .sunlight-globalFunction,
 .sunlight-ruby .sunlight-specialFunction,
 .sunlight-6502asm .sunlight-illegalOpcode,
+.sunlight-powershell .sunlight-switch,
 .sunlight-lisp .sunlight-macro,
 .sunlight-lisp .sunlight-specialForm,
 .sunlight-lisp .sunlight-type,
@@ -186,6 +187,7 @@
 }
 .sunlight-variable,
 .sunlight-environmentVariable,
+.sunlight-specialVariable,
 .sunlight-lisp .sunlight-globalVariable,
 .sunlight-ruby .sunlight-globalVariable,
 .sunlight-ruby .sunlight-instanceVariable {
@@ -270,7 +272,8 @@
 .sunlight-bash .sunlight-verbatimCommand {
 	color: #BBA4EE !important;
 }
-.sunlight-bash .sunlight-variable, .sunlight-bash .sunlight-specialVariable {
+.sunlight-bash .sunlight-variable, 
+.sunlight-bash .sunlight-specialVariable {
 	color: #ED8585 !important;
 }
 

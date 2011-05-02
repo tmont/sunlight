@@ -129,12 +129,6 @@
 				
 				//user-defined types
 				function(context) {
-					//next token is not "."
-					// var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-					// if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
-						// return false;
-					// }
-					
 					return sunlight.util.contains(context.items.userDefinedTypes, context.tokens[context.index].value);
 				},
 				

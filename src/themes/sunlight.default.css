@@ -145,7 +145,7 @@
 .sunlight-css
 .sunlight-element,
 .sunlight-bash .sunlight-command,
-.sunlight-ruby .sunlight-specialOperator,
+.sunlight-specialOperator,
 .sunlight-erlang .sunlight-moduleAttribute,
 .sunlight-xml .sunlight-tagName,
 .sunlight-xml .sunlight-operator,
@@ -166,6 +166,7 @@
 .sunlight-globalFunction,
 .sunlight-ruby .sunlight-specialFunction,
 .sunlight-6502asm .sunlight-illegalOpcode,
+.sunlight-powershell .sunlight-switch,
 .sunlight-lisp .sunlight-macro,
 .sunlight-lisp .sunlight-specialForm,
 .sunlight-lisp .sunlight-type,

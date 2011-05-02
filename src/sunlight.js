@@ -12,6 +12,7 @@
 
 	//http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
 	var isIe = !+"\v1"; //we have to sniff this because IE requires \r
+	var EOL = isIe ? "\r" : "\n";
 
 	var EMPTY = function() { return null; };
 	var HIGHLIGHTED_NODE_COUNT = 0;
@@ -20,10 +21,10 @@
 
 	//http://javascript.crockford.com/prototypal.html
 	var create = function(o) {
-        function F() {}
-        F.prototype = o;
-        return new F();
-    };
+		function F() {}
+		F.prototype = o;
+		return new F();
+	};
 	
 	var appendAll = function(parent, children) {
 		for (var i = 0; i < children.length; i++) {
@@ -38,6 +39,10 @@
 
 	//array.contains()
 	var contains = function(arr, value, caseInsensitive) {
+		if (arr.indexOf && !caseInsensitive) {
+			return arr.indexOf(value) >= 0;
+		}
+		
 		for (var i = 0; i < arr.length; i++) {
 			if (arr[i] === value) {
 				return true;
@@ -160,7 +165,7 @@
 			return function(context) {
 				var element = document.createElement("span");
 				element.className = context.options.classPrefix + suffix;
-				element.appendChild(context.createTextNode(context.tokens[context.index].value));
+				element.appendChild(context.createTextNode(context.tokens[context.index]));
 				return context.addNode(element) || true;
 			};
 		};
@@ -169,7 +174,7 @@
 			handleToken: function(context) { return defaultHandleToken(context.tokens[context.index].name)(context); },
 
 			//just append default content as a text node
-			handle_default: function(context) { return context.addNode(context.createTextNode(context.tokens[context.index].value)); },
+			handle_default: function(context) { return context.addNode(context.createTextNode(context.tokens[context.index])); },
 
 			//this handles the named ident mayhem
 			handle_ident: function(context) {
@@ -213,13 +218,8 @@
 			}
 
 			count = count || 1;
-
-			var value = "", num = 1;
-			//TODO use substring()
-			while (num <= count && text.charAt(index + num) !== "") {
-				value += text.charAt(index + num++);
-			}
-
+			
+			var value = text.substring(index + 1, index + count + 1);
 			return value === "" ? EOF : value;
 		};
 
@@ -272,6 +272,8 @@
 				return value;
 			},
 
+			text: function() { return text; },
+			
 			getLine: function() { return line; },
 			getColumn: function() { return column; },
 			isEof: function() { return index >= length; },
@@ -621,10 +623,29 @@
 		var createAnalyzerContext = function(parserContext, partialContext, options) {
 			var nodes = [];
 			var prepareText = function() {
-				var nbsp = String.fromCharCode(0xa0);
-				var tab = new Array(options.tabWidth + 1).join(nbsp);
-				return function(text) {
-					return text.split(" ").join(nbsp).split("\t").join(tab);
+				var nbsp, tab;
+				if (options.showWhitespace) {
+					nbsp = String.fromCharCode(0xB7);
+					tab = new Array(options.tabWidth).join(String.fromCharCode(0x2014)) + String.fromCharCode(0x2192);
+				} else {
+					nbsp = String.fromCharCode(0xA0);
+					tab = new Array(options.tabWidth + 1).join(nbsp);
+				}
+				
+				return function(token) {
+					var value = token.value.split(" ").join(nbsp);
+					var tabIndex;
+					
+					//tabstop madness: replace \t with the appropriate number of characters, depending on the tabWidth option and its relative position in the line
+					while ((tabIndex = value.indexOf("\t")) >= 0) {
+						var lastNewlineColumn = value.lastIndexOf(EOL, tabIndex);
+						var actualColumn = lastNewlineColumn === -1 ? tabIndex : tabIndex - lastNewlineColumn - 1;
+						var tabLength = options.tabWidth - (actualColumn % options.tabWidth); //actual length of the TAB character
+						
+						value = value.substring(0, tabIndex) + tab.substring(options.tabWidth - tabLength) + value.substring(tabIndex + 1);
+					}
+					
+					return value;
 				};
 			}();
 
@@ -635,7 +656,7 @@
 				options: options,
 				continuation: parserContext.continuation,
 				addNode: function(node) { nodes.push(node); },
-				createTextNode: function(text) { return document.createTextNode(prepareText(text)); },
+				createTextNode: function(token) { return document.createTextNode(prepareText(token)); },
 				getNodes: function() { return nodes; },
 				resetNodes: function() { nodes = []; },
 				items: parserContext.items
@@ -656,7 +677,7 @@
 			
 			var analyzerContext = createAnalyzerContext(
 				tokenize(unhighlightedCode, language, partialContext, this.options),
-				partialContext, 
+				partialContext,
 				this.options
 			);
 			
@@ -885,7 +906,8 @@
 
 	var globalOptions = {
 		tabWidth: 4,
-		classPrefix: DEFAULT_CLASS_PREFIX
+		classPrefix: DEFAULT_CLASS_PREFIX,
+		showWhitespace: false
 	};
 
 	var languages = {};
@@ -938,7 +960,7 @@
 
 	//public facing object
 	window.Sunlight = {
-		version: "1.7",
+		version: "1.8",
 		Highlighter: highlighterConstructor,
 		createAnalyzer: function() { return create(defaultAnalyzer); },
 		globalOptions: globalOptions,
@@ -998,7 +1020,7 @@
 
 		util: {
 			last: last,
-			eol: isIe ? "\r" : "\n",
+			eol: EOL,
 			escapeSequences: ["\\n", "\\t", "\\r", "\\\\", "\\v", "\\f"],
 			contains: contains,
 			matchWord: matchWord,

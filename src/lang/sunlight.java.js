@@ -229,7 +229,7 @@
 					//go backward and make sure that there are only idents and dots before the new keyword
 					var token, index = context.index, previous = context.tokens[index];
 					while ((token = context.tokens[--index]) !== undefined) {
-						if (token.name === "keyword" && token.value === "new") {
+						if (token.name === "keyword" && (token.value === "new" || token.value === "import" || token.value === "instanceof")) {
 							return true;
 						}
 						
