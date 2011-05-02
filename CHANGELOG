@@ -2,9 +2,14 @@
 --------------
 - Bugfixes
 	- C++: fixed syntax error in IE (trailing comma)
+	- tabstops are now being correctly parsed
 - Enhancements
 	- new languages: actionscript, powershell
 	- Java: highlight type names after "instanceof" and "import"
+	- new option: showWhitespace
+- Breaking Changes
+	- the signature for analyzerContext.createTextNode changed from accepting a string
+	  to accepting a token
 
 1.7 2011-04-29
 --------------

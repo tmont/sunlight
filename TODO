@@ -14,7 +14,6 @@ TESTING
 BUGS
 
 FUNCTIONALITY
-- show whitespace option
 - remove hideous code duplication (e.g. between c#, java and c++)
 
 FUNCTIONALITY - 2.0
@@ -33,3 +32,5 @@ LANGUAGES
 WEB
 - add actionscript to demo
 - add powershell to demo
+- document showWhitespace option
+- document changes to analyzerContext.createTextNode
