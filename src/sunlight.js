@@ -218,13 +218,8 @@
 			}
 
 			count = count || 1;
-
-			var value = "", num = 1;
-			//TODO use substring()
-			while (num <= count && text.charAt(index + num) !== "") {
-				value += text.charAt(index + num++);
-			}
-
+			
+			var value = text.substring(index + 1, index + count + 1);
 			return value === "" ? EOF : value;
 		};
 
