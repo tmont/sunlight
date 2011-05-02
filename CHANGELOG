@@ -3,6 +3,7 @@
 - Bugfixes
 	- C++: fixed syntax error in IE (trailing comma)
 	- tabstops are now being correctly parsed
+	- enabling the line number plugin on code blocks that were empty threw undefined errors
 - Enhancements
 	- new languages: actionscript, powershell
 	- Java: highlight type names after "instanceof" and "import"
