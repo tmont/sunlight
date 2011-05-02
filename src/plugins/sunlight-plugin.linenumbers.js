@@ -20,12 +20,16 @@
 		
 		//get the last text node
 		var lastTextNode = function getLastNode(node) {
+			if (!node.lastChild) {
+				return null;
+			}
+			
 			if (node.lastChild.nodeType === 3) {
 				return node.lastChild;
 			}
 			
 			return getLastNode(node.lastChild);
-		}(node);
+		}(node) || { lastChild: "" };
 		
 		return node.innerHTML.replace(/[^\n]/g, "").length - /\n$/.test(lastTextNode.nodeValue);
 	}
