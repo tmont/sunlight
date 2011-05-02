@@ -30,7 +30,3 @@ LANGUAGES
 - prolog
 
 WEB
-- add actionscript to demo
-- add powershell to demo
-- document showWhitespace option
-- document changes to analyzerContext.createTextNode
