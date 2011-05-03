@@ -1,0 +1,67 @@
+<html>
+
+	<head>
+		<script type="text/javascript" src="../src/sunlight.js"></script>
+		<script type="text/javascript" src="../src/plugins/sunlight-plugin.linenumbers.js"></script>
+		<script type="text/javascript" src="../src/lang/sunlight.objective-c.js"></script>
+		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.default.css" />
+	</head>
+
+	<body>
+<pre id="code" class="sunlight-highlight-objective-c">
+@protocol Link
+@property id &lt;Link&gt; next;
+@end
+
+@interface MyClass : NSObject &lt;Link&gt; {
+	NSTimeInterval intervalSinceReferenceDate;
+	CGFloat gratuitousFloat;
+	id &lt;Link&gt; nextLink;
+}
+
+@property(readonly) NSTimeInterval creationTimestamp;
+@property(copy) NSString *name;
+@property CGFloat gratuitousFloat;
+@property(readonly, getter=nameAndAgeAsString) NSString *nameAndAge;
+@end
+
+@implementation MyClass
+@synthesize creationTimestamp = intervalSinceReferenceDate, name;
+// Synthesizing 'name' is an error in legacy runtimes;
+// in modern runtimes, the instance variable is synthesized.
+@synthesize next = nextLink;
+// Uses instance variable &quot;nextLink&quot; for storage.
+@dynamic gratuitousFloat;
+// This directive is not strictly necessary.
+- (CGFloat)gratuitousFloat {
+	return gratuitousFloat;
+}
+- (void)setGratuitousFloat:(CGFloat)aValue {
+	gratuitousFloat = aValue;
+}
+- (NSString *)nameAndAgeAsString {
+	return [NSString stringWithFormat:@&quot;%@ (%fs)&quot;, [self name],
+	           [NSDate timeIntervalSinceReferenceDate] - intervalSinceReferenceDate];
+}
+- (id)init {
+	self = [super init];
+	if (self) {
+		intervalSinceReferenceDate = [NSDate timeIntervalSinceReferenceDate];
+	}
+	return self;
+}
+- (void)dealloc {
+	[nextLink release]
+	[name release];
+	[super dealloc];
+}
+@end
+</pre>
+	</body>
+
+	<script type="text/javascript"  src="test.js"></script>
+	<script type="text/javascript">//<![CDATA[
+		//assertExists("preprocessorDirective", "#include <iostream>", "preprocessor");
+
+	//]]></script>
+</html>

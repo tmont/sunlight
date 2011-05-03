@@ -165,6 +165,7 @@
 .sunlight-function,
 .sunlight-globalFunction,
 .sunlight-ruby .sunlight-specialFunction,
+.sunlight-objective-c .sunlight-builtinMessage,
 .sunlight-6502asm .sunlight-illegalOpcode,
 .sunlight-powershell .sunlight-switch,
 .sunlight-lisp .sunlight-macro,
