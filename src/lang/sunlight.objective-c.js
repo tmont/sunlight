@@ -12,7 +12,7 @@
 			"true","bitand","enum","or","try","bitor","explicittodo","or_eq","typedef","bool","export",
 			"private","typeid","break","externtodo","protected","typename","case","false","public","union",
 			"catch","float","register","using","char","for","reinterpret_cast","unsigned","char16_t",
-			"friend","return","void","char32_t","goto","short","wchar_t","class","if","signed","virtual",
+			"friend","return","void","char32_t","goto","short","wchar_t","if","signed","virtual",
 			"compl","inline","sizeof","volatile","const","int","static","while","constexpr","long",
 			"static_assert","xor","const_cast","mutable","static_cast","xor_eq","continue","namespace",
 			"struct","decltype","new","switch",
