@@ -62,6 +62,82 @@
 		},
 		
 		customParseRules: [
+			//message destination (e.g. method calls)
+			function(context) {
+				//read the ident first
+				if (!context.language.identFirstLetter.test(context.reader.current())) {
+					return null;
+				}
+				
+				var peek, count = 0;
+				while ((peek = context.reader.peek(++count)) && peek.length === count) {
+					if (!context.language.identAfterFirstLetter.test(sunlight.util.last(peek))) {
+						break;
+					}
+				}
+				
+				var ident = context.reader.current() + peek.substring(0, peek.length - 1), count = count - 1;
+				var possibleMessageArgument = false;
+				while ((peek = context.reader.peek(++count)) && peek.length === count) {
+					if (!/\s$/.test(peek)) {
+						var match = /([\]:])$/.exec(peek);
+						if (match === null) {
+							//not a message destination
+							return null;
+						}
+						
+						possibleMessageArgument = match[1] === ":" && !/::$/.test(context.reader.peek(count + 1));
+						break;
+					}
+				}
+				
+				//must be the second expression after "["
+				var parenCount = 0, bracketCount = 0, token, index = context.count(), exprCount = 1;
+				while (token = context.token(--index)) {
+					if (exprCount > 1 && !possibleMessageArgument) {
+						return null;
+					}
+					
+					if (token.name === "punctuation") {
+						switch (token.value) {
+							case ";":
+							case "{":
+							case "}":
+								//short circuit rules
+								return null;
+							case "(":
+								parenCount--;
+								break;
+							case ")":
+								parenCount++;
+								break;
+							case "[":
+								if (bracketCount === 0 && parenCount === 0) {
+									if (exprCount >= 1) {
+										token = context.createToken(possibleMessageArgument && exprCount > 1 ? "messageArgumentName" : "messageDestination", ident, context.reader.getLine(), context.reader.getColumn());
+										context.reader.read(ident.length - 1);
+										return token;
+									}
+									
+									return null;
+								}
+								
+								bracketCount--;
+								break;
+							case "]":
+								bracketCount++;
+								break;
+						}
+					}
+					
+					if (bracketCount === 0 && parenCount === 0 && token.name === "default") {
+						exprCount++;
+					}
+				}
+				
+				return null;
+			},
+			
 			//@property attributes
 			function() {
 				var attributes = sunlight.util.createHashMap([
@@ -116,6 +192,12 @@
 				function(context) {
 					var regex = /^(NS|CG).+$/;
 					return regex.test(context.tokens[context.index].value);
+				},
+				
+				//call to class
+				function(context) {
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					return nextToken && nextToken.name === "messageDestination" && nextToken.value === "class";
 				},
 				
 				//ident followed by an ident, but not inside []
