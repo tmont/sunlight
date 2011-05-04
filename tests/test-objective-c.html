@@ -9,142 +9,184 @@
 
 	<body>
 <pre id="code" class="sunlight-highlight-objective-c">
-/*
- * Copyright (C) 2007, 2008 Apple Inc. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL APPLE COMPUTER, INC. OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
- * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+//
+//  GCPagedScrollView.m
+//  GCLibrary
+//
+//  Created by Guillaume Campagna on 10-11-10.
+//  Copyright (c) 2010 LittleKiwi. All rights reserved.
+//
 
-#import &quot;WebDragClient.h&quot;
+#import &quot;GCPagedScrollView.h&quot;
+#import &lt;QuartzCore/CATransaction.h&gt;
 
-#import &quot;WebArchive.h&quot;
-#import &quot;WebDOMOperations.h&quot;
-#import &quot;WebFrame.h&quot;
-#import &quot;WebFrameInternal.h&quot;
-#import &quot;WebHTMLViewInternal.h&quot;
-#import &quot;WebHTMLViewPrivate.h&quot;
-#import &quot;WebKitLogging.h&quot;
-#import &quot;WebKitNSStringExtras.h&quot;
-#import &quot;WebNSPasteboardExtras.h&quot;
-#import &quot;WebNSURLExtras.h&quot;
-#import &quot;WebStringTruncator.h&quot;
-#import &quot;WebUIDelegate.h&quot;
-#import &quot;WebUIDelegatePrivate.h&quot;
-#import &quot;WebViewInternal.h&quot;
-#import &lt;WebCore/ClipboardMac.h&gt;
-#import &lt;WebCore/DragData.h&gt;
-#import &lt;WebCore/Editor.h&gt;
-#import &lt;WebCore/EditorClient.h&gt;
-#import &lt;WebCore/EventHandler.h&gt;
-#import &lt;WebCore/Frame.h&gt;
-#import &lt;WebCore/FrameView.h&gt;
-#import &lt;WebCore/Image.h&gt;
-#import &lt;WebCore/Page.h&gt;
+NSString * const GCPagedScrollViewContentOffsetKey = @&quot;contentOffset&quot;;
+const CGFloat GCPagedScrollViewPageControlHeight = 36.0;
 
-using namespace WebCore;
+@interface GCPagedScrollView ()
 
-WebDragClient::WebDragClient(WebView* webView)
-    : m_webView(webView)
-{
+@property (nonatomic, readonly) NSMutableArray* views;
+@property (nonatomic, readonly) UIPageControl* pageControl;
+
+- (void) updateViewPositionAndPageControl;
+
+- (void) changePage:(UIPageControl*) aPageControl;
+
+@end
+
+@implementation GCPagedScrollView
+
+@synthesize views;
+@synthesize pageControl;
+
+#pragma mark -
+#pragma mark Subclass
+
+- (id)initWithFrame:(CGRect)frame {
+    if ((self = [super initWithFrame:frame])) {
+        self.pagingEnabled = YES;
+        self.showsVerticalScrollIndicator = NO;
+        self.showsHorizontalScrollIndicator = NO;
+        self.scrollsToTop = NO;
+        
+        //Place page control
+        CGRect frame = CGRectMake(self.contentOffset.x, 0, self.frame.size.width, GCPagedScrollViewPageControlHeight);
+        UIPageControl* aPageControl = [[UIPageControl alloc] initWithFrame:frame];
+        [aPageControl addTarget:self action:@selector(changePage:) forControlEvents:UIControlEventValueChanged];
+        aPageControl.defersCurrentPageDisplay = YES;
+        aPageControl.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin);
+        [self addSubview:aPageControl];
+        pageControl = aPageControl;  
+    }
+    return self;
 }
 
-static WebHTMLView *getTopHTMLView(Frame* frame)
-{
-    ASSERT(frame);
-    ASSERT(frame-&gt;page());
-    return (WebHTMLView*)[[kit(frame-&gt;page()-&gt;mainFrame()) frameView] documentView];
+- (void) setPagingEnabled:(BOOL) pagingEnabled {
+    if (pagingEnabled) [super setPagingEnabled:pagingEnabled];
+    else {
+        [NSException raise:@&quot;Disabling pagingEnabled&quot; format:@&quot;Paging enabled should not be disabled in GCPagedScrollView&quot;];
+    }
 }
 
-WebCore::DragDestinationAction WebDragClient::actionMaskForDrag(WebCore::DragData* dragData)
-{
-    return (WebCore::DragDestinationAction)[[m_webView _UIDelegateForwarder] webView:m_webView dragDestinationActionMaskForDraggingInfo:dragData-&gt;platformData()];
+#pragma mark -
+#pragma mark Add/Remove content
+
+- (void) addContentSubview:(UIView *)view {
+    [self addContentSubview:view atIndex:[self.views count]];
 }
 
-void WebDragClient::willPerformDragDestinationAction(WebCore::DragDestinationAction action, WebCore::DragData* dragData)
-{
-    [[m_webView _UIDelegateForwarder] webView:m_webView willPerformDragDestinationAction:(WebDragDestinationAction)action forDraggingInfo:dragData-&gt;platformData()];
+- (void) addContentSubview:(UIView *)view atIndex:(NSUInteger)index {
+    [self insertSubview:view atIndex:index];
+    [self.views insertObject:view atIndex:index];
+    [self updateViewPositionAndPageControl];
+    self.contentOffset = CGPointMake(0, - self.scrollIndicatorInsets.top);
 }
 
-
-WebCore::DragSourceAction WebDragClient::dragSourceActionMaskForPoint(const IntPoint&amp; windowPoint)
-{
-    NSPoint viewPoint = [m_webView convertPoint:windowPoint fromView:nil];
-    return (DragSourceAction)[[m_webView _UIDelegateForwarder] webView:m_webView dragSourceActionMaskForPoint:viewPoint];
-}
-
-void WebDragClient::willPerformDragSourceAction(WebCore::DragSourceAction action, const WebCore::IntPoint&amp; mouseDownPoint, WebCore::Clipboard* clipboard)
-{
-    ASSERT(clipboard);
-    [[m_webView _UIDelegateForwarder] webView:m_webView willPerformDragSourceAction:(WebDragSourceAction)action fromPoint:mouseDownPoint withPasteboard:static_cast&lt;WebCore::ClipboardMac*&gt;(clipboard)-&gt;pasteboard()];
-}
-
-void WebDragClient::startDrag(DragImageRef dragImage, const IntPoint&amp; at, const IntPoint&amp; eventPos, Clipboard* clipboard, Frame* frame, bool linkDrag)
-{
-    if (!frame)
-        return;
-    ASSERT(clipboard);
-    RetainPtr&lt;WebHTMLView&gt; htmlView = (WebHTMLView*)[[kit(frame) frameView] documentView];
-    if (![htmlView.get() isKindOfClass:[WebHTMLView class]])
-        return;
+- (void) removeContentSubview:(UIView *)view {
+    [view removeFromSuperview];
     
-    NSEvent *event = linkDrag ? frame-&gt;eventHandler()-&gt;currentNSEvent() : [htmlView.get() _mouseDownEvent];
-    WebHTMLView* topHTMLView = getTopHTMLView(frame);
-    RetainPtr&lt;WebHTMLView&gt; topViewProtector = topHTMLView;
+    [self.views removeObject:view];
+    [self updateViewPositionAndPageControl];
+}
+
+- (void)removeContentSubviewAtIndex:(NSUInteger)index {
+    [self removeContentSubview:[self.views objectAtIndex:index]];
+}
+
+- (void) removeAllContentSubview {
+    for (UIView* view in self.views) {
+        [view removeFromSuperview];
+    }
     
-    [topHTMLView _stopAutoscrollTimer];
-    NSPasteboard *pasteboard = static_cast&lt;ClipboardMac*&gt;(clipboard)-&gt;pasteboard();
-
-    NSImage *dragNSImage = dragImage.get();
-    WebHTMLView *sourceHTMLView = htmlView.get();
-
-    id delegate = [m_webView UIDelegate];
-    SEL selector = @selector(webView:dragImage:at:offset:event:pasteboard:source:slideBack:forView:);
-    if ([delegate respondsToSelector:selector]) {
-        if ([m_webView _catchesDelegateExceptions]) {
-            @try {
-                [delegate webView:m_webView dragImage:dragNSImage at:at offset:NSZeroSize event:event pasteboard:pasteboard source:sourceHTMLView slideBack:YES forView:topHTMLView];
-            } @catch (id exception) {
-                ReportDiscardedDelegateException(selector, exception);
-            }
-        } else
-            [delegate webView:m_webView dragImage:dragNSImage at:at offset:NSZeroSize event:event pasteboard:pasteboard source:sourceHTMLView slideBack:YES forView:topHTMLView];
-    } else
-        [topHTMLView dragImage:dragNSImage at:at offset:NSZeroSize event:event pasteboard:pasteboard source:sourceHTMLView slideBack:YES];
+    [self.views removeAllObjects];
+    [self updateViewPositionAndPageControl];
 }
 
-void WebDragClient::declareAndWriteDragImage(NSPasteboard* pasteboard, DOMElement* element, NSURL* URL, NSString* title, WebCore::Frame* frame)
-{
-    ASSERT(pasteboard);
-    ASSERT(element);
-    WebHTMLView *source = getTopHTMLView(frame);
-    WebArchive *archive = [element webArchive];
+#pragma mark -
+#pragma mark Layout
+
+- (void) updateViewPositionAndPageControl {
+    NSUInteger index = 0;
+    for (UIView* view in self.views) {
+        view.center = CGPointMake(self.frame.size.width * index + self.frame.size.width / 2, 
+                                  (self.frame.size.height - GCPagedScrollViewPageControlHeight) / 2);
+        index ++;
+    }
     
-    [pasteboard _web_declareAndWriteDragImageForElement:element URL:URL title:title archive:archive source:source];
+    UIEdgeInsets inset = self.scrollIndicatorInsets;
+    CGFloat heightInset = inset.top + inset.bottom;
+    self.contentSize = CGSizeMake(self.frame.size.width * [self.views count], self.frame.size.height - heightInset);
+    
+    self.pageControl.numberOfPages = self.views.count;
 }
 
-void WebDragClient::dragControllerDestroyed()
-{
-    delete this;
+- (void) layoutSubviews {
+    [super layoutSubviews];
+    
+    //Avoid that the pageControl move
+    [CATransaction begin];
+    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+    
+    CGRect frame = self.pageControl.frame;
+    frame.origin.x = self.contentOffset.x;
+    frame.origin.y = self.frame.size.height - GCPagedScrollViewPageControlHeight - self.scrollIndicatorInsets.bottom - self.scrollIndicatorInsets.top;
+    frame.size.width = self.frame.size.width;
+    self.pageControl.frame = frame;
+    
+    [CATransaction commit];
 }
+
+#pragma mark -
+#pragma mark Getters/Setters
+
+- (void) setFrame:(CGRect) newFrame {
+    [super setFrame:newFrame];
+    [self updateViewPositionAndPageControl];
+}
+
+- (void) changePage:(UIPageControl*) aPageControl {
+    [self setPage:aPageControl.currentPage animated:YES];
+}
+
+- (void) setContentOffset:(CGPoint) new {
+    new.y = -self.scrollIndicatorInsets.top;
+    [super setContentOffset:new];
+    
+    self.pageControl.currentPage = self.page; //Update the page number
+}
+
+- (NSMutableArray*) views {
+    if (views == nil) {
+        views = [[NSMutableArray alloc] initWithCapacity:1];
+    }
+    return views;
+}
+
+- (NSUInteger) page {
+    return (self.contentOffset.x + self.frame.size.width / 2) / self.frame.size.width;
+}
+
+- (void) setPage:(NSUInteger)page {
+    [self setPage:page animated:NO];
+}
+
+- (void) setPage:(NSUInteger)page animated:(BOOL) animated {
+    [self setContentOffset:CGPointMake(page * self.frame.size.width, - self.scrollIndicatorInsets.top) animated:animated];
+}
+
+#pragma mark -
+#pragma mark Dealloc
+
+- (void)dealloc {    
+    [views release];
+    [pageControl release];
+    
+    [super dealloc];
+}
+
+
+@end
+
 </pre>
 	</body>
 

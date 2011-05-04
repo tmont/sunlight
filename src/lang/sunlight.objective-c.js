@@ -343,7 +343,7 @@
 										return false;
 									}
 									
-									if (prevToken.name === "keyword" && sunlight.util.contains(["if", "while"], token.value)) {
+									if (prevToken.name === "keyword" && sunlight.util.contains(["if", "while"], prevToken.value)) {
 										return false;
 									}
 								}
