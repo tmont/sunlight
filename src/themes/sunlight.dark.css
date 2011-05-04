@@ -174,6 +174,7 @@
 }
 .sunlight-function,
 .sunlight-globalFunction,
+.sunlight-objective-c .sunlight-messageDestination,
 .sunlight-ruby .sunlight-specialFunction,
 .sunlight-6502asm .sunlight-illegalOpcode,
 .sunlight-powershell .sunlight-switch,
@@ -188,6 +189,7 @@
 .sunlight-variable,
 .sunlight-environmentVariable,
 .sunlight-specialVariable,
+.sunlight-objective-c .sunlight-messageArgumentName,
 .sunlight-lisp .sunlight-globalVariable,
 .sunlight-ruby .sunlight-globalVariable,
 .sunlight-ruby .sunlight-instanceVariable {
