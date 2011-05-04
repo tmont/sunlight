@@ -196,7 +196,7 @@
 	font-weight: bold !important;
 }
 .sunlight-csharp .sunlight-pragma,
-.sunlight-cpp .sunlight-preprocessorDirective,
+.sunlight-preprocessorDirective,
 .sunlight-vb .sunlight-compilerDirective,
 .sunlight-diff .sunlight-mergeHeader,
 .sunlight-diff .sunlight-noNewLine {

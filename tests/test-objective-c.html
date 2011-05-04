@@ -9,53 +9,142 @@
 
 	<body>
 <pre id="code" class="sunlight-highlight-objective-c">
-@protocol Link
-@property id &lt;Link&gt; next;
-@end
+/*
+ * Copyright (C) 2007, 2008 Apple Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+ * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
-@interface MyClass : NSObject &lt;Link&gt; {
-	NSTimeInterval intervalSinceReferenceDate;
-	CGFloat gratuitousFloat;
-	id &lt;Link&gt; nextLink;
+#import &quot;WebDragClient.h&quot;
+
+#import &quot;WebArchive.h&quot;
+#import &quot;WebDOMOperations.h&quot;
+#import &quot;WebFrame.h&quot;
+#import &quot;WebFrameInternal.h&quot;
+#import &quot;WebHTMLViewInternal.h&quot;
+#import &quot;WebHTMLViewPrivate.h&quot;
+#import &quot;WebKitLogging.h&quot;
+#import &quot;WebKitNSStringExtras.h&quot;
+#import &quot;WebNSPasteboardExtras.h&quot;
+#import &quot;WebNSURLExtras.h&quot;
+#import &quot;WebStringTruncator.h&quot;
+#import &quot;WebUIDelegate.h&quot;
+#import &quot;WebUIDelegatePrivate.h&quot;
+#import &quot;WebViewInternal.h&quot;
+#import &lt;WebCore/ClipboardMac.h&gt;
+#import &lt;WebCore/DragData.h&gt;
+#import &lt;WebCore/Editor.h&gt;
+#import &lt;WebCore/EditorClient.h&gt;
+#import &lt;WebCore/EventHandler.h&gt;
+#import &lt;WebCore/Frame.h&gt;
+#import &lt;WebCore/FrameView.h&gt;
+#import &lt;WebCore/Image.h&gt;
+#import &lt;WebCore/Page.h&gt;
+
+using namespace WebCore;
+
+WebDragClient::WebDragClient(WebView* webView)
+    : m_webView(webView)
+{
 }
 
-@property(readonly) NSTimeInterval creationTimestamp;
-@property(copy) NSString *name;
-@property CGFloat gratuitousFloat;
-@property(readonly, getter=nameAndAgeAsString) NSString *nameAndAge;
-@end
+static WebHTMLView *getTopHTMLView(Frame* frame)
+{
+    ASSERT(frame);
+    ASSERT(frame-&gt;page());
+    return (WebHTMLView*)[[kit(frame-&gt;page()-&gt;mainFrame()) frameView] documentView];
+}
 
-@implementation MyClass
-@synthesize creationTimestamp = intervalSinceReferenceDate, name;
-// Synthesizing 'name' is an error in legacy runtimes;
-// in modern runtimes, the instance variable is synthesized.
-@synthesize next = nextLink;
-// Uses instance variable &quot;nextLink&quot; for storage.
-@dynamic gratuitousFloat;
-// This directive is not strictly necessary.
-- (CGFloat)gratuitousFloat {
-	return gratuitousFloat;
+WebCore::DragDestinationAction WebDragClient::actionMaskForDrag(WebCore::DragData* dragData)
+{
+    return (WebCore::DragDestinationAction)[[m_webView _UIDelegateForwarder] webView:m_webView dragDestinationActionMaskForDraggingInfo:dragData-&gt;platformData()];
 }
-- (void)setGratuitousFloat:(CGFloat)aValue {
-	gratuitousFloat = aValue;
+
+void WebDragClient::willPerformDragDestinationAction(WebCore::DragDestinationAction action, WebCore::DragData* dragData)
+{
+    [[m_webView _UIDelegateForwarder] webView:m_webView willPerformDragDestinationAction:(WebDragDestinationAction)action forDraggingInfo:dragData-&gt;platformData()];
 }
-- (NSString *)nameAndAgeAsString {
-	return [NSString stringWithFormat:@&quot;%@ (%fs)&quot;, [self name],
-	           [NSDate timeIntervalSinceReferenceDate] - intervalSinceReferenceDate];
+
+
+WebCore::DragSourceAction WebDragClient::dragSourceActionMaskForPoint(const IntPoint&amp; windowPoint)
+{
+    NSPoint viewPoint = [m_webView convertPoint:windowPoint fromView:nil];
+    return (DragSourceAction)[[m_webView _UIDelegateForwarder] webView:m_webView dragSourceActionMaskForPoint:viewPoint];
 }
-- (id)init {
-	self = [super init];
-	if (self) {
-		intervalSinceReferenceDate = [NSDate timeIntervalSinceReferenceDate];
-	}
-	return self;
+
+void WebDragClient::willPerformDragSourceAction(WebCore::DragSourceAction action, const WebCore::IntPoint&amp; mouseDownPoint, WebCore::Clipboard* clipboard)
+{
+    ASSERT(clipboard);
+    [[m_webView _UIDelegateForwarder] webView:m_webView willPerformDragSourceAction:(WebDragSourceAction)action fromPoint:mouseDownPoint withPasteboard:static_cast&lt;WebCore::ClipboardMac*&gt;(clipboard)-&gt;pasteboard()];
 }
-- (void)dealloc {
-	[nextLink release]
-	[name release];
-	[super dealloc];
+
+void WebDragClient::startDrag(DragImageRef dragImage, const IntPoint&amp; at, const IntPoint&amp; eventPos, Clipboard* clipboard, Frame* frame, bool linkDrag)
+{
+    if (!frame)
+        return;
+    ASSERT(clipboard);
+    RetainPtr&lt;WebHTMLView&gt; htmlView = (WebHTMLView*)[[kit(frame) frameView] documentView];
+    if (![htmlView.get() isKindOfClass:[WebHTMLView class]])
+        return;
+    
+    NSEvent *event = linkDrag ? frame-&gt;eventHandler()-&gt;currentNSEvent() : [htmlView.get() _mouseDownEvent];
+    WebHTMLView* topHTMLView = getTopHTMLView(frame);
+    RetainPtr&lt;WebHTMLView&gt; topViewProtector = topHTMLView;
+    
+    [topHTMLView _stopAutoscrollTimer];
+    NSPasteboard *pasteboard = static_cast&lt;ClipboardMac*&gt;(clipboard)-&gt;pasteboard();
+
+    NSImage *dragNSImage = dragImage.get();
+    WebHTMLView *sourceHTMLView = htmlView.get();
+
+    id delegate = [m_webView UIDelegate];
+    SEL selector = @selector(webView:dragImage:at:offset:event:pasteboard:source:slideBack:forView:);
+    if ([delegate respondsToSelector:selector]) {
+        if ([m_webView _catchesDelegateExceptions]) {
+            @try {
+                [delegate webView:m_webView dragImage:dragNSImage at:at offset:NSZeroSize event:event pasteboard:pasteboard source:sourceHTMLView slideBack:YES forView:topHTMLView];
+            } @catch (id exception) {
+                ReportDiscardedDelegateException(selector, exception);
+            }
+        } else
+            [delegate webView:m_webView dragImage:dragNSImage at:at offset:NSZeroSize event:event pasteboard:pasteboard source:sourceHTMLView slideBack:YES forView:topHTMLView];
+    } else
+        [topHTMLView dragImage:dragNSImage at:at offset:NSZeroSize event:event pasteboard:pasteboard source:sourceHTMLView slideBack:YES];
 }
-@end
+
+void WebDragClient::declareAndWriteDragImage(NSPasteboard* pasteboard, DOMElement* element, NSURL* URL, NSString* title, WebCore::Frame* frame)
+{
+    ASSERT(pasteboard);
+    ASSERT(element);
+    WebHTMLView *source = getTopHTMLView(frame);
+    WebArchive *archive = [element webArchive];
+    
+    [pasteboard _web_declareAndWriteDragImageForElement:element URL:URL title:title archive:archive source:source];
+}
+
+void WebDragClient::dragControllerDestroyed()
+{
+    delete this;
+}
 </pre>
 	</body>
 

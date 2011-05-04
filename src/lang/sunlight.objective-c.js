@@ -44,14 +44,14 @@
 					"SIG_DFL", "SIG_IGN", "SIG_ERR", "SIGABRT", "SIGFPE", "SIGILL", "SIGINT", "SIGSEGV", "SIGTERM"
 				],
 				boundary: "\\b"
-			},
-			
-			builtinMessage: {
-				values: [
-					"init", "alloc", "class", "release", "dealloc", "autorelease"
-				],
-				boundary: "\\b"
 			}
+			
+			// builtinMessage: {
+				// values: [
+					// "init", "alloc", "class", "release", "dealloc", "autorelease"
+				// ],
+				// boundary: "\\b"
+			// }
 		},
 
 		scopes: {
@@ -109,12 +109,48 @@
 		identFirstLetter: /[A-Za-z_]/,
 		identAfterFirstLetter: /\w/,
 
-		
-		//inside <> (protocols)
 		//after classname in () (categories)
-		
 		namedIdentRules: {
 			custom: [
+				//naming convention: NS.+, CG.+ are assumed to be built in objects
+				function(context) {
+					var regex = /^(NS|CG).+$/;
+					return regex.test(context.tokens[context.index].value);
+				},
+				
+				//ident followed by an ident, but not inside []
+				function(context) {
+					if (!sunlight.util.createProceduralRule(context.index + 1, 1, [{ token: "default" }, { token: "ident" }])(context.tokens)) {
+						return false;
+					}
+					
+					//must be between []
+					var token, index = context.index, parenCount = 0;
+					while (token = context.tokens[--index]) {
+						if (token.name === "punctuation") {
+							switch (token.value) {
+								case "[":
+									return false;
+								case "{":
+								case ",":
+									return true;
+								case "(":
+									if (parenCount === 0) {
+										return true;
+									}
+									
+									parenCount++;
+									break;
+								case ")":
+									parenCount--;
+									break;
+							}
+						}
+					}
+					
+					return true;
+				},
+				
 				//pointer default declarations, e.g. pointer* myPointer;
 				function() {
 					var precedes = [[
@@ -126,8 +162,8 @@
 							{ token: "punctuation", values: [";"] }
 						], [
 							//function parameters
-							{ token: "default" },
-							{ token: "operator", values: ["&"] },
+							sunlight.util.whitespace,
+							{ token: "operator", values: ["&", "*", "**"] },
 							sunlight.util.whitespace,
 							{ token: "ident" }
 							
@@ -176,6 +212,7 @@
 				function() {
 					var precedes = [
 						[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "ident" }],
+						[sunlight.util.whitespace, { token: "punctuation", values: [")"] }, sunlight.util.whitespace, { token: "punctuation", values: ["["] }],
 						[
 							sunlight.util.whitespace, 
 							{ token: "operator", values: ["*", "**"] }, 
@@ -184,6 +221,16 @@
 							sunlight.util.whitespace, 
 							{ token: "operator", values: ["&"], optional: true }, 
 							{ token: "ident" }
+						],
+						
+						[
+							sunlight.util.whitespace, 
+							{ token: "operator", values: ["*", "**"] }, 
+							sunlight.util.whitespace, 
+							{ token: "punctuation", values: [")"] }, 
+							sunlight.util.whitespace, 
+							{ token: "operator", values: ["&"], optional: true }, 
+							{ token: "punctuation", values: ["["] }
 						]
 					];
 				
@@ -202,15 +249,21 @@
 							return false;
 						}
 						
-						//make sure the previous tokens are "(" and then not a keyword
-						//this'll make sure that things like "if (foo) doSomething();" won't color "foo"
+						//make sure the previous tokens are "(" and then not a keyword or an ident
+						//this'll make sure that things like "if (foo) doSomething();" and "bar(foo)" won't color "foo"
 						
 						var token, index = context.index;
 						while (token = context.tokens[--index]) {
 							if (token.name === "punctuation" && token.value === "(") {
 								var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, index);
-								if (prevToken && prevToken.name === "keyword") {
-									return false;
+								if (prevToken) {
+									if (prevToken.name === "ident") {
+										return false;
+									}
+									
+									if (prevToken.name === "keyword" && sunlight.util.contains(["if", "while"], token.value)) {
+										return false;
+									}
 								}
 								
 								return true;
@@ -222,6 +275,7 @@
 				}(),
 				
 				//generic definitions/params between "<" and ">"
+				//stolen and slightly modified from cpp, this is actually for protocols, since objective-c doesn't have generics
 				function(context) {
 					//between < and > and preceded by an ident and not preceded by "class"
 					var index = context.index, token;
@@ -251,7 +305,10 @@
 									bracketCountLeft[1] += token.value.length;
 									continue;
 								case ".":
+								case "::":
 									//allows generic method invocations, like "Foo" in "foo.Resolve<Foo>()"
+								case "*":
+									//allows pointers
 									continue;
 							}
 						}
@@ -264,7 +321,7 @@
 							continue;
 						}
 						
-						if (token.name === "ident" || (token.name === "keyword" && token.value === "id")) {
+						if (token.name === "ident" || (token.name === "keyword" && sunlight.util.contains(["id", "static_cast"], token.value))) {
 							foundIdent = true;
 							continue;
 						}
@@ -277,8 +334,6 @@
 						//not inside a generic definition
 						return false;
 					}
-						console.dir(context.tokens[context.index]);
-					
 					
 					//now look forward to make sure the generic definition is closed
 					//this avoids false positives like "foo < bar"
@@ -290,7 +345,7 @@
 						
 						if (
 							//(token.name === "keyword" && sunlight.util.contains(acceptableKeywords, token.value))
-							(token.name === "operator" && sunlight.util.contains(["<", "<<", ">", ">>"], token.value))
+							(token.name === "operator" && sunlight.util.contains(["<", "<<", ">", ">>", "::", "*"], token.value))
 							|| (token.name === "punctuation" && token.value === ",")
 							|| token.name === "ident"
 							|| token.name === "default"
@@ -302,7 +357,89 @@
 					}
 					
 					return false;
-				}
+				},
+				
+				//ident before <>
+				//stolen from c++/java/c#
+				function(context) {
+					//if it's preceded by an ident or a primitive/alias keyword then it's no good (i.e. a generic method definition like "public void Foo<T>")
+					//also a big fail if it is preceded by a ., i.e. a generic method invocation like container.Resolve()
+					var token = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
+					if (token !== undefined) {
+						if (
+							token.name === "ident" 
+							|| (token.name === "operator" && token.value === ".")
+						) {
+							return false;
+						}
+					}
+					
+					//needs to be immediately followed by <, then by idents, acceptable keywords and ",", and then closed by >, then immediately followed by an ident
+					token = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					if (!token || token.name !== "operator" || token.value !== "<") {
+						return false;
+					}
+					
+					var index = context.index, bracketCount = [0, 0], token; //open (<), close (>)
+					while ((token = context.tokens[++index]) !== undefined) {
+						if (token.name === "operator") {
+							switch (token.value) {
+								case "<":
+									bracketCount[0]++;
+									break;
+								case "<<":
+									bracketCount[0] += 2;
+									break;
+								case ">":
+									bracketCount[1]++;
+									break;
+								case ">>":
+									bracketCount[1] += 2;
+									break;
+								default:
+									return false;
+							}
+							
+							//if bracket counts match, get the f out
+							if (bracketCount[0] === bracketCount[1]) {
+								break;
+							}
+							
+							continue;
+						}
+						
+						if (
+							token.name === "default"
+							|| token.name === "ident"
+							|| (token.name === "punctuation" && token.value === ",")
+						) {
+							continue;
+						}
+						
+						return false;
+					}
+					
+					//verify bracket count
+					if (bracketCount[0] !== bracketCount[1]) {
+						//mismatched generics, could be something scary
+						return false;
+					}
+					
+					//next token should be optional whitespace followed by an ident
+					token = context.tokens[++index];
+					if (!token || (token.name !== "default" && token.name !== "ident")) {
+						return false;
+					}
+					
+					if (token.name === "default") {
+						token = context.tokens[++index];
+						if (!token || token.name !== "ident") {
+							return false;
+						}
+					}
+					
+					return true;
+				},
 			],
 			
 			follows: [
@@ -310,11 +447,27 @@
 			],
 			
 			precedes: [
-				//normal parameters/declarations
-				[{ token: "default" }, { token: "ident" }],
+				[{ token: "operator", values: ["::"] }],
 				
-				[sunlight.util.whitespace, { token: "operator", values: ["*", "**"] }, { token: "default" }, { token: "ident" }, sunlight.util.whitespace, { token: "operator", values: ["=", ","] }],
-				[sunlight.util.whitespace, { token: "operator", values: ["*", "**"] }, { token: "default" }, { token: "operator", values: ["&"] }, sunlight.util.whitespace, { token: "ident" }, sunlight.util.whitespace, { token: "operator", values: ["=", ","] }],
+				[
+					sunlight.util.whitespace, 
+					{ token: "operator", values: ["*", "**"] },
+					{ token: "default" }, 
+					{ token: "ident" }, 
+					sunlight.util.whitespace, 
+					{ token: "operator", values: ["=", ","] }
+				],
+				
+				[
+					sunlight.util.whitespace, 
+					{ token: "operator", values: ["*", "**"] }, 
+					sunlight.util.whitespace, 
+					{ token: "operator", values: ["&"] }, 
+					sunlight.util.whitespace, 
+					{ token: "ident" }, 
+					sunlight.util.whitespace, 
+					{ token: "operator", values: ["=", ","] }
+				]
 			]
 		},
 		
