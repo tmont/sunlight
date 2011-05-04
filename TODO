@@ -25,8 +25,8 @@ LANGUAGES
 - PostgreSQL
 - Oracle
 - lua
-- objective-c
 - yaml
 - prolog
 
 WEB
+- add objective-c to demo

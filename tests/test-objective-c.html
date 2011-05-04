@@ -186,13 +186,53 @@ const CGFloat GCPagedScrollViewPageControlHeight = 36.0;
 
 
 @end
-
 </pre>
 	</body>
 
 	<script type="text/javascript"  src="test.js"></script>
 	<script type="text/javascript">//<![CDATA[
-		//assertExists("preprocessorDirective", "#include <iostream>", "preprocessor");
+		assertExists("keyword", "const", "const keyword");
+		assertExists("keyword", "@interface", "@interface keyword");
+		assertExists("keyword", "@property", "@property keyword");
+		assertExists("keyword", "nonatomic", "nonatomic keyword");
+		assertExists("keyword", "readonly", "readonly keyword");
+		assertExists("keyword", "void", "void keyword");
+		assertExists("keyword", "@synthesize", "@synthesize keyword");
+		assertExists("keyword", "@end", "@end keyword");
+		assertExists("keyword", "@implementation", "@implementation keyword");
+		assertExists("keyword", "@selector", "@selector keyword");
+		assertExists("keyword", "if", "if keyword");
+		assertExists("keyword", "else", "else keyword");
+		assertExists("keyword", "self", "self keyword");
+		assertExists("keyword", "super", "super keyword");
+		assertExists("keyword", "YES", "YES keyword");
+		assertExists("keyword", "NO", "NO keyword");
+		assertExists("keyword", "BOOL", "BOOL keyword");
+		assertExists("keyword", "nil", "nil keyword");
+		
+		assertExists("comment", "//  Created by Guillaume Campagna on 10-11-10.", "single line comment");
+		
+		assertExists("string", "@\"contentOffset\"", "string starting with @");
+		
+		assertExists("preprocessorDirective", "#import \"GCPagedScrollView.h\"", "#import statement");
+		assertExists("preprocessorDirective", "#pragma mark -", "#pragma statement");
+		
+		assertExists("named-ident", "NSString", "type name with pointer");
+		assertExists("named-ident", "CGFloat", "type name");
+		assertExists("named-ident", "NSMutableArray", "type name after @property with pointer");
+		assertExists("named-ident", "UIPageControl", "type name with pointer cast");
+		assertExists("named-ident", "GCPagedScrollView", "type name after @interface");
+		assertExists("named-ident", "CGRect", "type name in cast");
+		
+		assertExists("ident", "CGRectMake", "type name beginning with CG but followed by a (");
+		assertExists("ident", "setPagingEnabled", "method name");
+		
+		assertExists("messageArgumentName", "forControlEvents", "message argument name");
+		assertExists("messageArgumentName", "action", "message argument name");
+		
+		assertExists("messageDestination", "initWithFrame", "message destination");
+		assertExists("messageDestination", "alloc", "nested message destination");
+		assertExists("messageDestination", "setPagingEnabled", "message destination");
 
 	//]]></script>
 </html>

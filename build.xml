@@ -98,6 +98,7 @@
 			<fileset dir="${temp.dir}" includes="sunlight.scala.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.actionscript.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.powershell.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight.objective-c.js"/>
 		</concat>
 	
 		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${deploy.dir}">
@@ -135,6 +136,7 @@
 			<include name="sunlight.scala.js"/>
 			<include name="sunlight.actionscript.js"/>
 			<include name="sunlight.powershell.js"/>
+			<include name="sunlight.objective-c.js"/>
 		</yui-compressor>
 		
 		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${plugins.dir}">

@@ -45,17 +45,10 @@
 				],
 				boundary: "\\b"
 			}
-			
-			// builtinMessage: {
-				// values: [
-					// "init", "alloc", "class", "release", "dealloc", "autorelease"
-				// ],
-				// boundary: "\\b"
-			// }
 		},
 
 		scopes: {
-			string: [ ["\"", "\"", sunlight.util.escapeSequences.concat(["\\\""])], ["@\"", "\""] ],
+			string: [ ["\"", "\"", sunlight.util.escapeSequences.concat(["\\\""])], ["@\"", "\"", ["\\\\", "\\\""]] ],
 			"char": [ ["'", "'", ["\\\'", "\\\\"]] ],
 			comment: [ ["//", "\n", null, true], ["/*", "*/"] ],
 			preprocessorDirective: [ ["#", "\n", null, true] ]
@@ -191,13 +184,14 @@
 				//naming convention: NS.+, CG.+ are assumed to be built in objects
 				function(context) {
 					var regex = /^(NS|CG).+$/;
-					return regex.test(context.tokens[context.index].value);
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					return regex.test(context.tokens[context.index].value) && (!nextToken || nextToken.name !== "punctuation" || nextToken.value !== "(");
 				},
 				
-				//call to class
+				//call to class or alloc
 				function(context) {
 					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-					return nextToken && nextToken.name === "messageDestination" && nextToken.value === "class";
+					return nextToken && nextToken.name === "messageDestination" && (nextToken.value === "class" || nextToken.value === "alloc");
 				},
 				
 				//ident followed by an ident, but not inside []
