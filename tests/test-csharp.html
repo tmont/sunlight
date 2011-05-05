@@ -12,7 +12,7 @@
 	<body>
 <pre id="code" class="sunlight-highlight-csharp">extern alias GridV1;
 using System;
-using UsingAlias = System.Linq.Enumerable;
+using UsingAlias = My.Namespace.UsingThisClass;
 
 namespace My.Namespace {
 	[NotAnAttribute.FullyQualifiedAttribute]
@@ -196,6 +196,7 @@ public class Foo { }</pre>
 		assertExists("named-ident", "InvalidOperationException", "new()'d class");
 		assertExists("named-ident", "GenericMethodDefinition", "generic method definition during invocation");
 		assertExists("named-ident", "TypeAfterIs", "type name after is keyword");
+		assertExists("named-ident", "UsingThisClass", "type name that is being used in a using alias");
 		
 		assertExists("pragma", "#if NET_20", "#if pragma");
 		assertExists("pragma", "#endif", "#endif pragma");

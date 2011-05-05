@@ -3,6 +3,7 @@
 - Enhancements
 	- new languages: objective-c, lua
 	- implemented embedded C# in XML (ASP tags: <% %>)
+	- C#: highlighted the name of the class being used in a using alias statement
 
 1.8 2011-05-02
 --------------

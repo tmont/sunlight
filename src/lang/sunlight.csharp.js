@@ -638,6 +638,33 @@
 					});
 				}(),
 			
+				//using alias type names, e.g. "Foo" in "using Bar = My.Namespace.Foo;"
+				function(context) {
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					if (!nextToken || nextToken.name !== "punctuation" || nextToken.value !== ";") {
+						return false;
+					}
+					
+					//should be preceded by idents and dots, and then "using ="
+					var token, index = context.index;
+					while (token = context.tokens[--index]) {
+						if (token.name !== "ident" && token.name !== "default" && (token.name !== "operator" || token.value !== ".")) {
+							//should be an equals sign, and then an ident and then "using"
+							if (token.name !== "operator" || token.value !== "=") {
+								return false;
+							}
+							
+							return sunlight.util.createProceduralRule(
+								index - 1, 
+								-1, 
+								[{ token: "keyword", values: ["using"] }, { token: "default" }, { token: "ident" }, sunlight.util.whitespace]
+							)(context.tokens);
+						}
+					}
+					
+					return false;
+				},
+			
 				//can't use the follows/precedes utilities since we need to verify that it doesn't match the type definition naming convention
 				createNamedIdentFunction(function(context) {
 					var follows = [

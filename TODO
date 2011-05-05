@@ -1,6 +1,5 @@
 PARSING
 - PHP class name highlighting in use statements
-- C# class name highlighting in using aliases
 - Python/Java/Lisp exponents: 1e3-10
 - ruby indented heredocs
 - perl heredocs don't allow spaces before identifiers
