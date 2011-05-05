@@ -8,6 +8,7 @@
 		<script type="text/javascript" src="../src/lang/sunlight.php.js"></script>
 		<script type="text/javascript" src="../src/lang/sunlight.css.js"></script>
 		<script type="text/javascript" src="../src/lang/sunlight.javascript.js"></script>
+		<script type="text/javascript" src="../src/lang/sunlight.csharp.js"></script>
 		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.default.css" />
 	</head>
 
@@ -35,6 +36,7 @@
 &lt;/config&gt;</pre>
 
 <pre id="embedded-test" class="sunlight-highlight-xml">
+&lt;!doctype html&gt;
 &lt;html&gt;
 	&lt;head&gt;
 		&lt;script type="text/javascript" src="/sunlight.js"&gt;&lt;/script&gt;
@@ -75,12 +77,28 @@
 	&lt;/head&gt;
 	
 	&lt;body&gt;
-		&lt;?php
-			//debug stuff
-			print_r($_GET);
-			
-			echo 'Hello ' . (@$_GET['username'] ?: '&lt;no username given&gt;') . '&lt;br /&gt;';
-		?&gt;
+		&lt;p&gt;
+			Let's try some PHP: Hello &lt;?= $_GET['username'] ?&gt;! Long tags work, too:
+			&lt;?php 
+				echo 'Hello world';
+				foreach (range(1, 10) as $i) {
+					print_r($i); //prints $i lol
+				}
+			?&gt;
+		&lt;/p&gt;
+		
+		&lt;p&gt;
+			Now let's try some C#:
+		&lt;/p&gt;
+		
+		&lt;%-- server side comment --%&gt;
+		&lt;% if (User.IsInRole(&quot;admin&quot;)) { %&gt;
+			You can see this
+		&lt;% } else { %&gt;
+			You are no admin fool!
+		&lt;% } %&gt;
+		
+		&lt;%= &quot;Short tag ftw&quot; %&gt;
 	&lt;/body&gt;
 &lt;/html&gt;
 </pre>
@@ -119,12 +137,23 @@
 		assertExists("operator", ":", "namespace operator");
 		assertExists("operator", "=", "= operator");
 		
+		assertExists("doctype", "<!doctype html>", "doctype", "embedded-test");
+		
 		
 		//embedded stuff
 		assertExists("variable", "$_GET", "php variable", "embedded-test");
+		assertExists("function", "print_r", "php function", "embedded-test");
 		assertExists("keyword", "function", "javascript keyword", "embedded-test");
 		assertExists("rule", "@font-face", "css rule", "embedded-test");
 		assertExists("tagName", "style", "xml tag", "embedded-test");
+		
+		assertExists("string", "\"Short tag ftw\"", "c# string", "embedded-test");
+		assertExists("keyword", "if", "c# keyword if", "embedded-test");
+		
+		assertExists("comment", "<" + "%-- server side comment --%>", "asp server side comment", "embedded-test");
+		assertExists("aspOpenTag", "<" + "%", "asp open tag", "embedded-test");
+		assertExists("aspOpenTag", "<" + "%=", "asp short open tag", "embedded-test");
+		assertExists("aspCloseTag", "%>", "asp close tag", "embedded-test");
 		
 	//]]></script>
 </html>

@@ -506,7 +506,7 @@
 						line = context.reader.getLine(), column = context.reader.getColumn();
 						context.reader.read(opener.length - 1);
 						continuation = getScopeReaderFunction(specificScopes[j], tokenName);
-						return continuation(context, continuation, opener, line, column);
+						return continuation(context, continuation, value, line, column);
 					}
 				}
 
@@ -960,7 +960,7 @@
 
 	//public facing object
 	window.Sunlight = {
-		version: "1.8",
+		version: "1.9",
 		Highlighter: highlighterConstructor,
 		createAnalyzer: function() { return create(defaultAnalyzer); },
 		globalOptions: globalOptions,

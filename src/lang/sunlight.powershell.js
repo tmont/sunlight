@@ -11,9 +11,6 @@
 			comment: [ ["#", "\n", null, true] ]
 		},
 		
-		customTokens: {
-		},
-		
 		customParseRules: [
 			//idents and special operators
 			//we need a custom rule to differentiate between the "-" operator and idents that start with "-"

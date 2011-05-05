@@ -4,7 +4,7 @@
 	
 	<property name="product.name" value="Sunlight"/>
 	<property name="product.shortname" value="sunlight"/>
-	<property name="product.version" value="1.8"/>
+	<property name="product.version" value="1.9"/>
 	
 	<property name="build.dir" value="${basedir}/build"/>
 	<property name="build.dist" value="${build.dir}/dist"/>
@@ -98,6 +98,8 @@
 			<fileset dir="${temp.dir}" includes="sunlight.scala.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.actionscript.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.powershell.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight.objective-c.js"/>
+			<fileset dir="${temp.dir}" includes="sunlight.lua.js"/>
 		</concat>
 	
 		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${deploy.dir}">
@@ -135,6 +137,8 @@
 			<include name="sunlight.scala.js"/>
 			<include name="sunlight.actionscript.js"/>
 			<include name="sunlight.powershell.js"/>
+			<include name="sunlight.objective-c.js"/>
+			<include name="sunlight.lua.js"/>
 		</yui-compressor>
 		
 		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${plugins.dir}">

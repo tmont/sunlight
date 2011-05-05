@@ -1,3 +1,14 @@
+1.9 2011-05-05
+--------------
+- Bugfixes
+	- fixed bug in XML scopes where it was not acting in a case insensitive manner
+	  (apparently caseInsenstive !== caseInsensitive)
+- Enhancements
+	- new languages: objective-c, lua
+	- implemented embedded C# in XML (ASP tags: <% %>)
+	- C#: highlighted the name of the class being used in a using alias statement
+	- PHP: highlighted the name of the class being used in a use statement
+
 1.8 2011-05-02
 --------------
 - Bugfixes

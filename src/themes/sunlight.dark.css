@@ -104,6 +104,7 @@
 .sunlight-longString,
 .sunlight-rawString,
 .sunlight-binaryString,
+.sunlight-verbatimString,
 .sunlight-rawLongString,
 .sunlight-binaryLongString,
 .sunlight-diff .sunlight-added {
@@ -164,6 +165,8 @@
 .sunlight-closeTag,
 .sunlight-xmlOpenTag,
 .sunlight-xmlCloseTag,
+.sunlight-aspOpenTag,
+.sunlight-aspCloseTag,
 .sunlight-label,
 .sunlight-css .sunlight-importantFlag {
 	background-color: #7373C1 !important;
@@ -174,6 +177,7 @@
 }
 .sunlight-function,
 .sunlight-globalFunction,
+.sunlight-objective-c .sunlight-messageDestination,
 .sunlight-ruby .sunlight-specialFunction,
 .sunlight-6502asm .sunlight-illegalOpcode,
 .sunlight-powershell .sunlight-switch,
@@ -188,6 +192,7 @@
 .sunlight-variable,
 .sunlight-environmentVariable,
 .sunlight-specialVariable,
+.sunlight-objective-c .sunlight-messageArgumentName,
 .sunlight-lisp .sunlight-globalVariable,
 .sunlight-ruby .sunlight-globalVariable,
 .sunlight-ruby .sunlight-instanceVariable {
@@ -206,7 +211,7 @@
 	font-weight: bold !important;
 }
 .sunlight-csharp .sunlight-pragma,
-.sunlight-cpp .sunlight-preprocessorDirective,
+.sunlight-preprocessorDirective,
 .sunlight-vb .sunlight-compilerDirective {
 	color: #666363 !important;
 	font-style: italic !important;
