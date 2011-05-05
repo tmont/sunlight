@@ -24,7 +24,6 @@ FUNCTIONALITY - 2.0
 LANGUAGES
 - PostgreSQL
 - Oracle
-- lua
 - yaml
 - prolog
 

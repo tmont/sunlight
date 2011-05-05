@@ -101,6 +101,7 @@
 .sunlight-binaryString,
 .sunlight-rawLongString,
 .sunlight-binaryLongString,
+.sunlight-verbatimString,
 .sunlight-diff .sunlight-removed {
 	color: #990000 !important;
 }

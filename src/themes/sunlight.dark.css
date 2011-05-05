@@ -104,6 +104,7 @@
 .sunlight-longString,
 .sunlight-rawString,
 .sunlight-binaryString,
+.sunlight-verbatimString,
 .sunlight-rawLongString,
 .sunlight-binaryLongString,
 .sunlight-diff .sunlight-added {
