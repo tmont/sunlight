@@ -2,6 +2,7 @@
 --------------
 - Enhancements
 	- new languages: objective-c, lua
+	- implemented embedded C# in XML (ASP tags: <% %>)
 
 1.8 2011-05-02
 --------------

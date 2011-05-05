@@ -25,7 +25,7 @@
 		caseInsenstive: true,
 		
 		scopes: {
-			comment: [ ["<!--", "-->"] ],
+			comment: [ ["<!--", "-->"], ["<%--", "--%>"] ],
 			cdata: [ ["<![CDATA[", "]]>"] ],
 			doctype: [ ["<!DOCTYPE", ">"] ]
 		},
@@ -35,7 +35,9 @@
 		
 		customTokens: {
 			xmlOpenTag: { values: ["<?xml"], boundary: "\\b" },
-			xmlCloseTag: { values: ["?>"], boundary: "" }
+			xmlCloseTag: { values: ["?>"], boundary: "" },
+			aspOpenTag: { values: ["<%@", "<%$", "<%#", "<%=", "<%"], boundary: "" },
+			aspCloseTag: { values: ["%>"], boundary: "" }
 		},
 		
 		customParseRules: [
@@ -148,6 +150,27 @@
 				}
 				
 				return null;
+			},
+			
+			//asp.net server side comments: <%-- --%>
+			function(context) {
+				//have to do these manually or else they get swallowed by the open tag: <%
+				if (context.reader.current() !== "<" || context.reader.peek(3) !== "%--") {
+					return null;
+				}
+				
+				var peek, value = "<%--", line = context.reader.getLine(), column = context.reader.getColumn();
+				context.reader.read(3);
+				while (peek = context.reader.peek()) {
+					if (context.reader.peek(4) === "--%>") {
+						value += context.reader.read(4);
+						break;
+					}
+					
+					value += context.reader.read();
+				}
+				
+				return context.createToken("comment", value, line, column);
 			}
 		],
 		
@@ -231,6 +254,17 @@
 				switchBack: function(context) {
 					var prevToken = context.token(context.count() - 1);
 					return prevToken && prevToken.name === "closeTag";
+				}
+			},
+			
+			csharp: {
+				switchTo: function(context) {
+					var prevToken = context.token(context.count() - 1);
+					return prevToken && prevToken.name === "aspOpenTag";
+				},
+				
+				switchBack: function(context) {
+					return context.reader.peek(2) === "%>";
 				}
 			},
 			

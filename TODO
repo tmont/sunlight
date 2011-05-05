@@ -27,8 +27,9 @@ LANGUAGES
 - YAML
 - prolog
 - LaTeX
-- C# inside XML (<% %>)
 
 WEB
 - add objective-c to demo
 - add lua to demo
+- update embedded demo
+- update embedded documentation to include ASP tags in XML

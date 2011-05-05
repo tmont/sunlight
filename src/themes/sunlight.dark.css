@@ -165,6 +165,8 @@
 .sunlight-closeTag,
 .sunlight-xmlOpenTag,
 .sunlight-xmlCloseTag,
+.sunlight-aspOpenTag,
+.sunlight-aspCloseTag,
 .sunlight-label,
 .sunlight-css .sunlight-importantFlag {
 	background-color: #7373C1 !important;
