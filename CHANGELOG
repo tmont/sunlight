@@ -1,5 +1,8 @@
 1.9 2011-05-xx
 --------------
+- Bugfixes
+	- fixed bug in XML scopes where it was not acting in a case insensitive manner
+	  (apparently caseInsenstive !== caseInsensitive)
 - Enhancements
 	- new languages: objective-c, lua
 	- implemented embedded C# in XML (ASP tags: <% %>)

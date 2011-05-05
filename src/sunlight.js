@@ -506,7 +506,7 @@
 						line = context.reader.getLine(), column = context.reader.getColumn();
 						context.reader.read(opener.length - 1);
 						continuation = getScopeReaderFunction(specificScopes[j], tokenName);
-						return continuation(context, continuation, opener, line, column);
+						return continuation(context, continuation, value, line, column);
 					}
 				}
 

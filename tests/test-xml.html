@@ -36,6 +36,7 @@
 &lt;/config&gt;</pre>
 
 <pre id="embedded-test" class="sunlight-highlight-xml">
+&lt;!doctype html&gt;
 &lt;html&gt;
 	&lt;head&gt;
 		&lt;script type="text/javascript" src="/sunlight.js"&gt;&lt;/script&gt;
@@ -135,6 +136,8 @@
 		assertExists("operator", "/>", "</ operator");
 		assertExists("operator", ":", "namespace operator");
 		assertExists("operator", "=", "= operator");
+		
+		assertExists("doctype", "<!doctype html>", "doctype", "embedded-test");
 		
 		
 		//embedded stuff

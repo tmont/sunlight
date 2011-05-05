@@ -22,7 +22,7 @@
 	}
 	
 	sunlight.registerLanguage("xml", {
-		caseInsenstive: true,
+		caseInsensitive: true,
 		
 		scopes: {
 			comment: [ ["<!--", "-->"], ["<%--", "--%>"] ],
@@ -34,7 +34,7 @@
 		numberParser: function() {},
 		
 		customTokens: {
-			xmlOpenTag: { values: ["<?xml"], boundary: "\\b" },
+			xmlOpenTag: { values: ["<?xml"], boundary: "" },
 			xmlCloseTag: { values: ["?>"], boundary: "" },
 			aspOpenTag: { values: ["<%@", "<%$", "<%#", "<%=", "<%"], boundary: "" },
 			aspCloseTag: { values: ["%>"], boundary: "" }
