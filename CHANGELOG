@@ -1,4 +1,4 @@
-1.9 2011-05-xx
+1.9 2011-05-05
 --------------
 - Bugfixes
 	- fixed bug in XML scopes where it was not acting in a case insensitive manner
