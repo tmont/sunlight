@@ -460,7 +460,7 @@
 				}),
 				
 				//using aliases, e.g. "Foo" in "using Foo = System.Linq.Enumerable;"
-				createNamedIdentFunction(function(context) {
+				function(context) {
 					//previous non-ws token must be "using" and next non-ws token must be "="
 					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
 					if (!prevToken || prevToken.name !== "keyword" || prevToken.value !== "using") {
@@ -473,7 +473,7 @@
 					}
 					
 					return true;
-				}),
+				},
 				
 				//attributes (friggin' attributes...)
 				createNamedIdentFunction(function(context) {
