@@ -183,6 +183,29 @@
 					return true;
 				},
 				
+				//use alias type names, e.g. "Foo" in "use My\Namespace\Foo;"
+				function(context) {
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					if (!nextToken || nextToken.name !== "punctuation" || (nextToken.value !== ";" && nextToken.value !== ",")) {
+						return false;
+					}
+					
+					//should be preceded by idents and backslashes and commas, and then "use "
+					var token, index = context.index;
+					while (token = context.tokens[--index]) {
+						if (token.name !== "ident" && token.name !== "default" && (token.name !== "operator" || token.value !== "\\") && (token.name !== "punctuation" || token.value !== ",")) {
+							//should be the "use" keyword
+							console.group();
+							console.dir(token);
+							console.dir(context.tokens[context.index]);
+							console.groupEnd();
+							return token.name === "keyword" && token.value === "use";
+						}
+					}
+					
+					return false;
+				},
+				
 				function(context) {
 					//next token is not the namespace delimiter
 					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);

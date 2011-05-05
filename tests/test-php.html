@@ -66,6 +66,10 @@
 			$fqc = new Fully1\Qualified1\FullyQualifiedClassName1();
 			$fqc = new \Fully2\Qualified2\FullyQualifiedClassName2();
 			$notFullyQualified = new NotFullyQualified();
+			
+			$closure = function($foo, array $bar) use (Fully3\Qualified3\ClassName3 $fqc) {
+				return $fqc;
+			};
 		}
 		
 		public abstract function(TypeHinted $var);
@@ -136,6 +140,13 @@ unclosed heredoc</pre>
 		assertExists("named-ident", "OutOfBoundsException", "class name after new");
 		assertExists("named-ident", "InstanceOfClassName1", "class name after instanceof fully qualified");
 		assertExists("named-ident", "InstanceOfClassName2", "class name after instanceof not fully qualified");
+		assertExists("named-ident", "ClassName3", "class name in closure use statement");
+		assertExists("named-ident", "UseThisClass", "class name in use statement");
+		assertExists("named-ident", "AlsoUseThis", "class name in use statement");
+		assertExists("named-ident", "AndUseThis", "class name in use statement");
+		assertExists("named-ident", "UseMePlease", "class name in use statement");
+		assertExists("named-ident", "UseMe", "class name in use statement");
+		assertExists("named-ident", "NoUseMe", "class name in use statement");
 		
 		assertExists("comment", "#Perl-style comments are stupid", "Perl-style comment");
 		assertExists("comment", "//unset stuff", "Single line comment");

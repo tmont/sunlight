@@ -1,5 +1,4 @@
 PARSING
-- PHP class name highlighting in use statements
 - Python/Java/Lisp exponents: 1e3-10
 - ruby indented heredocs
 - perl heredocs don't allow spaces before identifiers
@@ -31,3 +30,4 @@ WEB
 - add lua to demo
 - update embedded demo
 - update embedded documentation to include ASP tags in XML
+- updated known issues
