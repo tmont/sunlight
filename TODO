@@ -24,8 +24,10 @@ FUNCTIONALITY - 2.0
 LANGUAGES
 - PostgreSQL
 - Oracle
-- yaml
+- YAML
 - prolog
+- LaTeX
+- C# inside XML (<% %>)
 
 WEB
 - add objective-c to demo
