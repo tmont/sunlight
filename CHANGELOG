@@ -1,5 +1,8 @@
-1.10 2011-05-xz
+1.10 2011-05-xx
 --------------
+- Enhancements
+	- added doclinks plugin
+	- removed automatic hyperlinks to php.net for php functions and language constructs
 
 1.9 2011-05-05
 --------------

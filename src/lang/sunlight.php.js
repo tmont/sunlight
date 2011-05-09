@@ -4,20 +4,6 @@
 		throw "Include sunlight.js before including language files";
 	}
 
-	var addFunctionLink = function(context) {
-		var word = context.tokens[context.index].value;
-		var suffix = context.tokens[context.index].name;
-		var link = document.createElement("a");
-		link.className = context.options.classPrefix + suffix;
-		link.setAttribute("href", "http://php.net/" + word);
-		link.appendChild(context.createTextNode(context.tokens[context.index]));
-		context.addNode(link);
-	}
-	
-	var phpAnalyzer = sunlight.createAnalyzer();
-	phpAnalyzer.handle_languageConstruct = addFunctionLink;
-	phpAnalyzer.handle_function = addFunctionLink;
-	
 	sunlight.registerLanguage("php", {
 		keywords: [
 			//class qualifiers
@@ -303,8 +289,6 @@
 
 			//other
 			"?:", "?", ":", ".=", ".", "=>", "=", "\\"
-		],
-		
-		analyzer: phpAnalyzer
+		]
 	});
 }(this["Sunlight"], document));
