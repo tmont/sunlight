@@ -309,7 +309,7 @@
 								case "<":
 								case "<<":
 									bracketCountLeft[0] += token.value.length;
-									break;
+									continue;
 								case ">":
 								case ">>":
 									if (bracketCountLeft[0] === 0) {
@@ -317,15 +317,10 @@
 									}
 									
 									bracketCountLeft[1] += token.value.length;
-									break;
-								case ".":
-									//allows generic method invocations, like "Foo" in "foo.Resolve<Foo>()"
-									break;
-								default:
-									return false;
+									continue;
 							}
 							
-							continue;
+							break;
 						}
 						
 						if (
@@ -345,11 +340,13 @@
 						break;
 					}
 					
+					
 					if (!foundIdent || bracketCountLeft[0] === 0) {
 						
 						//not inside a generic definition
 						return false;
 					}
+					
 					
 					//now look forward to make sure the generic definition is closed
 					//this avoids false positives like "foo < bar"
