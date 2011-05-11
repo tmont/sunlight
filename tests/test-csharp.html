@@ -69,6 +69,10 @@ namespace My.Namespace {
 				this.value = set ?? value; 
 			}
 		}
+		
+		public string AutomaticProperty {
+			get; private set;
+		}
 
 		private static Func&lt;Object, char&gt; GetFunction(Object o, Character c, Integer[] integers) {
 			if (!Object.ReferenceEquals(o, c)) {

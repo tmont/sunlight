@@ -1,5 +1,7 @@
 1.10 2011-05-xx
 --------------
+- Bugfixes
+	- C#: get/set keywords were not being detected correctly in automatic properties
 - Enhancements
 	- added doclinks plugin
 	- removed automatic hyperlinks to php.net for php functions and language constructs

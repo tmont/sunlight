@@ -128,7 +128,7 @@
 				}
 				
 				var rule = sunlight.util.createProceduralRule(context.count() - 1, -1, [
-					{ token: "punctuation", values: ["}", "{"] },
+					{ token: "punctuation", values: ["}", "{", ";"] },
 					sunlight.util.whitespace,
 					{ token: "keyword", values: ["public", "private", "protected", "internal"], optional: true }
 				]);
@@ -137,11 +137,11 @@
 					return null;
 				}
 				
-				//now we need to look ahead and verify that the next non-sunlight.util.whitespace token is "{"
+				//now we need to look ahead and verify that the next non-sunlight.util.whitespace token is "{" or ";"
 				var count = "get".length, peek = context.reader.peek(count), current, allGoodYo = false;
 				while (peek.length === count) {
 					if (!/\s$/.test(peek)) {
-						if (peek.charAt(peek.length - 1) !== "{") {
+						if (!/[\{;]$/.test(peek)) {
 							return null;
 						}
 						
