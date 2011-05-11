@@ -3,6 +3,7 @@
 - Bugfixes
 	- C#: get/set keywords were not being detected correctly in automatic properties
 	- C#: fixed bug in generic definition detection when invoking a generic method
+	- fixed margin-bottom issue on line number margin
 - Enhancements
 	- added doclinks plugin
 	- removed automatic hyperlinks to php.net for php functions and language constructs
