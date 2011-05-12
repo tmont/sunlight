@@ -69,12 +69,17 @@ namespace My.Namespace {
 				this.value = set ?? value; 
 			}
 		}
+		
+		public string AutomaticProperty {
+			get; private set;
+		}
 
 		private static Func&lt;Object, char&gt; GetFunction(Object o, Character c, Integer[] integers) {
 			if (!Object.ReferenceEquals(o, c)) {
 				throw new ArgumentException();
 			}
 
+			
 			return value =&gt; (char)value.GetHashCode();
 		}
 		
@@ -97,6 +102,7 @@ namespace My.Namespace {
 		
 		public IEnumerable&lt;TReturnValue&gt; GenericMethod&lt;TMethod&gt;(GenericCollection1&lt;TParameter&gt; shouldNotBeNamed, GenericCollection2&lt;TGenericTest4&gt; somethingElse) {
 			container.GenericMethodInvocation&lt;GenericMethodDefinition&gt;();
+			var options = OptionParser.Parse&lt;Contract&gt;(args);
 			expression.ArrayAccess[0].Name; //ArrayAccess should not be a named ident
 		}
 		

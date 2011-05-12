@@ -128,7 +128,7 @@
 				}
 				
 				var rule = sunlight.util.createProceduralRule(context.count() - 1, -1, [
-					{ token: "punctuation", values: ["}", "{"] },
+					{ token: "punctuation", values: ["}", "{", ";"] },
 					sunlight.util.whitespace,
 					{ token: "keyword", values: ["public", "private", "protected", "internal"], optional: true }
 				]);
@@ -137,11 +137,11 @@
 					return null;
 				}
 				
-				//now we need to look ahead and verify that the next non-sunlight.util.whitespace token is "{"
+				//now we need to look ahead and verify that the next non-sunlight.util.whitespace token is "{" or ";"
 				var count = "get".length, peek = context.reader.peek(count), current, allGoodYo = false;
 				while (peek.length === count) {
 					if (!/\s$/.test(peek)) {
-						if (peek.charAt(peek.length - 1) !== "{") {
+						if (!/[\{;]$/.test(peek)) {
 							return null;
 						}
 						
@@ -309,7 +309,7 @@
 								case "<":
 								case "<<":
 									bracketCountLeft[0] += token.value.length;
-									break;
+									continue;
 								case ">":
 								case ">>":
 									if (bracketCountLeft[0] === 0) {
@@ -317,15 +317,10 @@
 									}
 									
 									bracketCountLeft[1] += token.value.length;
-									break;
-								case ".":
-									//allows generic method invocations, like "Foo" in "foo.Resolve<Foo>()"
-									break;
-								default:
-									return false;
+									continue;
 							}
 							
-							continue;
+							break;
 						}
 						
 						if (
@@ -345,11 +340,13 @@
 						break;
 					}
 					
+					
 					if (!foundIdent || bracketCountLeft[0] === 0) {
 						
 						//not inside a generic definition
 						return false;
 					}
+					
 					
 					//now look forward to make sure the generic definition is closed
 					//this avoids false positives like "foo < bar"

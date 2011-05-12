@@ -653,6 +653,7 @@
 				tokens: (partialContext.tokens || []).concat(parserContext.getAllTokens()),
 				index: partialContext.index ? partialContext.index + 1 : 0,
 				language: null,
+				getAnalyzer: EMPTY,
 				options: options,
 				continuation: parserContext.continuation,
 				addNode: function(node) { nodes.push(node); },
@@ -676,12 +677,12 @@
 			fireEvent("beforeHighlight", this, { code: unhighlightedCode, language: language, previousContext: partialContext });
 			
 			var analyzerContext = createAnalyzerContext(
-				tokenize(unhighlightedCode, language, partialContext, this.options),
+				tokenize.call(this, unhighlightedCode, language, partialContext, this.options),
 				partialContext,
 				this.options
 			);
 			
-			analyze(analyzerContext, partialContext.index ? partialContext.index + 1 : 0);
+			analyze.call(this, analyzerContext, partialContext.index ? partialContext.index + 1 : 0);
 			
 			fireEvent("afterHighlight", this, { analyzerContext: analyzerContext });
 
@@ -716,7 +717,7 @@
 					tokenName = analyzerContext.tokens[i].name;
 					func = "handle_" + tokenName;
 
-					analyzer = analyzerContext.language.analyzer;
+					analyzer = analyzerContext.getAnalyzer.call(analyzerContext) || analyzerContext.language.analyzer;
 					analyzer[func] ? analyzer[func](analyzerContext) : analyzer.handleToken(analyzerContext);
 				}
 				
@@ -960,7 +961,7 @@
 
 	//public facing object
 	window.Sunlight = {
-		version: "1.9",
+		version: "1.10",
 		Highlighter: highlighterConstructor,
 		createAnalyzer: function() { return create(defaultAnalyzer); },
 		globalOptions: globalOptions,
@@ -1021,6 +1022,7 @@
 		util: {
 			last: last,
 			eol: EOL,
+			clone: clone,
 			escapeSequences: ["\\n", "\\t", "\\r", "\\\\", "\\v", "\\f"],
 			contains: contains,
 			matchWord: matchWord,
