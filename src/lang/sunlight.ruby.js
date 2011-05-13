@@ -113,8 +113,8 @@
 				}
 				
 				//cannot be preceded by an ident or a number or a string
-				var prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count() - 1);
-				if (prevToken && (prevToken.name === "ident" || prevToken.name === "number" || prevToken.name === "string")) {
+				var prevToken = context.token(context.count() - 1);
+				if (prevToken && sunlight.util.contains(["ident", "number", "string"], prevToken.name)) {
 					return null;
 				}
 				
@@ -129,13 +129,14 @@
 				if (current === "-") {
 					context.reader.read();
 					value += current;
+					ident += current;
 					current = context.reader.current();
 				}
 				
 				if (sunlight.util.contains(["\"", "'", "`"], current)) {
 					delimiter = current;
 				} else {
-					ident = current;
+					ident += current;
 				}
 				
 				value += current;
@@ -165,9 +166,7 @@
 				}
 				
 				context.items.heredocQueue.push(ident);
-				
-				var token = context.createToken("heredocDeclaration", value, line, column);
-				return token;
+				return context.createToken("heredocDeclaration", value, line, column);
 			},
 			
 			//heredoc
@@ -183,19 +182,28 @@
 				
 				//we're confirmed to be in the heredoc body, so read until all of the heredoc declarations have been satisfied
 				
-				var tokens = [], declaration, line, column, value = context.reader.current();
+				var tokens = [], declaration, line, column, value = context.reader.current(), ignoreWhitespace = false;
+				var regex, match;
 				while (context.items.heredocQueue.length > 0 && context.reader.peek() !== context.reader.EOF) {
 					declaration = context.items.heredocQueue.shift();
+					if (declaration.charAt(0) === "-") {
+						declaration = declaration.substring(1);
+						ignoreWhitespace = true;
+					}
 					line = context.reader.getLine(), column = context.reader.getColumn();
 					
 					//read until "\n{declaration}\n"
+					//unless the declaration is prefixed with "-", then we don't care about preceding whitespace, but it must be on its own line
+					//e.g. \n[ \t]*{declaration}\n
+					regex = new RegExp("^\\n" + (ignoreWhitespace ? "[ \\t]*" : "") + sunlight.util.regexEscape(declaration) + "\\n");
 					while (context.reader.peek() !== context.reader.EOF) {
-						var peekIdent = context.reader.peek(declaration.length + 2);
-						if (peekIdent === "\n" + declaration || peekIdent === "\n" + declaration + "\n") {
-							value += context.reader.read(declaration.length + 2);
+						match = regex.exec(context.reader.peekSubstring());
+						if (match !== null) {
+							value += context.reader.read(match[0].length);
+							
 							break;
 						}
-						
+					
 						value += context.reader.read();
 					}
 					

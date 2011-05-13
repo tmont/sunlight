@@ -1,8 +1,11 @@
 1.11 2011-05-xx
 ---------------
+- Enhancements
+	- Ruby: implemented indented heredocs (prefixed with "-"). see here http://ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/syntax.html#here_doc
+	  for more details
 - Bugfixes
 	- the default theme no longer overrides all textarea styles
-	- C#: fixed char detection
+	- C#: fixed char detection (reported by admin@hinata.in)
 
 1.10 2011-05-11
 ---------------

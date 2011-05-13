@@ -3,6 +3,7 @@
 	<head>
 		<script type="text/javascript" src="../src/sunlight.js"></script>
 		<script type="text/javascript" src="../src/plugins/sunlight-plugin.doclinks.js"></script>
+		<script type="text/javascript" src="../src/plugins/sunlight-plugin.linenumbers.js"></script>
 		<script type="text/javascript" src="../src/lang/sunlight.ruby.js"></script>
 		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.default.css" />
 	</head>
@@ -103,6 +104,7 @@ end
 raise IdentBeforeNew.new("Foo", 3, 9)
 
 #friggin' heredocs...
+#http://ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/syntax.html#here_doc
 print &lt;&lt;HEREDOC
 Default heredoc body
 HEREDOC
@@ -125,6 +127,14 @@ stacked1
 stacked heredoc #2
 stacked2
 
+if need_define_foo
+	eval &lt;&lt;-INDENTED  # delimiters can be indented
+		def foo
+			print "foo\n"
+		end
+	INDENTED
+end
+
 print "we're still good"
 </pre>
 
@@ -138,6 +148,7 @@ print "we're still good"
 		assertExists("heredocDeclaration", "<<'SINGLEQUOTEDHEREDOC'", "single quoted heredoc declaration");
 		assertExists("heredocDeclaration", "<<\"stacked1\"", "stacked heredoc declaration");
 		assertExists("heredocDeclaration", "<<\"stacked2\"", "stacked heredoc declaration");
+		assertExists("heredocDeclaration", "<<-INDENTED", "indented heredoc declaration");
 		
 		assertExists("heredoc", "Default heredoc body\nHEREDOC\n", "default heredoc body");
 		assertExists("heredoc", "Quoted heredoc body\nQUOTEDHEREDOC\n", "double quoted heredoc body");
@@ -147,7 +158,7 @@ print "we're still good"
 		assertExists("heredoc", "stacked heredoc #2\nstacked2\n", "stacked heredoc body");
 		
 		assertExists("comment", "#single line comment", "comment");
-		assertExists("comment", "#single line comment", "comment");
+		assertExists("comment", "# delimiters can be indented", "comment after heredoc declaration");
 		
 		assertExists("docComment", "=begin This is a \"comment\" that begins with\n=begin and apparently doesn't end until\nyou get to a line that starts with =end\n=end this is also ignored by the interpreter", "docComment");
 		

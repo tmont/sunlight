@@ -231,6 +231,14 @@
 			peek: function(count) {
 				return getCharacters(count);
 			},
+			
+			substring: function() {
+				return text.substring(index);
+			},
+			
+			peekSubstring: function() {
+				return text.substring(index + 1);
+			},
 
 			read: function(count) {
 				var value = getCharacters(count);
@@ -1021,6 +1029,7 @@
 
 		util: {
 			last: last,
+			regexEscape: regexEscape,
 			eol: EOL,
 			clone: clone,
 			escapeSequences: ["\\n", "\\t", "\\r", "\\\\", "\\v", "\\f"],
