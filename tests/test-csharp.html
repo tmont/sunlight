@@ -35,6 +35,8 @@ namespace My.Namespace {
 					if (foo is MyNamespace.TypeAfterIs) {
 						this.SomeMethod(ref foo, out foo);
 					}
+					
+					Console.WriteLine(new char[] { 'c', '\'', '\\' });
 				}
 			}
 		}

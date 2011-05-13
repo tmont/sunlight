@@ -239,7 +239,8 @@
 		],
 		
 		scopes: {
-			string: [ ["\"", "\"", sunlight.util.escapeSequences.concat(["\\\""])], ["@\"", "\"", ["\"\""]], ["'", "'", ["\'", "\\\\"]] ],
+			string: [ ["\"", "\"", sunlight.util.escapeSequences.concat(["\\\""])], ["@\"", "\"", ["\"\""]] ],
+			"char": [ ["'", "'", ["\\'", "\\\\"]] ],
 			comment: [ ["//", "\n", null, true], ["/*", "*/"] ],
 			pragma: [ ["#", "\n", null, true] ]
 		},

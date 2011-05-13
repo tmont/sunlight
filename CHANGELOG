@@ -1,5 +1,11 @@
+1.11 2011-05-xx
+---------------
+- Bugfixes
+	- the default theme no longer overrides all textarea styles
+	- C#: fixed char detection
+
 1.10 2011-05-11
---------------
+---------------
 - Bugfixes
 	- C#: get/set keywords were not being detected correctly in automatic properties
 	- C#: fixed bug in generic definition detection when invoking a generic method
