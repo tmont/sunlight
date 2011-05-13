@@ -25,3 +25,6 @@ LANGUAGES
 - LaTeX
 
 WEB
+- update ruby demo to include an indented heredoc
+- document reader.substring() and reader.peekSubstring()
+- update known issues
