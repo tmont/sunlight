@@ -139,6 +139,19 @@ print &lt;&lt;-'THERE'
     This is single quoted.
     The above used #{a + 1}
     THERE
+	
+File::open("grocery-list", "w") do |f|
+  f &lt;&lt; &lt;&lt;GROCERY_LIST
+Grocery list
+------------
+1. Salad mix.
+2. Strawberries.*
+3. Cereal.
+4. Milk.*
+ 
+* Organic
+GROCERY_LIST
+end
 
 print "we're still good"
 </pre>
