@@ -3,8 +3,9 @@
 	<head>
 		<script type="text/javascript" src="../src/sunlight.js"></script>
 		<script type="text/javascript" src="../src/plugins/sunlight-plugin.doclinks.js"></script>
+		<script type="text/javascript" src="../src/plugins/sunlight-plugin.linenumbers.js"></script>
 		<script type="text/javascript" src="../src/lang/sunlight.ruby.js"></script>
-		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.default.css" />
+		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.dark.css" />
 	</head>
 
 	<body>
@@ -74,7 +75,10 @@ ensure
 end
 
 BEGIN {
-	#do stuff
+	#oh god, the colons!
+	not_true = false
+	foo = false ? :symbol1 :not_a_symbol1
+	foo = false ? (true ? :symbol2 : :symbol3) :not_a_symbol2
 }
 
 END {
@@ -103,6 +107,7 @@ end
 raise IdentBeforeNew.new("Foo", 3, 9)
 
 #friggin' heredocs...
+#http://ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/syntax.html#here_doc
 print &lt;&lt;HEREDOC
 Default heredoc body
 HEREDOC
@@ -125,6 +130,32 @@ stacked1
 stacked heredoc #2
 stacked2
 
+if need_define_foo
+	eval &lt;&lt;-INDENTED  # delimiters can be indented
+		def foo
+			print "foo\n"
+		end
+	INDENTED
+end
+
+print &lt;&lt;-'THERE'
+    This is single quoted.
+    The above used #{a + 1}
+    THERE
+	
+File::open("grocery-list", "w") do |f|
+  f &lt;&lt; &lt;&lt;GROCERY_LIST
+Grocery list
+------------
+1. Salad mix.
+2. Strawberries.*
+3. Cereal.
+4. Milk.*
+ 
+* Organic
+GROCERY_LIST
+end
+
 print "we're still good"
 </pre>
 
@@ -138,6 +169,7 @@ print "we're still good"
 		assertExists("heredocDeclaration", "<<'SINGLEQUOTEDHEREDOC'", "single quoted heredoc declaration");
 		assertExists("heredocDeclaration", "<<\"stacked1\"", "stacked heredoc declaration");
 		assertExists("heredocDeclaration", "<<\"stacked2\"", "stacked heredoc declaration");
+		assertExists("heredocDeclaration", "<<-INDENTED", "indented heredoc declaration");
 		
 		assertExists("heredoc", "Default heredoc body\nHEREDOC\n", "default heredoc body");
 		assertExists("heredoc", "Quoted heredoc body\nQUOTEDHEREDOC\n", "double quoted heredoc body");
@@ -147,7 +179,7 @@ print "we're still good"
 		assertExists("heredoc", "stacked heredoc #2\nstacked2\n", "stacked heredoc body");
 		
 		assertExists("comment", "#single line comment", "comment");
-		assertExists("comment", "#single line comment", "comment");
+		assertExists("comment", "# delimiters can be indented", "comment after heredoc declaration");
 		
 		assertExists("docComment", "=begin This is a \"comment\" that begins with\n=begin and apparently doesn't end until\nyou get to a line that starts with =end\n=end this is also ignored by the interpreter", "docComment");
 		
@@ -185,6 +217,12 @@ print "we're still good"
 		assertExists("named-ident", "IdentBeforeNew", "class name before new() invocation");
 		
 		assertExists("ident", "factorial", "user-defined function call");
+		assertExists("ident", "not_a_symbol1", "second argument of ternary operator");
+		assertExists("ident", "not_a_symbol2", "second argument of ternary operator after nested ternary operator");
+		
+		assertExists("symbol", ":symbol1", "symbol as first argument of ternary operator");
+		assertExists("symbol", ":symbol2", "symbol as first argument of nested ternary operator");
+		assertExists("symbol", ":symbol3", "symbol as second argument of nested ternary operator");
 		
 		assertExists("function", "puts", "puts function");
 		assertExists("function", "chomp", "chomp function");

@@ -35,6 +35,8 @@ namespace My.Namespace {
 					if (foo is MyNamespace.TypeAfterIs) {
 						this.SomeMethod(ref foo, out foo);
 					}
+					
+					var chars = new[] { 'c', '\'', '\\' };
 				}
 			}
 		}
@@ -251,6 +253,10 @@ public class Foo { }</pre>
 		
 		assertExists("string", "\"this is \\\"a\\\" string\"", "string with escaped quote");
 		assertExists("string", "@\"this is \"\"another\"\"\nmulti line\nstring\"", "verbatim string with escaped quote");
+		
+		assertExists("char", "'c'", "char");
+		assertExists("char", "'\\''", "char with escaped single quote");
+		assertExists("char", "'\\\\'", "char with escaped backslash");
 		
 		assertExists("number", "0", "number 0");
 		assertExists("number", "1.5", "number 1.5");

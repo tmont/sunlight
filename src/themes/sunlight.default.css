@@ -215,6 +215,7 @@
 	color: #808080 !important;
 }
 .sunlight-quotedIdent,
+.sunlight-ruby .sunlight-subshellCommand,
 .sunlight-lisp .sunlight-keywordArgument,
 .sunlight-haskell .sunlight-infixOperator,
 .sunlight-erlang .sunlight-quotedAtom {
@@ -284,8 +285,9 @@
 }
 
 /* ruby */
-.sunlight-ruby .sunlight-subshellCommand {
-	color: #999900 !important;
+.sunlight-ruby .sunlight-symbol {
+	font-weight: bold !important;
+	color: #ED7272 !important;
 }
 
 /* brainfuck */
