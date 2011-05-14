@@ -5,7 +5,7 @@
 		<script type="text/javascript" src="../src/plugins/sunlight-plugin.doclinks.js"></script>
 		<script type="text/javascript" src="../src/plugins/sunlight-plugin.linenumbers.js"></script>
 		<script type="text/javascript" src="../src/lang/sunlight.ruby.js"></script>
-		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.dark.css" />
+		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.default.css" />
 	</head>
 
 	<body>
@@ -156,6 +156,21 @@ Grocery list
 GROCERY_LIST
 end
 
+#&lt;&lt; operator should not be interpreted as heredoc
+self &lt;&lt; a[0]
+
+def foo(s)
+	puts s
+end
+
+foo &lt;&lt;afterIdent
+lol
+afterIdent
+
+foo = &lt;&lt;1_a2
+lol
+1_a2
+
 print "we're still good"
 </pre>
 
@@ -170,6 +185,8 @@ print "we're still good"
 		assertExists("heredocDeclaration", "<<\"stacked1\"", "stacked heredoc declaration");
 		assertExists("heredocDeclaration", "<<\"stacked2\"", "stacked heredoc declaration");
 		assertExists("heredocDeclaration", "<<-INDENTED", "indented heredoc declaration");
+		assertExists("heredocDeclaration", "<<1_a2", "heredoc declaration that starts with a number");
+		assertExists("heredocDeclaration", "<<afterIdent", "heredoc declaration after ident");
 		
 		assertExists("heredoc", "Default heredoc body\nHEREDOC\n", "default heredoc body");
 		assertExists("heredoc", "Quoted heredoc body\nQUOTEDHEREDOC\n", "double quoted heredoc body");

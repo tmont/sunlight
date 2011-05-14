@@ -156,16 +156,28 @@
 			//heredoc declaration
 			//heredocs can be stacked and delimited, so this is a bit complicated
 			//we keep track of the heredoc declarations in context.items.heredocQueue, and then use them later in the heredoc custom parse rule below
+			
 			function(context) {
-				if (context.reader.current() !== "<" || context.reader.peek() !== "<") {
+				if (context.reader.current() !== "<" || !/<[\w'"`-]$/.test(context.reader.peek(2))) {
 					return null;
 				}
 				
-				//cannot be preceded by an ident or a number or a string
+				
+				//cannot be preceded by an a number or a string
 				var prevToken = context.token(context.count() - 1);
-				if (prevToken && sunlight.util.contains(["ident", "number", "string"], prevToken.name)) {
+				if (prevToken && sunlight.util.contains(["number", "string"], prevToken.name)) {
 					return null;
 				}
+				
+				//there are still cases where heredocs are falsely detected, because it would require performing
+				//static analysis
+				
+				//e.g. foo <<a
+				//if foo is an object that has the "<<" method defined, then it will perform a left shift
+				//if foo is a function that takes a string argument, it will interpret it as a heredoc
+				
+				//so, we just force you to have whitespace between << and the rhs operand in these ambiguous cases
+				
 				
 				//can be between quotes (double, single or back) or not, or preceded by a hyphen
 				
