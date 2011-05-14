@@ -104,6 +104,55 @@
 				return context.createToken("regexLiteral", regexLiteral, line, column);
 			},
 			
+			//symbols
+			function(context) {
+				//this is goofy, because it needs to recognize things like "foo = true ? :true :not_true"
+				//and detect that :not_true is not a symbol
+				
+				if (context.reader.current() !== ":" || !/[a-zA-Z_]/.test(context.reader.peek())) {
+					return null;
+				}
+				
+				//basically look backward until a line break not preceded by an operator or a comma
+				var token, index = context.count(), parenCount = 0, count = context.count() - 1;
+				while (token = context.token(--index)) {
+					if (token.name === "operator") {
+						if (parenCount === 0) {
+							if (token.value === "?" && index < count) {
+								//this is a ternary operator, not a symbol
+								return null;
+							} else if (token.value === ":") {
+								break;
+							}
+						}
+						
+					} else if (token.name === "punctuation") {
+						switch (token.value) {
+							case "(":
+								parenCount--;
+								break;
+							case ")":
+								parenCount++;
+								break;
+						}
+					} else if (token.name === "default" && /\n/.test(token.value)) {
+						var prevToken = context.token(index - 1);
+						if (prevToken && (prevToken.name === "operator" || (prevToken.name === "punctuation" && prevToken.value === ","))) {
+							//line continuation
+							continue;
+						}
+						
+						break;
+					}
+				}
+				
+				//read the symbol
+				var symbol = /^:\w+/.exec(context.reader.substring())[0];
+				token = context.createToken("symbol", symbol, context.reader.getLine(), context.reader.getColumn());
+				context.reader.read(symbol.length - 1); //already read the ":"
+				return token;
+			},
+			
 			//heredoc declaration
 			//heredocs can be stacked and delimited, so this is a bit complicated
 			//we keep track of the heredoc declarations in context.items.heredocQueue, and then use them later in the heredoc custom parse rule below
@@ -374,6 +423,7 @@
 			"||=", "|=", "||", "|",
 			"^=", "^", 
 			"~", 
+			"\\", //line continuation
 			"<=>", "<<=", "<<", "<=", "<", 
 			">>=", ">>", ">=", ">",   
 			"!~", "!=", "!",

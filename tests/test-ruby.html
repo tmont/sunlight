@@ -5,7 +5,7 @@
 		<script type="text/javascript" src="../src/plugins/sunlight-plugin.doclinks.js"></script>
 		<script type="text/javascript" src="../src/plugins/sunlight-plugin.linenumbers.js"></script>
 		<script type="text/javascript" src="../src/lang/sunlight.ruby.js"></script>
-		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.default.css" />
+		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.dark.css" />
 	</head>
 
 	<body>
@@ -75,7 +75,10 @@ ensure
 end
 
 BEGIN {
-	#do stuff
+	#oh god, the colons!
+	not_true = false
+	foo = false ? :symbol1 :not_a_symbol1
+	foo = false ? (true ? :symbol2 : :symbol3) :not_a_symbol2
 }
 
 END {
@@ -214,6 +217,12 @@ print "we're still good"
 		assertExists("named-ident", "IdentBeforeNew", "class name before new() invocation");
 		
 		assertExists("ident", "factorial", "user-defined function call");
+		assertExists("ident", "not_a_symbol1", "second argument of ternary operator");
+		assertExists("ident", "not_a_symbol2", "second argument of ternary operator after nested ternary operator");
+		
+		assertExists("symbol", ":symbol1", "symbol as first argument of ternary operator");
+		assertExists("symbol", ":symbol2", "symbol as first argument of nested ternary operator");
+		assertExists("symbol", ":symbol3", "symbol as second argument of nested ternary operator");
 		
 		assertExists("function", "puts", "puts function");
 		assertExists("function", "chomp", "chomp function");
