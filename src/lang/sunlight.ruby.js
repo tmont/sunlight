@@ -60,7 +60,10 @@
 						return true;
 					}
 					
-					if (previousNonWsToken.name === "keyword" || previousNonWsToken.name === "ident" || previousNonWsToken.name === "number") {
+					if (sunlight.util.contains(["keyword", "ident", "number"], previousNonWsToken.name)) {
+						return false;
+					}
+					if (previousNonWsToken.name === "punctuation" && !sunlight.util.contains(["(", "{", "[", ","], previousNonWsToken.value)) {
 						return false;
 					}
 					

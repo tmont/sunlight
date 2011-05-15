@@ -105,6 +105,11 @@
 	/foo/gim.test("foo") //should be a regex with modifiers
 	/foo/asdfasdf //should be a regex with non-existent modifiers
 	
+	var foo = (4 + 5) / 2; //should not be a regex
+	var arr = [/regexafterbracket/, /regexaftercomma/, 4/5];
+	function(regex) { /regexafterbrace/.text(regex); }
+	func(/regexafterparen/); /regexaftersemicolon/;
+	
 	
 	//.test("foo"); //should not be a regex
 	
@@ -143,6 +148,12 @@
 		assertExists("regexLiteral", "/regexaftercolon/", "regex literal after colon");
 		assertExists("regexLiteral", "/regexafteroperator/", "regex literal after operator");
 		assertExists("regexLiteral", "/regexatstartofline/", "regex literal at start of line");
+		assertExists("regexLiteral", "/regexaftercomma/", "regex literal after a comma");
+		assertExists("regexLiteral", "/regexaftersemicolon/", "regex literal after a semicolon");
+		assertExists("regexLiteral", "/regexafterbrace/", "regex literal after curly brace");
+		assertExists("regexLiteral", "/regexafterbracket/", "regex literal after bracket");
+		assertExists("regexLiteral", "/regexafterparen/", "regex literal after paren");
+		
 		assertExists("ident", "identafterdivision1", "not a regex literal after division operator");
 		assertExists("ident", "identafterdivision2", "not a regex literal after division operator");
 		assertExists("ident", "identafterdivision3", "not a regex literal after division operator");
