@@ -1,4 +1,4 @@
-1.13 2011-05-xx
+1.13 2011-05-15
 ---------------
 - Bugfixes
 	- fixed a few false positives in regex literal detection for JavaScript, Ruby, Perl and ActionScript
