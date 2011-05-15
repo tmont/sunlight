@@ -1,3 +1,10 @@
+1.13 2011-05-15
+---------------
+- Bugfixes
+	- fixed a few false positives in regex literal detection for JavaScript, Ruby, Perl and ActionScript
+	  (things like myFunc(/myregexliteral/) were not being detected, but things like (4 + 5) / 2 were being
+	  falsely detected)
+
 1.12 2011-05-14
 ---------------
 - Bugfixes

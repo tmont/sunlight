@@ -24,6 +24,9 @@
 			//this is not valid context for a regex literal
 			return false;
 		}
+		if (previousNonWsToken.name === "punctuation" && !sunlight.util.contains(["(", "{", "[", ",", ";"], previousNonWsToken.value)) {
+			return false;
+		}
 		
 		return true;
 	};
