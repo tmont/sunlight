@@ -1,4 +1,5 @@
 1.12 2011-05-14
+---------------
 - Bugfixes
 	- Ruby: fixed heredoc detection. However, it would require static analysis to have a 100% success rate
 	  for detecting heredocs in Ruby. Things like "x <<1" will give false positives, but it can't be helped.
