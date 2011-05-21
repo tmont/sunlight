@@ -103,14 +103,14 @@
 			<fileset dir="${temp.dir}" includes="sunlight.lua.js"/>
 		</concat>
 	
-		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${deploy.dir}">
+		<yui-compressor warn="true" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${deploy.dir}">
 			<include name="sunlight-all.js"/>
 			<include name="sunlight-bundled.js"/>
 		</yui-compressor>
 		
 		<move file="${deploy.dir}/sunlight-bundled-min.js" tofile="${deploy.dir}/sunlight-min.js" />
 		
-		<yui-compressor warn="false" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${lang.dir}">
+		<yui-compressor warn="true" munge="true" jsSuffix="-min.js" charset="UTF-8" fromdir="${temp.dir}" todir="${lang.dir}">
 			<include name="sunlight.csharp.js"/>
 			<include name="sunlight.javascript.js"/>
 			<include name="sunlight.php.js"/>

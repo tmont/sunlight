@@ -57,23 +57,35 @@
 		customParseRules: [
 			//message destination (e.g. method calls)
 			function(context) {
+				var peek,
+					count,
+					ident,
+					possibleMessageArgument,
+					match,
+					parenCount,
+					bracketCount,
+					token,
+					index,
+					exprCount;
+				
 				//read the ident first
 				if (!context.language.identFirstLetter.test(context.reader.current())) {
 					return null;
 				}
 				
-				var peek, count = 0;
+				count = 0;
 				while ((peek = context.reader.peek(++count)) && peek.length === count) {
 					if (!context.language.identAfterFirstLetter.test(sunlight.util.last(peek))) {
 						break;
 					}
 				}
 				
-				var ident = context.reader.current() + peek.substring(0, peek.length - 1), count = count - 1;
-				var possibleMessageArgument = false;
+				ident = context.reader.current() + peek.substring(0, peek.length - 1);
+				count = count - 1;
+				possibleMessageArgument = false;
 				while ((peek = context.reader.peek(++count)) && peek.length === count) {
 					if (!/\s$/.test(peek)) {
-						var match = /([\]:])$/.exec(peek);
+						match = /([\]:])$/.exec(peek);
 						if (match === null) {
 							//not a message destination
 							return null;
@@ -85,7 +97,10 @@
 				}
 				
 				//must be the second expression after "["
-				var parenCount = 0, bracketCount = 0, token, index = context.count(), exprCount = 1;
+				parenCount = 0;
+				bracketCount = 0;
+				index = context.count();
+				exprCount = 1;
 				while (token = context.token(--index)) {
 					if (exprCount > 1 && !possibleMessageArgument) {
 						return null;
@@ -141,7 +156,9 @@
 				], "\\b");
 				
 				return function(context) {
-					var token = sunlight.util.matchWord(context, attributes, "keyword", true);
+					var token = sunlight.util.matchWord(context, attributes, "keyword", true),
+						prevToken,
+						index;
 					if (!token) {
 						return null;
 					}
@@ -150,7 +167,7 @@
 					
 					//look backward for "("
 					//if we find a ";" before a "(" then that's no good
-					var prevToken, index = context.count();
+					index = context.count();
 					while (prevToken = context.token(--index)) {
 						if (prevToken.name === "punctuation") {
 							if (prevToken.value === "(") {
@@ -183,8 +200,8 @@
 			custom: [
 				//naming convention: NS.+, CG.+ are assumed to be built in objects
 				function(context) {
-					var regex = /^(NS|CG).+$/;
-					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					var regex = /^(NS|CG).+$/,
+						nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
 					return regex.test(context.tokens[context.index].value) && (!nextToken || nextToken.name !== "punctuation" || nextToken.value !== "(");
 				},
 				
@@ -196,12 +213,17 @@
 				
 				//ident followed by an ident, but not inside []
 				function(context) {
+					var token,
+						index,
+						parenCount;
+						
 					if (!sunlight.util.createProceduralRule(context.index + 1, 1, [{ token: "default" }, { token: "ident" }])(context.tokens)) {
 						return false;
 					}
 					
 					//must be between []
-					var token, index = context.index, parenCount = 0;
+					index = context.index;
+					parenCount = 0;
 					while (token = context.tokens[--index]) {
 						if (token.name === "punctuation") {
 							switch (token.value) {
@@ -250,8 +272,15 @@
 						//basically, can't be on the right hand side of an equals sign
 						//so we traverse the tokens backward, and if we run into a "=" before a ";" or a "{", it's no good
 						
-						var precedesIsSatisfied = function(tokens) {
-							for (var i = 0; i < precedes.length; i++) {
+						var precedesIsSatisfied,
+							isPartOfProperty,
+							foundEquals,
+							token,
+							index;
+						
+						precedesIsSatisfied = function(tokens) {
+							var i;
+							for (i = 0; i < precedes.length; i++) {
 								if (sunlight.util.createProceduralRule(context.index + 1, 1, precedes[i], false)(tokens)) {
 									return true;
 								}
@@ -266,8 +295,9 @@
 						
 						//make sure we're not on the left side of the equals sign
 						//objc addition: okay if part of a @property statement
-						var isPartOfProperty = false, foundEquals = false;
-						var token, index = context.index;
+						isPartOfProperty = false;
+						foundEquals = false;
+						index = context.index;
 						while (token = context.tokens[--index]) {
 							if (token.name === "punctuation" && (token.value === ";" || token.value === "{")) {
 								return isPartOfProperty || !foundEquals;
@@ -311,8 +341,14 @@
 					];
 				
 					return function(context) {
-						var precedesIsSatisfied = function(tokens) {
-							for (var i = 0; i < precedes.length; i++) {
+						var token, 
+							index,
+							prevToken,
+							precedesIsSatisfied;
+							
+						precedesIsSatisfied = function(tokens) {
+							var i;
+							for (i = 0; i < precedes.length; i++) {
 								if (sunlight.util.createProceduralRule(context.index + 1, 1, precedes[i], false)(tokens)) {
 									return true;
 								}
@@ -328,10 +364,10 @@
 						//make sure the previous tokens are "(" and then not a keyword or an ident
 						//this'll make sure that things like "if (foo) doSomething();" and "bar(foo)" won't color "foo"
 						
-						var token, index = context.index;
+						index = context.index;
 						while (token = context.tokens[--index]) {
 							if (token.name === "punctuation" && token.value === "(") {
-								var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, index);
+								prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, index);
 								if (prevToken) {
 									if (prevToken.name === "ident") {
 										return false;
@@ -354,17 +390,24 @@
 				//stolen and slightly modified from cpp, this is actually for protocols, since objective-c doesn't have generics
 				function(context) {
 					//between < and > and preceded by an ident and not preceded by "class"
-					var index = context.index, token;
+					var index = context.index, 
+						token, 
+						foundIdent, 
+						bracketCountLeft, 
+						bracketCountRight,
+						prevToken;
 					
 					//if the previous token is a keyword, then we don't care about it
-					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
+					prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
 					if (!prevToken || prevToken.name === "keyword") {
 						return false;
 					}
 					
 					//look for "<" preceded by an ident but not "class"
 					//if we run into ">" before "," or "<" then it's a big fail
-					var foundIdent = false, bracketCountLeft = [0, 0], bracketCountRight = [0, 0];
+					foundIdent = false;
+					bracketCountLeft = [0, 0];
+					bracketCountRight = [0, 0];
 					while ((token = context.tokens[--index]) !== undefined) {
 						if (token.name === "operator") {
 							switch (token.value) {
@@ -440,7 +483,10 @@
 				function(context) {
 					//if it's preceded by an ident or a primitive/alias keyword then it's no good (i.e. a generic method definition like "public void Foo<T>")
 					//also a big fail if it is preceded by a ., i.e. a generic method invocation like container.Resolve()
-					var token = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
+					var token = sunlight.util.getPreviousNonWsToken(context.tokens, context.index),
+						index,
+						bracketCount;
+						
 					if (token !== undefined) {
 						if (
 							token.name === "ident" 
@@ -456,7 +502,7 @@
 						return false;
 					}
 					
-					var index = context.index, bracketCount = [0, 0], token; //open (<), close (>)
+					index = context.index, bracketCount = [0, 0]; //open (<), close (>)
 					while ((token = context.tokens[++index]) !== undefined) {
 						if (token.name === "operator") {
 							switch (token.value) {
@@ -515,7 +561,7 @@
 					}
 					
 					return true;
-				},
+				}
 			],
 			
 			follows: [
