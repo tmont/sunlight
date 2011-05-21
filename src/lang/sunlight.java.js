@@ -7,15 +7,15 @@
 		throw "Include sunlight.js before including language files";
 	}
 	
-	var createNamedIdentFunction = function(func) {
+	function createNamedIdentFunction(func) {
 		var typeDefinitionRegex = /^T([A-Z0-9]\w*)?$/;
 		return function(context) {
 			return !typeDefinitionRegex.test(context.tokens[context.index].value) && func(context);
 		};
 	};
 	
-	var primitives = ["boolean", "byte", "char", "double", "float", "int", "long", "short"];
-	var acceptableKeywords = primitives.concat(["extends"]);
+	var primitives = ["boolean", "byte", "char", "double", "float", "int", "long", "short"],
+		acceptableKeywords = primitives.concat(["extends"]);
 
 	sunlight.registerLanguage("java", {
 		keywords: [
@@ -45,11 +45,14 @@
 				//generic definitions/params between "<" and ">"
 				createNamedIdentFunction(function(context) {
 					//between < and > and preceded by an ident and not preceded by "class"
-					var index = context.index, token;
-					
+					var index = context.index, 
+						token,
+						foundIdent = false,
+						bracketCountLeft = [0, 0],
+						bracketCountRight = [0, 0];
+						
 					//look for "<" preceded by an ident but not "class"
 					//if we run into ">" before "," or "<" then it's a big fail
-					var foundIdent = false, bracketCountLeft = [0, 0], bracketCountRight = [0, 0];
 					while ((token = context.tokens[--index]) !== undefined) {
 						if (token.name === "keyword" && token.value === "class") {
 							//this must be a generic class type definition, e.g. Foo<T>, and we don't want to color the "T"
@@ -101,7 +104,6 @@
 					}
 					
 					if (!foundIdent || bracketCountLeft[0] === 0) {
-						
 						//not inside a generic definition
 						return false;
 					}
@@ -135,7 +137,10 @@
 				createNamedIdentFunction(function(context) {
 					//if it's preceded by an ident or a primitive/alias keyword then it's no good (i.e. a generic method definition like "public void Foo<T>")
 					//also a big fail if it is preceded by a ., i.e. a generic method invocation like container.Resolve()
-					var token = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
+					var token = sunlight.util.getPreviousNonWsToken(context.tokens, context.index),
+						index,
+						bracketCount;
+					
 					if (token !== undefined) {
 						if (
 							token.name === "ident" 
@@ -152,7 +157,8 @@
 						return false;
 					}
 					
-					var index = context.index, bracketCount = [0, 0], token; //open (<), close (>)
+					index = context.index;
+					bracketCount = [0, 0]; //open (<), close (>)
 					while ((token = context.tokens[++index]) !== undefined) {
 						if (token.name === "operator") {
 							switch (token.value) {
@@ -221,13 +227,18 @@
 				//fully qualified type names
 				createNamedIdentFunction(function(context) {
 					//next token is not "."
-					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index),
+						token,
+						index,
+						previous;
+					
 					if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
 						return false;
 					}
 					
 					//go backward and make sure that there are only idents and dots before the new keyword
-					var token, index = context.index, previous = context.tokens[index];
+					index = context.index;
+					previous = context.tokens[index];
 					while ((token = context.tokens[--index]) !== undefined) {
 						if (token.name === "keyword" && (token.value === "new" || token.value === "import" || token.value === "instanceof")) {
 							return true;
@@ -269,15 +280,17 @@
 					];
 				
 					return createNamedIdentFunction(function(context) {
-						var precedesIsSatisfied = function(tokens) {
-							for (var i = 0; i < precedes.length; i++) {
-								if (sunlight.util.createProceduralRule(context.index + 1, 1, precedes[i], false)(tokens)) {
-									return true;
+						var token,
+							index,
+							precedesIsSatisfied = function(tokens) {
+								for (var i = 0; i < precedes.length; i++) {
+									if (sunlight.util.createProceduralRule(context.index + 1, 1, precedes[i], false)(tokens)) {
+										return true;
+									}
 								}
-							}
-							
-							return false;
-						}(context.tokens);
+								
+								return false;
+							}(context.tokens);
 						
 						if (!precedesIsSatisfied) {
 							return false;
@@ -286,7 +299,7 @@
 						//make sure the previous tokens are "(" and then not a keyword
 						//this'll make sure that things like "if (foo) doSomething();" won't color "foo"
 						
-						var token, index = context.index;
+						index = context.index;
 						while (token = context.tokens[--index]) {
 							if (token.name === "punctuation" && token.value === "(") {
 								var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, index);
@@ -304,39 +317,40 @@
 			
 				//can't use the follows/precedes/between utilities since we need to verify that it doesn't match the type definition naming convention
 				createNamedIdentFunction(function(context) {
-					var follows = [
-						[{ token: "ident" }, sunlight.util.whitespace, { token: "keyword", values: ["extends", "implements"] }, sunlight.util.whitespace],
-				
-						//method/property return values
-						//class/interface names
-						[{ token: "keyword", values: ["class", "interface", "enum", "public", "private", "protected", "static", "final"] }, sunlight.util.whitespace],
+					var i,
+						follows = [
+							[{ token: "ident" }, sunlight.util.whitespace, { token: "keyword", values: ["extends", "implements"] }, sunlight.util.whitespace],
+					
+							//method/property return values
+							//class/interface names
+							[{ token: "keyword", values: ["class", "interface", "enum", "public", "private", "protected", "static", "final"] }, sunlight.util.whitespace],
+							
+							//bounded generic interface constraints
+							//this matches "MyInterface" in "public <T extends Object & MyInterface>..."
+							[
+								{ token: "keyword", values: ["extends"] },
+								{ token: "default" }, 
+								{ token: "ident" }, 
+								{ token: "default" }, 
+								{ token: "operator", values: ["&"] },
+								{ token: "default" }
+							]
+						],
 						
-						//bounded generic interface constraints
-						//this matches "MyInterface" in "public <T extends Object & MyInterface>..."
-						[
-							{ token: "keyword", values: ["extends"] },
-							{ token: "default" }, 
-							{ token: "ident" }, 
-							{ token: "default" }, 
-							{ token: "operator", values: ["&"] },
-							{ token: "default" }
-						]
-					];
-					
-					var precedes = [
-						//arrays
-						[sunlight.util.whitespace, { token: "punctuation", values: ["["] }, sunlight.util.whitespace, { token: "punctuation", values: ["]"] }], //in method parameters
+						precedes = [
+							//arrays
+							[sunlight.util.whitespace, { token: "punctuation", values: ["["] }, sunlight.util.whitespace, { token: "punctuation", values: ["]"] }], //in method parameters
 
-						//assignment: Object o = new object();
-						//method parameters: public int Foo(Foo foo, Bar b, Object o) { }
-						[{ token: "default" }, { token: "ident" }]
-					];
+							//assignment: Object o = new object();
+							//method parameters: public int Foo(Foo foo, Bar b, Object o) { }
+							[{ token: "default" }, { token: "ident" }]
+						],
+						
+						between = [
+							{ opener: { token: "keyword", values: ["implements", "throws"] }, closer: { token: "punctuation", values: ["{"] } }
+						];
 					
-					var between = [
-						{ opener: { token: "keyword", values: ["implements", "throws"] }, closer: { token: "punctuation", values: ["{"] } }
-					];
-					
-					for (var i = 0; i < follows.length; i++) {
+					for (i = 0; i < follows.length; i++) {
 						if (sunlight.util.createProceduralRule(context.index - 1, -1, follows[i], false)(context.tokens)) {
 							return true;
 						}

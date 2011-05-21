@@ -55,15 +55,22 @@
 		customParseRules: [
 			//regex literal
 			function(context) {
-				var peek = context.reader.peek();
+				var peek = context.reader.peek(),
+					isValid,
+					regexLiteral = "/",
+					line = context.reader.getLine(),
+					column = context.reader.getColumn(),
+					peek2,
+					next;
+					
 				if (context.reader.current() !== "/" || peek === "/" || peek === "*") {
 					//doesn't start with a / or starts with // (comment) or /* (multi line comment)
 					return null;
 				}
 				
-				var isValid = function() {
-					var previousNonWsToken = context.token(context.count() - 1);
-					var previousToken = null;
+				isValid = function() {
+					var previousNonWsToken = context.token(context.count() - 1),
+						previousToken = null;
 					if (context.defaultData.text !== "") {
 						previousToken = context.createToken("default", context.defaultData.text); 
 					}
@@ -97,11 +104,6 @@
 				}
 				
 				//read the regex literal
-				var regexLiteral = "/";
-				var line = context.reader.getLine();
-				var column = context.reader.getColumn();
-				var peek2, next;
-				
 				while (context.reader.peek() !== context.reader.EOF) {
 					peek2 = context.reader.peek(2);
 					if (peek2 === "\\/" || peek2 === "\\\\") {
