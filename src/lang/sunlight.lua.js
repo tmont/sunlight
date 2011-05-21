@@ -65,15 +65,20 @@
 			
 			//literal strings
 			function(context) {
+				var numberOfEqualsSigns = 0,
+					peek,
+					count = 0,
+					value,
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn(),
+					closer;
+					
 				//[=*[ string contents ]=*]
 				
 				if (context.reader.current() !== "[") {
 					return null;
 				}
 				
-				var numberOfEqualsSigns = 0;
-				
-				var peek, count = 0;
 				while ((peek = context.reader.peek(++count)) && peek.length === count) {
 					if (!/=$/.test(peek)) {
 						if (!/\[$/.test(peek)) {
@@ -85,11 +90,11 @@
 					}
 				}
 				
-				var value = "[" + peek, line = context.reader.getLine(), column = context.reader.getColumn();
+				value = "[" + peek;
 				context.reader.read(peek.length);
 				
 				//read until "]" + numberOfEqualsSigns + "]"
-				var closer = "]" + new Array(numberOfEqualsSigns + 1).join("=") + "]";
+				closer = "]" + new Array(numberOfEqualsSigns + 1).join("=") + "]";
 				while (peek = context.reader.peek()) {
 					if (peek === "]" && context.reader.peek(closer.length) === closer) {
 						value += context.reader.read(closer.length);
@@ -112,11 +117,12 @@
 					var tables = ["coroutine", "package", "string", "table", "math", "io", "os", "debug"];
 					
 					return function(context) {
+						var nextToken;
 						if (!sunlight.util.contains(tables, context.tokens[context.index].value)) {
 							return false;
 						}
 						
-						var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+						nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
 						return nextToken && (nextToken.name !== "operator" || nextToken.value !== ":");
 					};
 				}()

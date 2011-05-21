@@ -89,11 +89,14 @@
 		customParseRules: [
 			//#<n>r operator where n is an integer
 			function(context) {
+				var peek, 
+					count = 0,
+					token;
+				
 				if (context.reader.current() !== "#") {
 					return null;
 				}
 				
-				var peek, count = 0;
 				while ((peek = context.reader.peek(++count)) !== context.reader.EOF && peek.length === count) {
 					if (!/\d$/.test(peek)) {
 						if (/[AR]$/i.test(peek)) {
@@ -108,25 +111,31 @@
 					return null;
 				}
 				
-				var token = context.createToken("operator", "#" + peek, context.reader.getLine(), context.reader.getColumn());
+				token = context.createToken("operator", "#" + peek, context.reader.getLine(), context.reader.getColumn());
 				context.reader.read(peek.length);
 				return token;
 			},
 			
 			//characters prepended by the #\ operator are read as idents
 			function(context) {
+				var prevToken,
+					peek,
+					value,
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn();
+					
 				if (context.defaultData.text !== "" || /\s/.test(context.reader.current())) {
 					//whitespace is not allowed
 					return null;
 				}
 				
-				var prevToken = context.getAllTokens()[context.count() - 1];
+				prevToken = context.getAllTokens()[context.count() - 1];
 				if (!prevToken || prevToken.name !== "operator" || prevToken.value !== "#\\") {
 					return null;
 				}
 				
 				//the next characters up until whitespace or ( or ) are part of the ident
-				var peek, value = context.reader.current(), line = context.reader.getLine(), column = context.reader.getColumn();
+				value = context.reader.current();
 				while ((peek = context.reader.peek()) !== context.reader.EOF) {
 					if (/[\s\(\)]/.test(peek)) {
 						break;
@@ -135,18 +144,22 @@
 					value += context.reader.read();
 				}
 				
-				//TODO handle continuations
-				
 				return context.createToken("ident", value, line, column);
 			},
 			
 			//variables
 			function(context) {
+				var token,
+					value = "*",
+					peek, 
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn();
+				
 				if (context.reader.current() !== "*") {
 					return null;
 				}
 				
-				var token = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
+				token = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
 				if (token && token.name === "punctuation" && token.value === "(") {
 					//function that starts with "*"
 					return null;
@@ -157,7 +170,6 @@
 				}
 				
 				//read until *
-				var value = "*", peek, line = context.reader.getLine(), column = context.reader.getColumn();
 				while ((peek = context.reader.peek()) !== context.reader.EOF) {
 					value += context.reader.read();
 					
@@ -166,39 +178,43 @@
 					}
 				}
 				
-				//TODO handle continuations
-				
 				return context.createToken("variable", value, line, column);
 			},
 			
 			//function after #' operator
-			function(context) {
+			function() {
 				var boundary = new RegExp(functionBoundary);
-				if (context.defaultData.text !== "" || boundary.test(context.reader.current())) {
-					//whitespace is not allowed or we're already at the boundary
-					return null;
-				}
-				
-				var token = context.getAllTokens()[context.count() - 1];
-				if (!token || token.name !== "operator" || token.value !== "#'") {
-					return null;
-				}
-				
-				//read until function boundary
-				var peek, value = context.reader.current();
-				var line = context.reader.getLine(), column = context.reader.getColumn();
-				while ((peek = context.reader.peek()) !== context.reader.EOF) {
-					if (boundary.test(peek)) {
-						break;
+			
+				return function(context) {
+					var token,
+						peek,
+						value,
+						line = context.reader.getLine(), 
+						column = context.reader.getColumn();
+					
+					if (context.defaultData.text !== "" || boundary.test(context.reader.current())) {
+						//whitespace is not allowed or we're already at the boundary
+						return null;
 					}
 					
-					value += context.reader.read();
-				}
-				
-				//TODO handle continuations
-				
-				return context.createToken("function", value, line, column);
-			},
+					token = context.getAllTokens()[context.count() - 1];
+					if (!token || token.name !== "operator" || token.value !== "#'") {
+						return null;
+					}
+					
+					//read until function boundary
+					value = context.reader.current();
+					while ((peek = context.reader.peek()) !== context.reader.EOF) {
+						if (boundary.test(peek)) {
+							break;
+						}
+						
+						value += context.reader.read();
+					}
+					
+					return context.createToken("function", value, line, column);
+				};
+			}(),
 			
 			//types/specifiers
 			createFunctionRule([
@@ -326,8 +342,9 @@
 					
 					return function(context) {
 						//if the previous token is "defun" function, then this is a user-defined function
-						var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
-						var identValue = context.tokens[context.index].value;
+						var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index),
+							identValue = context.tokens[context.index].value;
+						
 						if (prevToken && prevToken.name === "macro" && sunlight.util.contains(defMacros, prevToken.value)) {
 							context.items.userDefinedFunctions.push(identValue);
 						}
