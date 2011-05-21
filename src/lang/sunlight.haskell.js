@@ -15,7 +15,11 @@
 		customParseRules: [
 			//character literals, e.g. 'a'
 			function(context) {
-				var peek = context.reader.peek();
+				var peek = context.reader.peek(),
+					expectedEnd = 2,
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn();
+					
 				if (context.reader.current() !== "'" && peek !== "'") {
 					return null;
 				}
@@ -23,7 +27,6 @@
 				//to differentiate from template haskell, we'll just assume that character literals
 				//are exactly one character long (or two for \' and \\) and delimited by '
 				
-				var expectedEnd = 2;
 				if (peek && peek === "\\") {
 					expectedEnd++;
 				}
@@ -33,29 +36,34 @@
 					return null;
 				}
 				
-				var line = context.reader.getLine(), column = context.reader.getColumn();
 				return context.createToken("char", "'" + context.reader.read(expectedEnd), line, column);
 			},
 			
 			//look for user defined functions
 			function(context) {
+				var peek, 
+					count = 0,
+					ident,
+					prevToken,
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn();
+				
 				//read the ident, if a :: operator follows it, then it's a function definition (i guess, like i know anything about haskell)
 				//or if follows newtype, class or data, we keep track of it as well
 				if (!/[A-Za-z_]/.test(context.reader.current())) {
 					return null;
 				}
 				
-				var peek, value = context.reader.current(), count = 0;
 				while ((peek = context.reader.peek(++count)) && peek.length === count) {
 					if (!/[\w']$/.test(peek)) {
 						break;
 					}
 				}
 				
-				var ident = context.reader.current() + peek.substring(0, peek.length - 1);
+				ident = context.reader.current() + peek.substring(0, peek.length - 1);
 				
 				//if it follows class, newtype, type or data
-				var prevToken = context.token(context.count() - 1);
+				prevToken = context.token(context.count() - 1);
 				if (prevToken && prevToken.name === "keyword" && sunlight.util.contains(["class", "newtype", "data", "type"], prevToken.value)) {
 					context.items.userDefinedFunctions.push(ident);
 					context.reader.read(ident.length - 1); //already read the first character
@@ -72,9 +80,8 @@
 							}
 							
 							//yay it's a function!
-							var line = context.reader.getLine(), column = context.reader.getColumn();
+							
 							context.items.userDefinedFunctions.push(ident);
-					
 							context.reader.read(ident.length - 1); //already read the first character
 							return context.createToken("ident", ident, line, column);
 						}

@@ -4,10 +4,19 @@
 		throw "Include sunlight.js before including language files";
 	}
 	
-	var peekSelectorToken = function(context) {
+	function peekSelectorToken(context) {
 		//make sure it's not part of a property value
 		//basically if we run into "{" before "}" it's bad
-		var token, index = context.count(), tokens = context.getAllTokens();
+		var token, 
+			index = context.count(), 
+			tokens = context.getAllTokens(),
+			value = "",
+			appendToValue = true,
+			count = 1,
+			peek,
+			line = context.reader.getLine(), 
+			column = context.reader.getColumn()
+			
 		while ((token = context.token(--index)) !== undefined) {
 			if (token.name === "punctuation" && token.value === "}") {
 				break;
@@ -18,9 +27,7 @@
 		
 		//now check to make sure we run into a { before a ;
 		
-		var value = "", appendToValue = true, count = 1;
-		var peek = context.reader.peek();
-		var line = context.reader.getLine(), column = context.reader.getColumn();
+		peek = context.reader.peek();
 		while (peek.length === count) {
 			letter = peek.charAt(peek.length - 1);
 			if (/[^\w-]$/.test(peek)) {
@@ -43,7 +50,7 @@
 		}
 		
 		return value;
-	};
+	}
 
 	sunlight.registerLanguage("css", {
 		caseInsensitive: true,
@@ -160,13 +167,16 @@
 				], "\\b", true);
 				
 				return function(context) {
-					var token = sunlight.util.matchWord(context, functions, "function", true);
+					var token = sunlight.util.matchWord(context, functions, "function", true),
+						count,
+						peek;
 					if (token === null) {
 						return null;
 					}
 					
 					//the next non-whitespace character must be a "("
-					var count = token.value.length, peek = context.reader.peek(count);
+					count = token.value.length;
+					peek = context.reader.peek(count);
 					while (peek.length === count && peek !== context.reader.EOF) {
 						if (!/\s$/.test(peek)) {
 							if (peek.charAt(peek.length - 1) === "(") {
@@ -228,6 +238,10 @@
 			
 			//classes
 			function(context) {
+				var className,
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn();
+				
 				//we can't just make this a scope because we'll get false positives for things like ".png" in url(image.png) (image.png doesn't need to be in quotes)
 				//so we detect them the hard way
 				
@@ -235,12 +249,11 @@
 					return null;
 				}
 				
-				var className = peekSelectorToken(context);
+				className = peekSelectorToken(context);
 				if (className === null) {
 					return null;
 				}
 				
-				var line = context.reader.getLine(), column = context.reader.getColumn();
 				context.reader.read(className.length);
 				return [
 					context.createToken("operator", ".", line, column),
@@ -250,28 +263,40 @@
 			
 			//element selctors (div, html, body, etc.)
 			function(context) {
-				var current = context.reader.current();
+				var current = context.reader.current(),
+					prevToken,
+					tagName,
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn();
+				
 				if (!/[A-Za-z_]/.test(current)) {
 					return null;
 				}
 				
-				var prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
+				prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
 				if (prevToken && prevToken.name === "operator" && (prevToken.value === ":" || prevToken.value === "::")) {
 					return null;
 				}
 				
-				var tagName = peekSelectorToken(context);
+				tagName = peekSelectorToken(context);
 				if (tagName === null) {
 					return null;
 				}
 				
-				var line = context.reader.getLine(), column = context.reader.getColumn();
 				context.reader.read(tagName.length);
 				return context.createToken("element", current + tagName, line, column);
 			},
 			
 			//hex color value
 			function(context) {
+				var peek,
+					count = 1,
+					value = "#",
+					letter,
+					validHex = true,
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn();
+				
 				if (context.reader.current() !== "#") {
 					return null;
 				}
@@ -279,8 +304,7 @@
 				//must be between ":" and ";"
 				//basically if we run into a "{" before a "} it's bad
 				
-				var peek = context.reader.peek(), count = 1, value = "#", letter, validHex = true;
-				var line = context.reader.getLine(), column = context.reader.getColumn();
+				peek = context.reader.peek();
 				while (peek.length === count) {
 					letter = peek.charAt(peek.length - 1);
 					if (letter === "}" || letter === ";") {
@@ -309,7 +333,8 @@
 				number, 
 				line = context.reader.getLine(), 
 				column = context.reader.getColumn(),
-				allowDecimal = true;
+				allowDecimal = true,
+				peek;
 
 			if (!/\d/.test(current)) {
 				//is it a decimal followed by a number?
@@ -328,7 +353,6 @@
 				}
 			}
 
-			var peek;
 			while ((peek = context.reader.peek()) !== context.reader.EOF) {
 				if (!/[A-Za-z0-9%]/.test(peek)) {
 					if (peek === "." && allowDecimal && /\d$/.test(context.reader.peek(2))) {

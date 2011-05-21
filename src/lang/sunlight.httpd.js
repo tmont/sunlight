@@ -27,7 +27,10 @@
 				
 				return function(context) {
 					//verify that the previous token is "<" or "</"
-					var token = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
+					var token = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count()),
+						peek,
+						count;
+					
 					if (!token || token.name !== "operator" || (token.value !== "<" && token.value !== "</")) {
 						return false;
 					}
@@ -38,7 +41,7 @@
 					}
 					
 					//if we encounter a ">" before a newline, we're good
-					var peek, count = token.value.length;
+					count = token.value.length;
 					while ((peek = context.reader.peek(count++)) !== context.reader.EOF) {
 						if (/>$/.test(peek)) {
 							context.reader.read(token.value.length - 1); //already read the first letter
@@ -56,7 +59,14 @@
 			
 			//regex literals for mod_rewrite
 			function(context) {
-				var current = context.reader.current();
+				var current = context.reader.current(),
+					tokens,
+					prevToken,
+					regexLiteral,
+					peek,
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn();
+				
 				if (/[\s\n]/.test(current)) {
 					return null;
 				}
@@ -64,8 +74,8 @@
 				//first argument after RewriteRule, delimited by \s
 				//second argument after RewriteCond, delimited by \s
 				
-				var tokens = context.getAllTokens();
-				var prevToken = sunlight.util.getPreviousNonWsToken(tokens, context.count());
+				tokens = context.getAllTokens();
+				prevToken = sunlight.util.getPreviousNonWsToken(tokens, context.count());
 				if (!prevToken) {
 					return null;
 				}
@@ -79,7 +89,7 @@
 				}
 				
 				//read to the end of the regex literal
-				var regexLiteral = current, peek, line = context.reader.getLine(), column = context.reader.getColumn();
+				regexLiteral = current;
 				while ((peek = context.reader.peek()) !== context.reader.EOF) {
 					if (/[\s\n]/.test(peek)) {
 						break;

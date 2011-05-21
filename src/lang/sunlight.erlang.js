@@ -17,14 +17,20 @@
 		customParseRules: [
 			//atom/function/userDefinedFunction detection
 			function(context) {
+				var line = context.reader.getLine(), 
+					column = context.reader.getColumn(),
+					peek,
+					count = 0,
+					ident,
+					isFunction = false,
+					parenCount = 1,
+					letter;
+				
 				if (!/[A-Za-z_]/.test(context.reader.current())) {
 					return null;
 				}
 				
-				var line = context.reader.getLine(), column = context.reader.getColumn();
-				
 				//read the ident (they can have letters, numbers, underscores and @-signs in them)
-				var peek, count = 0;
 				while (peek = context.reader.peek(++count)) {
 					if (!/[\w@]$/.test(peek)) {
 						break;
@@ -34,7 +40,6 @@
 				ident = context.reader.current() + peek.substring(0, peek.length - 1);
 				
 				//if the next non-whitespace character is "(", then it's a function
-				var isFunction = false;
 				count--;
 				while (peek = context.reader.peek(++count)) {
 					if (!/\s$/.test(peek)) {
@@ -56,7 +61,6 @@
 				
 				if (isFunction) {
 					//is it a function declaration? (preceded by -> operator)
-					var parenCount = 1, letter;
 					while (peek = context.reader.peek(++count)) {
 						letter = peek.charAt(peek.length - 1);
 						
