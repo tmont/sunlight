@@ -65,24 +65,29 @@
 				], "\\b", false);
 				
 				return function(context) {
+					var prevToken,
+						token,
+						peek,
+						count;
+					
 					if (!/[A-Za-z]/.test(context.reader.current())) {
 						//short circuit
 						return null;
 					}
 					
 					//if it follows "new" or ":", then it's not a function
-					var prevToken = context.token(context.count() - 1);
+					prevToken = context.token(context.count() - 1);
 					if (prevToken && ((prevToken.name === "keyword" && prevToken.value === "new") || (prevToken.name === "operator" && prevToken.value === ":"))) {
 						return null;
 					}
 					
-					var token = sunlight.util.matchWord(context, functions, "globalFunction", true);
+					token = sunlight.util.matchWord(context, functions, "globalFunction", true);
 					if (!token) {
 						return null;
 					}
 					
 					//make sure that a "(" follows it
-					var peek, count = token.value.length;
+					count = token.value.length;
 					while ((peek = context.reader.peek(count)) && peek.length === count) {
 						if (!/\s$/.test(peek)) {
 							if (sunlight.util.last(peek) === "(") {
@@ -102,15 +107,23 @@
 				
 			//regex literal, stolen from javascript
 			function(context) {
-				var peek = context.reader.peek();
+				var peek = context.reader.peek(),
+					isValid,
+					regexLiteral = "/",
+					line = context.reader.getLine(),
+					column = context.reader.getColumn(),
+					peek2,
+					next;
+					
 				if (context.reader.current() !== "/" || peek === "/" || peek === "*") {
 					//doesn't start with a / or starts with // (comment) or /* (multi line comment)
 					return null;
 				}
 				
-				var isValid = function() {
-					var previousNonWsToken = context.token(context.count() - 1);
-					var previousToken = null;
+				isValid = function() {
+					var previousNonWsToken = context.token(context.count() - 1),
+						previousToken = null;
+					
 					if (context.defaultData.text !== "") {
 						previousToken = context.createToken("default", context.defaultData.text); 
 					}
@@ -144,11 +157,6 @@
 				}
 				
 				//read the regex literal
-				var regexLiteral = "/";
-				var line = context.reader.getLine();
-				var column = context.reader.getColumn();
-				var peek2, next;
-				
 				while (context.reader.peek() !== context.reader.EOF) {
 					peek2 = context.reader.peek(2);
 					if (peek2 === "\\/" || peek2 === "\\\\") {
@@ -184,13 +192,18 @@
 			custom: [
 				function(context) {
 					//next token is not "."
-					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index),
+						token,
+						index,
+						previous;
+						
 					if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
 						return false;
 					}
 					
 					//go backward and make sure that there are only idents and dots before the new keyword
-					var token, index = context.index, previous = context.tokens[index];
+					index = context.index;
+					previous = context.tokens[index];
 					while ((token = context.tokens[--index]) !== undefined) {
 						if (token.name === "keyword" && sunlight.util.contains(["new", "is", "instanceof", "import"], token.value)) {
 							return true;

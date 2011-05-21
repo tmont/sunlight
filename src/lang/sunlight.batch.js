@@ -16,14 +16,19 @@
 		customParseRules: [
 			//labels
 			function(context) {
+				var colon,
+					peek,
+					value = "",
+					line,
+					column;
+				
 				if (!context.reader.isSolWs() || context.reader.current() !== ":" || context.reader.peek() === ":") {
 					return null;
 				}
 				
-				var colon = context.createToken("operator", ":", context.reader.getLine(), context.reader.getColumn());
+				colon = context.createToken("operator", ":", context.reader.getLine(), context.reader.getColumn());
 				
 				//label, read until whitespace
-				var peek, value = "", line, column;
 				while (peek = context.reader.peek()) {
 					if (/\s/.test(peek)) {
 						break;
@@ -46,12 +51,17 @@
 			
 			//label after goto statements
 			function(context) {
-				var matches = sunlight.util.createProceduralRule(context.count() - 1, -1, [{ token: "keyword", values: ["goto"] }, { token: "operator", values: [":"], optional: true }], true);
+				var matches = sunlight.util.createProceduralRule(context.count() - 1, -1, [{ token: "keyword", values: ["goto"] }, { token: "operator", values: [":"], optional: true }], true),
+					peek,
+					value,
+					line = context.reader.getLine(),
+					column = context.reader.getColumn();
+				
 				if (!matches(context.getAllTokens())) {
 					return null;
 				}
 				
-				var peek, value = context.reader.current(), line = context.reader.getLine(), column = context.reader.getColumn();
+				value = context.reader.current();
 				while (peek = context.reader.peek()) {
 					if (/[\W]/.test(peek)) {
 						break;
@@ -89,7 +99,10 @@
 				], "\\b", true);
 				
 				return function(context) {
-					var token = sunlight.util.matchWord(context, keywords, "keyword", true);
+					var token = sunlight.util.matchWord(context, keywords, "keyword", true),
+						prevToken,
+						index;
+					
 					if (!token) {
 						return null;
 					}
@@ -98,7 +111,7 @@
 					//if we find "echo" or "set" or "title" or "=" before "|" or sol then it's a fail
 					
 					if (!context.reader.isSolWs()) {
-						var prevToken, index = context.count();
+						index = context.count();
 						while (prevToken = context.token(--index)) {
 							if (prevToken.name === "keyword" && sunlight.util.contains(["echo", "title", "set"], prevToken.value)) {
 								return null;
@@ -118,7 +131,6 @@
 							}
 						}
 					}
-					
 					
 					context.reader.read(token.value.length - 1);
 					return token;

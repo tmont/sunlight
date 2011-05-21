@@ -52,7 +52,14 @@
 		
 		customParseRules: [
 			function(context) {
-				var current = context.reader.current(), line = context.reader.getLine(), column = context.reader.getColumn();
+				var current = context.reader.current(), 
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn(),
+					parenCount = 0,
+					bracketCount = 0,
+					peek,
+					value;
+					
 				if (current !== "#") {
 					return null;
 				}
@@ -60,9 +67,7 @@
 				//quick and dirty: everything between "#" (inclusive) and whitespace (exclusive) is a constant
                 //too dirty.  Need to account for parens and square brackets, whitespace can appear inside them.
                 //New routine: once inside () or [], anything goes, but once outside, terminate with whitespace
-                var parenCount = 0;
-                var bracketCount = 0;
-				var peek = context.reader.peek();
+				peek = context.reader.peek();
 				value = current;
                 while (parenCount > 0 || bracketCount > 0 || !/\s/.test(peek)) {
                     if (peek === ")" && parenCount > 0) {
@@ -90,11 +95,17 @@
 				var validLabelOps = ["BCC", "BCS", "BEQ", "BMI", "BNE", "BPL", "BVC", "BVS", "JMP", "JSR"]
 				
 				return function(context) {
+					var prevToken,
+						label,
+						peek,
+						line = context.reader.getLine(), 
+						column = context.reader.getColumn();
+					
 					if (!/[A-Za-z]/.test(context.reader.current())) {
 						return null;
 					}
 					
-					var prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
+					prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count())
 					if (!prevToken || prevToken.name !== "keyword" || !sunlight.util.contains(validLabelOps, prevToken.value, true)) {
 						if (context.count() > 0 && !/\n$/.test(context.defaultData.text)) {
 							//just a regular ident
@@ -103,8 +114,7 @@
 					}
 					
 					//read until the end of the ident
-					var label = context.reader.current();
-					var peek, line = context.reader.getLine(), column = context.reader.getColumn();
+					label = context.reader.current();
 					while ((peek = context.reader.peek()) !== context.reader.EOF) {
 						if (!/\w/.test(peek)) {
 							break;
@@ -121,7 +131,11 @@
 		caseInsensitive: true,
 		
 		numberParser: function(context) {
-			var current = context.reader.current(), number, line = context.reader.getLine(), column = context.reader.getColumn();
+			var current = context.reader.current(), 
+				number, 
+				line = context.reader.getLine(), 
+				column = context.reader.getColumn(),
+				peek;
 		    
 			//is first char a digit?
 			if (!/\d/.test(current)) {
@@ -143,7 +157,6 @@
 			//easy way out: read until it's not a number or letter a-f
 			//this will work for hex ($FF), octal (012), decimal and binary
 		    
-			var peek;
 			while ((peek = context.reader.peek()) !== context.reader.EOF) {
 				if (!/[A-Fa-f0-9]/.test(peek)) {
 					break;
