@@ -29,11 +29,15 @@
 				];
 				
 				return function(context) {
+					var peek, 
+						ident = context.reader.current(), 
+						line = context.reader.getLine(), 
+						column = context.reader.getColumn(),
+						tokenType;
+					
 					if (!/[A-Za-z_-]/.test(context.reader.current()) || !/[\w-]/.test(context.reader.peek())) {
 						return null;
 					}
-					
-					var peek, ident = context.reader.current(), line = context.reader.getLine(), column = context.reader.getColumn();
 					
 					while (peek = context.reader.peek()) {
 						if (!/[\w-]/.test(peek)) {
@@ -43,7 +47,9 @@
 						ident += context.reader.read();
 					}
 					
-					var tokenType = sunlight.util.contains(specialOperators, ident) 
+					//lol at the utter confusion i know this statement creates
+					//BUT I DONT'T CARE
+					tokenType = sunlight.util.contains(specialOperators, ident) 
 						? "specialOperator" 
 						: (sunlight.util.contains(keywords, ident) 
 							? "keyword" 
@@ -61,21 +67,26 @@
 			function() {
 				//Get-Help about_automatic_variables
 				//all uppercase because they're not case sensitive
-				var specialVariables = [
-					"$$", "$?", "$^", "$_", "$ARGS", "$CONSOLEFILENAME", "$ERROR", "$EVENT", "$EVENTSUBSCRIBER",
-					"$EXECUTIONCONTEXT", "$FALSE", "$FOREACH", "$HOME", "$HOST", "$INPUT", "$LASTEXITCODE", 
-					"$MATCHES", "$MYINVOCATION", "$NESTEDPROMPTLEVEL", "$NULL", "$PID", "$PROFILE", "$PSBOUNDPARAMETERS",
-					"$PSCMDLET", "$PSCULTURE", "$PSDEBUGCONTEXT", "$PSHOME", "$PSSCRIPTROOT", "$PSUICULTURE",
-					"$PSVERSIONTABLE", "$PWD", "$SENDER", "$SHELLID", "$SOURCEARGS", "$SOURCEEVENTARGS", "$THIS", "$TRUE"
-				];
-				var invalidVariableCharRegex = /[!@#%&,\.\s]/;
+				var invalidVariableCharRegex = /[!@#%&,\.\s]/,
+					specialVariables = [
+						"$$", "$?", "$^", "$_", "$ARGS", "$CONSOLEFILENAME", "$ERROR", "$EVENT", "$EVENTSUBSCRIBER",
+						"$EXECUTIONCONTEXT", "$FALSE", "$FOREACH", "$HOME", "$HOST", "$INPUT", "$LASTEXITCODE", 
+						"$MATCHES", "$MYINVOCATION", "$NESTEDPROMPTLEVEL", "$NULL", "$PID", "$PROFILE", "$PSBOUNDPARAMETERS",
+						"$PSCMDLET", "$PSCULTURE", "$PSDEBUGCONTEXT", "$PSHOME", "$PSSCRIPTROOT", "$PSUICULTURE",
+						"$PSVERSIONTABLE", "$PWD", "$SENDER", "$SHELLID", "$SOURCEARGS", "$SOURCEEVENTARGS", "$THIS", "$TRUE"
+					];
+				
 				return function(context) {
+					var peek, 
+						value = "$", 
+						line = context.reader.getLine(), 
+						column = context.reader.getColumn();
+					
 					//illegal characters in a variable: ! @ # % & , . whitespace
 					if (context.reader.current() !== "$" || invalidVariableCharRegex.test(context.reader.peek())) {
 						return null;
 					}
 					
-					var peek, value = "$", line = context.reader.getLine(), column = context.reader.getColumn();
 					while (peek = context.reader.peek()) {
 						if (invalidVariableCharRegex.test(peek)) {
 							break;
@@ -118,12 +129,14 @@
 				
 				//type coercion
 				function(context) {
-					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index),
+						isBetween;
+					
 					if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
 						return false;
 					}
 					
-					var isBetween = sunlight.util.createBetweenRule(context.index, { token: "punctuation", values: ["["] }, { token: "punctuation", values: ["]"] });
+					isBetween = sunlight.util.createBetweenRule(context.index, { token: "punctuation", values: ["["] }, { token: "punctuation", values: ["]"] });
 					if (!isBetween(context.tokens)) {
 						return false;
 					}

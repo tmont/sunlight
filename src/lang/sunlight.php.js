@@ -102,17 +102,21 @@
 		customParseRules: [
 			//heredoc/nowdoc
 			function(context) {
+				var value = "<<<",
+					line = context.reader.getLine(),
+					column = context.reader.getColumn(),
+					ident = "",
+					isNowdoc = false,
+					peek;
+				
+				
 				if (context.reader.current() !== "<" || context.reader.peek(2) !== "<<") {
 					return null;
 				}
 				
-				var value = "<<<";
-				var line = context.reader.getLine();
-				var column = context.reader.getColumn();
 				context.reader.read(2);
 				
-				var ident = "", isNowdoc = false;
-				var peek = context.reader.peek();
+				peek = context.reader.peek();
 				while (peek !== context.reader.EOF && peek !== "\n") {
 					value += context.reader.read();
 					
@@ -155,13 +159,15 @@
 			custom: [
 				function(context) {
 					//must be preceded by "new"
-					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
+					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index),
+						nextToken;
+					
 					if (!prevToken || prevToken.name !== "keyword" || prevToken.value !== "new") {
 						return false;
 					}
 					
 					//if the next token is "\" then don't color it (fully qualified type name)
-					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
 					if (nextToken && nextToken.name === "operator" && nextToken.value === "\\") {
 						return false;
 					}
@@ -171,13 +177,16 @@
 				
 				//use alias type names, e.g. "Foo" in "use My\Namespace\Foo;"
 				function(context) {
-					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index),
+						token,
+						index;
+					
 					if (!nextToken || nextToken.name !== "punctuation" || (nextToken.value !== ";" && nextToken.value !== ",")) {
 						return false;
 					}
 					
 					//should be preceded by idents and backslashes and commas, and then "use "
-					var token, index = context.index;
+					index = context.index;
 					while (token = context.tokens[--index]) {
 						if (token.name !== "ident" && token.name !== "default" && (token.name !== "operator" || token.value !== "\\") && (token.name !== "punctuation" || token.value !== ",")) {
 							//should be the "use" keyword
@@ -194,14 +203,19 @@
 				
 				function(context) {
 					//next token is not the namespace delimiter
-					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index),
+						token,
+						index,
+						previous;
+					
 					if (nextToken && nextToken.name === "operator" && nextToken.value === "\\") {
 						return false;
 					}
 					
 					//go backward and make sure that there are only idents and dots before the new keyword
 					//"previous" is used to make sure that method declarations like "public new Object Value()..." are treated correctly
-					var token, index = context.index, previous = context.tokens[index];
+					index = context.index;
+					previous = context.tokens[index];
 					while ((token = context.tokens[--index]) !== undefined) {
 						if (token.name === "keyword" && (token.value === "new" || token.value === "instanceof")) {
 							return true;
