@@ -11,9 +11,6 @@
 (function(window, document, undefined){
 
 	var 
-		//-----------
-		//CONSTANTS
-		//-----------
 		//http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
 		//we have to sniff this because IE requires \r
 		isIe = !+"\v1", 
@@ -240,6 +237,7 @@
 	//-----------
 	//FUNCTIONS
 	//-----------
+	
 	//http://javascript.crockford.com/prototypal.html
 	function create(o) {
 		function F() {}
@@ -519,7 +517,11 @@
 		}
 	}
 	
-	highlighter = function() {
+	function Highlighter(options) {
+		this.options = merge(merge({}, globalOptions), options);
+	}
+
+	Highlighter.prototype = function() {
 		var parseNextToken,
 			tokenize;
 		
@@ -1065,21 +1067,15 @@
 		};
 	}();
 
-	function highlighterConstructor(options) {
-		this.options = merge(merge({}, globalOptions), options);
-	}
-
-	highlighterConstructor.prototype = highlighter;
-
 	//public facing object
 	window.Sunlight = {
 		version: "1.14",
-		Highlighter: highlighterConstructor,
+		Highlighter: Highlighter,
 		createAnalyzer: function() { return create(defaultAnalyzer); },
 		globalOptions: globalOptions,
 
 		highlightAll: function(options) {
-			var highlighter = new highlighterConstructor(options),
+			var highlighter = new Highlighter(options),
 				tags = document.getElementsByTagName("*"),
 				i;
 			
