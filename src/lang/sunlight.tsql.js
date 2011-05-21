@@ -61,13 +61,17 @@
 				
 				//functions need to be followed by a "(", otherwise they are (potentially) keywords or just regular idents
 				return function(context) {
-					var token = sunlight.util.matchWord(context, functions, "function", true);
+					var token = sunlight.util.matchWord(context, functions, "function", true),
+						count,
+						peek;
+					
 					if (token === null) {
 						return null;
 					}
 					
 					//the next non-whitespace character must be a "("
-					var count = token.value.length, peek = context.reader.peek(count);
+					count = token.value.length;
+					peek = context.reader.peek(count);
 					while (peek.length === count && peek !== context.reader.EOF) {
 						if (!/\s$/.test(peek)) {
 							if (peek.charAt(peek.length - 1) === "(") {

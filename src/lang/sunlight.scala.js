@@ -18,6 +18,7 @@
 		embeddedLanguages: {
 			xml: {
 				switchTo: function(context) {
+					var prevToken;
 					if (context.reader.current() !== "<" || !/[\w!?]/.test(context.reader.peek())) {
 						return false;
 					}
@@ -27,7 +28,7 @@
 						return true;
 					}
 					
-					var prevToken = context.token(context.count() - 1);
+					prevToken = context.token(context.count() - 1);
 					return prevToken && prevToken.name === "punctuation" && sunlight.util.contains(["(", "{"], prevToken.value);
 				},
 				
@@ -76,6 +77,12 @@
 		customParseRules: [
 			//case classes: can't distinguish between a case class and a function call so we need to keep track of them
 			function(context) {
+				var prevToken,
+					peek,
+					ident = context.reader.current(), 
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn();
+				
 				if (context.defaultData.text === "") {
 					return false;
 				}
@@ -84,13 +91,12 @@
 					return false;
 				}
 				
-				var prevToken = context.token(context.count() - 1);
+				prevToken = context.token(context.count() - 1);
 				if (context.defaultData.text === "" || !prevToken || prevToken.name !== "keyword" || !sunlight.util.contains(["class", "type", "trait", "object"], prevToken.value)) {
 					return false;
 				}
 				
 				//read the ident
-				var peek, ident = context.reader.current(), line = context.reader.getLine(), column = context.reader.getColumn();
 				while (peek = context.reader.peek()) {
 					if (!/\w/.test(peek)) {
 						break;
@@ -100,7 +106,6 @@
 				}
 				
 				context.items.userDefinedTypes.push(ident);
-				
 				return context.createToken("ident", ident, line, column);
 			}
 		],
@@ -135,7 +140,11 @@
 				//fully qualified type names after "new"
 				function(context) {
 					//next token is not "."
-					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index),
+						token,
+						index,
+						previous;
+					
 					if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
 						return false;
 					}
@@ -177,25 +186,24 @@
 				
 				function() {
 					var follows = [
-						[{ token: "keyword", values: ["class", "object", "extends", "new", "type", "trait"] }, { token: "default" }],
-						[{ token: "operator", values: [":"] }, sunlight.util.whitespace],
-						[{ token: "operator", values: ["#"] }],
-						[{ token: "keyword", values: ["type"] }, { token: "default" }, { token: "ident" }, sunlight.util.whitespace, { token: "operator", values: ["="] }, sunlight.util.whitespace]
-					];
-					
-					var between = [
-						//generics
-						{ opener: { token: "punctuation", values: ["["] }, closer: { token: "punctuation", values: ["]"] } }
-					];
+							[{ token: "keyword", values: ["class", "object", "extends", "new", "type", "trait"] }, { token: "default" }],
+							[{ token: "operator", values: [":"] }, sunlight.util.whitespace],
+							[{ token: "operator", values: ["#"] }],
+							[{ token: "keyword", values: ["type"] }, { token: "default" }, { token: "ident" }, sunlight.util.whitespace, { token: "operator", values: ["="] }, sunlight.util.whitespace]
+						],
+						between = [
+							//generics
+							{ opener: { token: "punctuation", values: ["["] }, closer: { token: "punctuation", values: ["]"] } }
+						];
 					
 					return function(context) {
+						var i;
 						if (/^[A-Z]([A-Z0-9]\w*)?$/.test(context.tokens[context.index].value)) {
 							//generic type names are assumed to start with a capital letter optionally followed by a number or another capital letter
 							//e.g. A, T1, TFrom, etc.
 							return false;
 						}
 						
-						var i;
 						for (i = 0; i < follows.length; i++) {
 							if (sunlight.util.createProceduralRule(context.index - 1, -1, follows[i], false)(context.tokens)) {
 								return true;

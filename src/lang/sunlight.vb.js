@@ -42,14 +42,18 @@
 		customParseRules: [
 			//xml doc comments (copypasted from c# file)
 			function(context) {
+				var metaName = "xmlDocCommentMeta",
+					contentName = "xmlDocCommentContent",
+					tokens,
+					peek,
+					current;
+					
 				if (context.reader.current() !== "'" || context.reader.peek(2) !== "''") {
 					return null;
 				}
 				
-				var metaName = "xmlDocCommentMeta"; //tags and the "'''" starting token
-				var contentName = "xmlDocCommentContent"; //actual comments (words and stuff)
-				var tokens = [context.createToken(metaName, "'''", context.reader.getLine(), context.reader.getColumn())];
-				var peek, current = { line: 0, column: 0, value: "", name: null };
+				tokens = [context.createToken(metaName, "'''", context.reader.getLine(), context.reader.getColumn())];
+				current = { line: 0, column: 0, value: "", name: null };
 				context.reader.read(2);
 				
 				while ((peek = context.reader.peek()) !== context.reader.EOF) {
@@ -98,13 +102,17 @@
 			
 			//keyword escaping: e.g. "[In]"
 			function(context) {
+				var line = context.reader.getLine(), 
+					column = context.reader.getColumn(),
+					next,
+					value = "[";
+				
 				if (context.reader.current() !== "[") {
 					return null;
 				}
 				
 				//read until "]"
-				var line = context.reader.getLine(), column = context.reader.getColumn();
-				var next = context.reader.read(), value = "[";
+				next = context.reader.read();
 				while (next !== context.reader.EOF) {
 					value += next;
 					
@@ -115,8 +123,6 @@
 					next = context.reader.read();
 				}
 				
-				//TODO handle continuations
-				
 				return context.createToken("escapedKeyword", value, line, column);
 			},
 			
@@ -125,14 +131,16 @@
 			function() {
 				var hashmap = sunlight.util.createHashMap(["New", "GetType"], "\\b");
 				return function(context) {
-					var token = sunlight.util.matchWord(context, hashmap, "keyword");
+					var token = sunlight.util.matchWord(context, hashmap, "keyword"),
+						prevToken;
+					
 					if (!token) {
 						return null;
 					}
 					
 					//if the previous non-ws token is the "." operator then it's an ident, not a keyword
 					//or if it's a subprocedure name
-					var prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
+					prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
 					if (prevToken && ((prevToken.name === "operator" && prevToken.value === ".") || (prevToken.name === "keyword" && prevToken.value === "Sub"))) {
 						token.name = "ident";
 					}
@@ -150,7 +158,12 @@
 				//attributes (copypasted (mostly) from c# file)
 				function(context) {
 					//if the next token is an equals sign, this is a named parameter (or something else not inside of an attribute)
-					var token, nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
+					var token, 
+						nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index),
+						index = context.index,
+						bracketCount = [0, 0],
+						indexOfLastBracket = -1;
+						
 					if (nextToken && nextToken.name === "operator" && (nextToken.value === "=" || nextToken.value === ".")) {
 						return false;
 					}
@@ -158,7 +171,6 @@
 					//we need to verify that we're between <>
 					
 					//first, verify that we're inside an opening bracket
-					var index = context.index, bracketCount = [0, 0];
 					while ((token = context.tokens[--index]) !== undefined) {
 						if (token.name === "operator") {
 							if (token.value === "<") {
@@ -181,7 +193,6 @@
 					
 					//next, verify we're inside a closing bracket
 					index = context.index;
-					var indexOfLastBracket = -1;
 					while ((token = context.tokens[++index]) !== undefined) {
 						if (token.name === "operator") {
 							if (token.value === "<") {
@@ -206,12 +217,14 @@
 						return true;
 					}
 					
-					
 					return false;
 				},
 				
 				//casts
 				function(context) {
+					var token, 
+						index = context.index, 
+						parenCount = 1;
 					//look backward for CType, DirectCast or TryCast
 					//could be goofy because of nesting, so we need to count parens
 					
@@ -220,7 +233,6 @@
 						return false;
 					}
 					
-					var token, index = context.index, parenCount = 1;
 					while (token = context.tokens[--index]) {
 						if (token.name === "punctuation" && token.value === "(") {
 							parenCount--;
@@ -243,14 +255,17 @@
 				
 				//implemented interfaces
 				function(context) {
+					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index),
+						token,
+						index = context.index;
+					
+					
 					//if previous non-ws token was a "." then it's an implemented method
-					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
 					if (prevToken && prevToken.name === "operator" && prevToken.value === ".") {
 						return false;
 					}
 					
 					//look backward for "Implements"
-					var token, index = context.index;
 					while (token = context.tokens[--index]) {
 						if (token.name === "keyword") {
 							switch (token.value) {
@@ -274,30 +289,31 @@
 				//type constraints: "As {ident, ident, ...}"
 				function(context) {
 					//look backward for "As {"
-					var token, index = context.index;
-					var isValid = function() {
-						while (token = context.tokens[--index]) {
-							if (token.name === "punctuation") {
-								switch (token.value) {
-									case "(":
-									case ")":
-										return false;
-									case "{":
-										//previous non-ws token should be keyword "As"
-										token = sunlight.util.getPreviousNonWsToken(context.tokens, index);
-										if (!token || token.name !== "keyword" || token.value !== "As") {
+					var token, 
+						index = context.index,
+						isValid = function() {
+							while (token = context.tokens[--index]) {
+								if (token.name === "punctuation") {
+									switch (token.value) {
+										case "(":
+										case ")":
 											return false;
-										}
-										
-										return true;
+										case "{":
+											//previous non-ws token should be keyword "As"
+											token = sunlight.util.getPreviousNonWsToken(context.tokens, index);
+											if (!token || token.name !== "keyword" || token.value !== "As") {
+												return false;
+											}
+											
+											return true;
+									}
+								} else if (token.name === "keyword" && sunlight.util.contains(["Public", "Protected", "Friend", "Private", "End"], token.value)) {
+									return false;
 								}
-							} else if (token.name === "keyword" && sunlight.util.contains(["Public", "Protected", "Friend", "Private", "End"], token.value)) {
-								return false;
 							}
-						}
-						
-						return false;
-					}();
+							
+							return false;
+						}();
 					
 					if (!isValid) {
 						return false;
@@ -329,9 +345,13 @@
 		},
 		
 		numberParser: function(context) {
-			var current = context.reader.current(), number, line = context.reader.getLine(), column = context.reader.getColumn();
+			var current = context.reader.current(), 
+				number,
+				line = context.reader.getLine(), 
+				column = context.reader.getColumn(),
+				allowDecimal = true,
+				peek;
 
-			var allowDecimal = true, peek;
 			if (current === "&" && /[Hh][A-Fa-f0-9]/.test(context.reader.peek(2))) {
 				number = current + context.reader.read(2);
 				allowDecimal = false;
@@ -346,7 +366,6 @@
 				allowDecimal = false;
 			}
 
-			var peek;
 			while ((peek = context.reader.peek()) !== context.reader.EOF) {
 				if (!/[A-Za-z0-9]/.test(peek)) {
 					if (peek === "." && allowDecimal && /\d$/.test(context.reader.peek(2))) {

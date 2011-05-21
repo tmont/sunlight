@@ -35,13 +35,21 @@
 		customParseRules: [
 			//regex literal, same as javascript
 			function(context) {
+				var isValid,
+					regexLiteral = "/",
+					line = context.reader.getLine(),
+					column = context.reader.getColumn(),
+					peek2,
+					next;
+					
 				if (context.reader.current() !== "/") {
 					return null;
 				}
 				
-				var isValid = function() {
-					var previousNonWsToken = context.token(context.count() - 1);
-					var previousToken = null;
+				isValid = function() {
+					var previousNonWsToken = context.token(context.count() - 1),
+						previousToken = null;
+					
 					if (context.defaultData.text !== "") {
 						previousToken = context.createToken("default", context.defaultData.text); 
 					}
@@ -74,12 +82,6 @@
 					return null;
 				}
 				
-				//read the regex literal
-				var regexLiteral = "/";
-				var line = context.reader.getLine();
-				var column = context.reader.getColumn();
-				var peek2, next;
-				
 				while (context.reader.peek() !== context.reader.EOF) {
 					peek2 = context.reader.peek(2);
 					if (peek2 === "\\/" || peek2 === "\\\\") {
@@ -109,6 +111,12 @@
 			
 			//symbols
 			function(context) {
+				var token,
+					index = context.count(),
+					parenCount = 0,
+					count = index - 1,
+					symbol;
+					
 				//this is goofy, because it needs to recognize things like "foo = true ? :true :not_true"
 				//and detect that :not_true is not a symbol
 				
@@ -117,7 +125,6 @@
 				}
 				
 				//basically look backward until a line break not preceded by an operator or a comma
-				var token, index = context.count(), parenCount = 0, count = context.count() - 1;
 				while (token = context.token(--index)) {
 					if (token.name === "operator") {
 						if (parenCount === 0) {
@@ -150,7 +157,7 @@
 				}
 				
 				//read the symbol
-				var symbol = /^:\w+/.exec(context.reader.substring())[0];
+				symbol = /^:\w+/.exec(context.reader.substring())[0];
 				token = context.createToken("symbol", symbol, context.reader.getLine(), context.reader.getColumn());
 				context.reader.read(symbol.length - 1); //already read the ":"
 				return token;
@@ -159,15 +166,23 @@
 			//heredoc declaration
 			//heredocs can be stacked and delimited, so this is a bit complicated
 			//we keep track of the heredoc declarations in context.items.heredocQueue, and then use them later in the heredoc custom parse rule below
-			
 			function(context) {
-				if (context.reader.current() !== "<" || !/<[\w'"`-]$/.test(context.reader.peek(2))) {
+				var prevToken,
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn(),
+					value = "<<",
+					ident = "",
+					current,
+					delimiter = "",
+					peek,
+					peek2;
+				
+				if (context.reader.current() !== "<" || !/<[\w'"`-]/.test(context.reader.peek(2))) {
 					return null;
 				}
 				
-				
 				//cannot be preceded by an a number or a string
-				var prevToken = context.token(context.count() - 1);
+				prevToken = context.token(context.count() - 1);
 				if (prevToken && sunlight.util.contains(["number", "string"], prevToken.name)) {
 					return null;
 				}
@@ -184,12 +199,9 @@
 				
 				//can be between quotes (double, single or back) or not, or preceded by a hyphen
 				
-				var line = context.reader.getLine(), column = context.reader.getColumn();
-				var value = "<<", ident = "";
 				context.reader.read(2);
 				
-				var current = context.reader.current();
-				var delimiter = "";
+				current = context.reader.current();
 				if (current === "-") {
 					context.reader.read();
 					value += current;
@@ -205,14 +217,13 @@
 				
 				value += current;
 				
-				var peek;
 				while ((peek = context.reader.peek()) !== context.reader.EOF) {
 					if (peek === "\n" || (delimiter === "" && /\W/.test(peek))) {
 						break;
 					}
 					
 					if (peek === "\\") {
-						var peek2 = context.reader.peek(2);
+						peek2 = context.reader.peek(2);
 						if (delimiter !== "" && sunlight.util.contains(["\\" + delimiter, "\\\\"], peek2)) {
 							value += peek2;
 							ident += context.reader.read(2);
@@ -235,6 +246,15 @@
 			
 			//heredoc
 			function(context) {
+				var tokens = [], 
+				declaration, 
+				line, 
+				column, 
+				value = context.reader.current(), 
+				ignoreWhitespace = false,
+				regex,
+				match;
+				
 				if (context.items.heredocQueue.length === 0) {
 					return null;
 				}
@@ -245,9 +265,6 @@
 				}
 				
 				//we're confirmed to be in the heredoc body, so read until all of the heredoc declarations have been satisfied
-				
-				var tokens = [], declaration, line, column, value = context.reader.current(), ignoreWhitespace = false;
-				var regex, match;
 				while (context.items.heredocQueue.length > 0 && context.reader.peek() !== context.reader.EOF) {
 					declaration = context.items.heredocQueue.shift();
 					if (declaration.charAt(0) === "-") {
@@ -282,13 +299,20 @@
 			//http://www.ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/syntax.html#string
 			//http://www.ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/syntax.html#regexp
 			function(context) {
+				var value = "%",
+					readCount = 1,
+					isRegex = false,
+					peek,
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn(),
+					delimiter;
+				
 				//begin with % or %q or %Q with a non-alphanumeric delimiter (opening bracket/paren are closed by corresponding closing bracket/paren)
 				if (context.reader.current() !== "%") {
 					return null;
 				}
 				
-				var value = "%", readCount = 1, isRegex = false;
-				var peek = context.reader.peek();
+				peek = context.reader.peek();
 				if (peek === "q" || peek === "Q" || peek === "r") {
 					readCount++;
 					if (peek === "r") {
@@ -301,9 +325,8 @@
 					return null;
 				}
 				
-				var line = context.reader.getLine(), column = context.reader.getColumn();
 				value += context.reader.read(readCount);
-				var delimiter = value.charAt(value.length - 1);
+				delimiter = value.charAt(value.length - 1);
 				switch (delimiter) {
 					case "(":
 						delimiter = ")";
@@ -348,6 +371,12 @@
 			//doc comments
 			//http://www.ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/syntax.html#embed_doc
 			function(context) {
+				var value = "=begin",
+					line = context.reader.getLine(),
+					column = context.reader.getColumn(),
+					foundEnd = false,
+					peek;
+					
 				//these begin on with a line that starts with "=begin" and end with a line that starts with "=end"
 				//apparently stuff on the same line as "=end" is also part of the comment
 				
@@ -355,13 +384,9 @@
 					return null;
 				}
 				
-				var value = "=begin";
-				var line = context.reader.getLine();
-				var column = context.reader.getColumn();
 				context.reader.read(5);
 				
 				//read until "\n=end" and then everything until the end of that line
-				var foundEnd = false, peek;
 				while ((peek = context.reader.peek()) !== context.reader.EOF) {
 					if (!foundEnd && context.reader.peek(5) === "\n=end") {
 						foundEnd = true;

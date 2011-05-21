@@ -5,7 +5,9 @@
 	}
 
 	function isInsideOpenBracket(context) {
-		var token, index = context.count();
+		var token, 
+			index = context.count();
+		
 		while (token = context.token(--index)) {
 			if (token.name === "operator") {
 				if (token.value === ">" || token.value === "/>" || token.value === "</") {
@@ -43,18 +45,22 @@
 		customParseRules: [
 			//tag names
 			function(context) {
-				var current = context.reader.current();
+				var current = context.reader.current(),
+					prevToken,
+					peek,
+					tagName = current,
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn();
 				if (!/[A-Za-z_]/.test(current)) {
 					return null;
 				}
 				
-				var prevToken = context.token(context.count() - 1);
+				prevToken = context.token(context.count() - 1);
 				if (!prevToken || prevToken.name !== "operator" || !sunlight.util.contains(["<", "</"], prevToken.value)) {
 					return null;
 				}
 				
 				//read the tag name
-				var peek, tagName = current, line = context.reader.getLine(), column = context.reader.getColumn();
 				while (peek = context.reader.peek()) {
 					if (!/[\w-]/.test(peek)) {
 						break;
@@ -68,7 +74,12 @@
 			
 			//strings (attribute values)
 			function(context) {
-				var delimiter = context.reader.current();
+				var delimiter = context.reader.current(),
+					stringValue,
+					peek,
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn();
+				
 				if (delimiter !== "\"" && delimiter !== "'") {
 					return null;
 				}
@@ -78,7 +89,7 @@
 				}
 				
 				//read until the delimiter
-				var stringValue = delimiter, peek, line = context.reader.getLine(), column = context.reader.getColumn();
+				stringValue = delimiter;
 				while (peek = context.reader.peek()) {
 					stringValue += context.reader.read();
 					
@@ -92,7 +103,13 @@
 			
 			//attributes
 			function(context) {
-				var current = context.reader.current();
+				var current = context.reader.current(),
+					peek,
+					count = 1,
+					attribute,
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn();
+				
 				if (!/[A-Za-z_]/.test(current)) {
 					return null;
 				}
@@ -104,14 +121,13 @@
 				}
 				
 				//look forward for >
-				var peek = context.reader.peek(), count = 1, attribute;
+				peek = context.reader.peek();
 				while (peek.length === count) {
 					if (/<$/.test(peek)) {
 						return null;
 					}
 					
 					if (/>$/.test(peek)) {
-						var line = context.reader.getLine(), column = context.reader.getColumn();
 						attribute = attribute || current + peek.substring(0, peek.length - 1);
 						context.reader.read(attribute.length - 1);
 						return context.createToken("attribute", attribute, line, column);
@@ -129,14 +145,17 @@
 			
 			//entities
 			function(context) {
-				var current = context.reader.current();
+				var current = context.reader.current(),
+					count = 1,
+					peek,
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn();
 				if (current !== "&") {
 					return null;
 				}
 				
 				//find semicolon, or whitespace, or < or >
-				var count = 1, peek = context.reader.peek(count);
-				var line = context.reader.getLine(), column = context.reader.getColumn();
+				peek = context.reader.peek(count);
 				while (peek.length === count) {
 					if (peek.charAt(peek.length - 1) === ";") {
 						return context.createToken("entity", current + context.reader.read(count), line, column);
@@ -154,12 +173,16 @@
 			
 			//asp.net server side comments: <%-- --%>
 			function(context) {
+				var peek, 
+					value = "<%--", 
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn();
+				
 				//have to do these manually or else they get swallowed by the open tag: <%
 				if (context.reader.current() !== "<" || context.reader.peek(3) !== "%--") {
 					return null;
 				}
 				
-				var peek, value = "<%--", line = context.reader.getLine(), column = context.reader.getColumn();
 				context.reader.read(3);
 				while (peek = context.reader.peek()) {
 					if (context.reader.peek(4) === "--%>") {
@@ -177,7 +200,9 @@
 		embeddedLanguages: {
 			css: {
 				switchTo: function(context) {
-					var prevToken = context.token(context.count() - 1);
+					var prevToken = context.token(context.count() - 1),
+						index;
+						
 					if (!prevToken || context.reader.current() + context.reader.peek(6) === "</style") {
 						return false;
 					}
@@ -187,7 +212,7 @@
 					}
 					
 					//look backward for a tag name, if it's "style", then we go to css mode
-					var index = context.count() - 1;
+					index = context.count() - 1;
 					while (prevToken = context.token(--index)) {
 						if (prevToken.name === "tagName") {
 							if (prevToken.value === "style") {
@@ -212,7 +237,9 @@
 			
 			javascript: {
 				switchTo: function(context) {
-					var prevToken = context.token(context.count() - 1);
+					var prevToken = context.token(context.count() - 1),
+						index;
+						
 					if (!prevToken || context.reader.current() + context.reader.peek(7) === "</script") {
 						return false;
 					}
@@ -222,7 +249,7 @@
 					}
 					
 					//look backward for a tag name, if it's "script", then we go to javascript mode
-					var index = context.count() - 1;
+					index = context.count() - 1;
 					while (prevToken = context.token(--index)) {
 						if (prevToken.name === "tagName") {
 							if (prevToken.value === "script") {
