@@ -6,7 +6,7 @@
 	
 	var functionBoundary = "[\\s\\(\\)]";
 	
-	var createFunctionRule = function(words, tokenName) {
+	function createFunctionRule(words, tokenName) {
 		var map = sunlight.util.createHashMap(words, functionBoundary, false);
 		return function(context) {
 			//must be right after a "("
@@ -21,7 +21,7 @@
 			
 			return sunlight.util.matchWord(context, map, tokenName);
 		};
-	};
+	}
 	
 	sunlight.registerLanguage("lisp", {
 		scopes: {

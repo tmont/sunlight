@@ -16,17 +16,17 @@
 			//we need a custom rule to differentiate between the "-" operator and idents that start with "-"
 			function() {
 				var specialOperators = [
-					"-not", "-band", "-bor", "bnot", "-replace", "-ireplace", "-creplace", "-and",
-					"-or", "-isnot", "-is", "-as", "-F", "-lt", "-le", "-gt", "-ge", "-eq", "-ne", 
-					"-contains", "-notcontains", "-like", "-notlike", "-match", "-notmatch"
-				];
+						"-not", "-band", "-bor", "bnot", "-replace", "-ireplace", "-creplace", "-and",
+						"-or", "-isnot", "-is", "-as", "-F", "-lt", "-le", "-gt", "-ge", "-eq", "-ne", 
+						"-contains", "-notcontains", "-like", "-notlike", "-match", "-notmatch"
+					],
 				
-				//[type]::gettype("System.Management.Automation.KeywordTokenReader")|%{$_.InvokeMember("_keywordTokens", "NonPublic,Static,GetField", $null, $_,@())}
-				var keywords = [
-					"elseif","begin","function","for","foreach","return","else","trap","while","using","do","data",
-					"dynamicparam","class","define","until","end","break","if","throw","param","continue","finally",
-					"in","switch","exit","filter","from","try","process","var","catch"
-				];
+					keywords = [
+						//[type]::gettype("System.Management.Automation.KeywordTokenReader")|%{$_.InvokeMember("_keywordTokens", "NonPublic,Static,GetField", $null, $_,@())}
+						"elseif","begin","function","for","foreach","return","else","trap","while","using","do","data",
+						"dynamicparam","class","define","until","end","break","if","throw","param","continue","finally",
+						"in","switch","exit","filter","from","try","process","var","catch"
+					];
 				
 				return function(context) {
 					var peek, 

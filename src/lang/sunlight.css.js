@@ -9,13 +9,10 @@
 		//basically if we run into "{" before "}" it's bad
 		var token, 
 			index = context.count(), 
-			tokens = context.getAllTokens(),
 			value = "",
 			appendToValue = true,
 			count = 1,
-			peek,
-			line = context.reader.getLine(), 
-			column = context.reader.getColumn()
+			peek;
 			
 		while ((token = context.token(--index)) !== undefined) {
 			if (token.name === "punctuation" && token.value === "}") {

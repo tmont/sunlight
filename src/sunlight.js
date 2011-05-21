@@ -21,7 +21,6 @@
 		DEFAULT_CLASS_PREFIX = "sunlight-",
 		
 		//global sunlight variables
-		highlighter,
 		defaultAnalyzer,
 		createCodeReader,
 		getComputedStyle,
@@ -530,8 +529,8 @@
 			//processCurrent indicates that this is being called from a continuation
 			//which means that we need to process the current char, rather than peeking at the next
 			return function(context, continuation, buffer, line, column, processCurrent) {
-				var foundCloser = false,
-					buffer = buffer || "";
+				var foundCloser = false;
+				buffer = buffer || "";
 					
 				processCurrent = processCurrent ? 1 : 0;
 
@@ -541,7 +540,7 @@
 						current = context.reader.current(),
 						i;
 					
-					for (var i = 0; i < escapeSequences.length; i++) {
+					for (i = 0; i < escapeSequences.length; i++) {
 						peekValue = (processCurrent ? current : "") + context.reader.peek(escapeSequences[i].length - processCurrent);
 						if (peekValue === escapeSequences[i]) {
 							buffer += context.reader.read(peekValue.length - processCurrent);

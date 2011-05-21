@@ -122,6 +122,7 @@
 					return function(context) {
 						var token,
 							index,
+							prevToken,
 							precedesIsSatisfied = function(tokens) {
 								for (var i = 0; i < precedes.length; i++) {
 									if (sunlight.util.createProceduralRule(context.index + 1, 1, precedes[i], false)(tokens)) {
@@ -142,7 +143,7 @@
 						index = context.index;
 						while (token = context.tokens[--index]) {
 							if (token.name === "punctuation" && token.value === "(") {
-								var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, index);
+								prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, index);
 								if (prevToken && prevToken.name === "keyword") {
 									return false;
 								}
@@ -162,8 +163,7 @@
 						token,
 						prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index),
 						foundIdent = false,
-						bracketCountLeft,
-						bracketCountRight;
+						bracketCountLeft;
 					
 					//if the previous token is a keyword, then we don't care about it
 					if (!prevToken || prevToken.name === "keyword") {
@@ -173,7 +173,6 @@
 					//look for "<" preceded by an ident but not "class"
 					//if we run into ">" before "," or "<" then it's a big fail
 					bracketCountLeft = [0, 0];
-					bracketCountRight = [0, 0];
 					while ((token = context.tokens[--index]) !== undefined) {
 						if (token.name === "keyword" && token.value === "class") {
 							//this must be a generic class type definition, e.g. Foo<T>, and we don't want to color the "T"
@@ -256,8 +255,7 @@
 					//also a big fail if it is preceded by a ., i.e. a generic method invocation like container.Resolve()
 					var token = sunlight.util.getPreviousNonWsToken(context.tokens, context.index),
 						index,
-						bracketCount,
-						token;
+						bracketCount;
 					
 					if (token !== undefined) {
 						if (

@@ -115,6 +115,7 @@
 					index = context.count(),
 					parenCount = 0,
 					count = index - 1,
+					prevToken,
 					symbol;
 					
 				//this is goofy, because it needs to recognize things like "foo = true ? :true :not_true"
@@ -146,7 +147,7 @@
 								break;
 						}
 					} else if (token.name === "default" && /\n/.test(token.value)) {
-						var prevToken = context.token(index - 1);
+						prevToken = context.token(index - 1);
 						if (prevToken && (prevToken.name === "operator" || (prevToken.name === "punctuation" && prevToken.value === ","))) {
 							//line continuation
 							continue;

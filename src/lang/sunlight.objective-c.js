@@ -394,7 +394,6 @@
 						token, 
 						foundIdent, 
 						bracketCountLeft, 
-						bracketCountRight,
 						prevToken;
 					
 					//if the previous token is a keyword, then we don't care about it
@@ -407,7 +406,6 @@
 					//if we run into ">" before "," or "<" then it's a big fail
 					foundIdent = false;
 					bracketCountLeft = [0, 0];
-					bracketCountRight = [0, 0];
 					while ((token = context.tokens[--index]) !== undefined) {
 						if (token.name === "operator") {
 							switch (token.value) {
@@ -502,7 +500,8 @@
 						return false;
 					}
 					
-					index = context.index, bracketCount = [0, 0]; //open (<), close (>)
+					index = context.index;
+					bracketCount = [0, 0]; //open (<), close (>)
 					while ((token = context.tokens[++index]) !== undefined) {
 						if (token.name === "operator") {
 							switch (token.value) {

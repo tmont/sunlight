@@ -129,7 +129,6 @@
 				var rule,
 					count,
 					peek,
-					current,
 					allGoodYo = false,
 					line = context.reader.getLine(),
 					column = context.reader.getColumn(),
@@ -177,13 +176,13 @@
 			function(context) {
 				var count,
 					peek,
-					current,
 					allGoodYo,
 					token,
 					index,
 					bracketCount,
 					line = context.reader.getLine(),
-					column = context.reader.getColumn();
+					column = context.reader.getColumn(),
+					peekPlus1;
 				
 				if (!/^value\b/.test(context.reader.current() + context.reader.peek(5))) {
 					return null;
@@ -197,7 +196,7 @@
 				peek = context.reader.peek(count);
 				while (peek.length === count) {
 					if (!/\s$/.test(peek)) {
-						var peekPlus1 = context.reader.peek(count + 1);
+						peekPlus1 = context.reader.peek(count + 1);
 						if (peek.charAt(peek.length - 1) === "=" && peekPlus1.charAt(peekPlus1.length - 1) !== "=") {
 							//"value" is on the left side of an assignment, so this is not the droid we're looking for
 							return null;
@@ -320,9 +319,8 @@
 					var index = context.index,
 						token,
 						foundIdent = false,
-						bracketCountLeft = [0, 0],
-						bracketCountRight = [0, 0];
-					
+						bracketCountLeft = [0, 0];
+						
 					//look for "<" preceded by an ident but not "class"
 					//if we run into ">" before "," or "<" then it's a big fail
 					while ((token = context.tokens[--index]) !== undefined) {
@@ -423,7 +421,8 @@
 						return false;
 					}
 					
-					index = context.index, bracketCount = [0, 0]; //open (<), close (>)
+					index = context.index;
+					bracketCount = [0, 0]; //open (<), close (>)
 					while ((token = context.tokens[++index]) !== undefined) {
 						if (token.name === "operator") {
 							switch (token.value) {
@@ -647,6 +646,7 @@
 					return createNamedIdentFunction(function(context) {
 						var token,
 							index,
+							prevToken,
 							precedesIsSatisfied = function(tokens) {
 								for (var i = 0; i < precedes.length; i++) {
 									if (sunlight.util.createProceduralRule(context.index + 1, 1, precedes[i], false)(tokens)) {
@@ -667,7 +667,7 @@
 						index = context.index;
 						while (token = context.tokens[--index]) {
 							if (token.name === "punctuation" && token.value === "(") {
-								var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, index);
+								prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, index);
 								if (prevToken && prevToken.name === "keyword") {
 									return false;
 								}

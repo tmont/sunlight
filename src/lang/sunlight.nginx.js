@@ -57,6 +57,7 @@
 					isRegexLiteral = false,
 					regexLiteral = current,
 					peek,
+					prevToken,
 					line = context.reader.getLine(), 
 					column = context.reader.getColumn();
 					
@@ -72,7 +73,7 @@
 					
 					if (token.name === "operator" && sunlight.util.contains(["^~", "~", "~*"], token.value)) {
 						//check previous token for "location" keyword
-						var prevToken = sunlight.util.getPreviousWhile(context.getAllTokens(), index, function(token) {
+						prevToken = sunlight.util.getPreviousWhile(context.getAllTokens(), index, function(token) {
 							return token.name === "default" || token.name === "comment";
 						});
 						

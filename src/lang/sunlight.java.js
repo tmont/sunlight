@@ -48,8 +48,7 @@
 					var index = context.index, 
 						token,
 						foundIdent = false,
-						bracketCountLeft = [0, 0],
-						bracketCountRight = [0, 0];
+						bracketCountLeft = [0, 0];
 						
 					//look for "<" preceded by an ident but not "class"
 					//if we run into ">" before "," or "<" then it's a big fail
@@ -282,6 +281,7 @@
 					return createNamedIdentFunction(function(context) {
 						var token,
 							index,
+							prevToken,
 							precedesIsSatisfied = function(tokens) {
 								for (var i = 0; i < precedes.length; i++) {
 									if (sunlight.util.createProceduralRule(context.index + 1, 1, precedes[i], false)(tokens)) {
@@ -302,7 +302,7 @@
 						index = context.index;
 						while (token = context.tokens[--index]) {
 							if (token.name === "punctuation" && token.value === "(") {
-								var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, index);
+								prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, index);
 								if (prevToken && prevToken.name === "keyword") {
 									return false;
 								}

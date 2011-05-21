@@ -37,7 +37,7 @@
 	sunlight.bind("afterHighlightNode", function(context) {
 		var lineContainer,
 			lineCount,
-			lineHighligtOverlay,
+			lineHighlightOverlay,
 			currentLineOverlay,
 			lineHighlightingEnabled,
 			i,
