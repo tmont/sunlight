@@ -1,5 +1,8 @@
 1.14 2011-05-xx
 ---------------
+- Enhancements
+	- sunlight source code is now free of lint errors when run through YUI
+	
 
 1.13 2011-05-15
 ---------------
