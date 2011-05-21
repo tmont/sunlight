@@ -4,8 +4,8 @@
 		throw "Include sunlight.js before including language files";
 	}
 	
-	var primitives = ["int", "char", "void", "long", "signed", "unsigned", "double", "bool", "typename", "class", "short", "wchar_t", "struct"];
-	var acceptableKeywords = ["int", "char", "void", "long", "signed", "unsigned", "double", "bool", "typename", "class", "short", "wchar_t"];
+	var primitives = ["int", "char", "void", "long", "signed", "unsigned", "double", "bool", "typename", "class", "short", "wchar_t", "struct"],
+		acceptableKeywords = ["int", "char", "void", "long", "signed", "unsigned", "double", "bool", "typename", "class", "short", "wchar_t"];
 
 	sunlight.registerLanguage("cpp", {
 		//http://www.cppreference.com/wiki/keywords/start
@@ -80,22 +80,24 @@
 						//basically, can't be on the right hand side of an equals sign
 						//so we traverse the tokens backward, and if we run into a "=" before a ";" or a "{", it's no good
 						
-						var precedesIsSatisfied = function(tokens) {
-							for (var i = 0; i < precedes.length; i++) {
-								if (sunlight.util.createProceduralRule(context.index + 1, 1, precedes[i], false)(tokens)) {
-									return true;
+						var token,
+							index,
+							precedesIsSatisfied = function(tokens) {
+								for (var i = 0; i < precedes.length; i++) {
+									if (sunlight.util.createProceduralRule(context.index + 1, 1, precedes[i], false)(tokens)) {
+										return true;
+									}
 								}
-							}
-							
-							return false;
-						}(context.tokens);
+								
+								return false;
+							}(context.tokens);
 						
 						if (!precedesIsSatisfied) {
 							return false;
 						}
 						
 						//make sure we're not on the left side of the equals sign
-						var token, index = context.index;
+						index = context.index;
 						while (token = context.tokens[--index]) {
 							if (token.name === "punctuation" && (token.value === ";" || token.value === "{")) {
 								return true;
@@ -118,15 +120,17 @@
 					];
 				
 					return function(context) {
-						var precedesIsSatisfied = function(tokens) {
-							for (var i = 0; i < precedes.length; i++) {
-								if (sunlight.util.createProceduralRule(context.index + 1, 1, precedes[i], false)(tokens)) {
-									return true;
+						var token,
+							index,
+							precedesIsSatisfied = function(tokens) {
+								for (var i = 0; i < precedes.length; i++) {
+									if (sunlight.util.createProceduralRule(context.index + 1, 1, precedes[i], false)(tokens)) {
+										return true;
+									}
 								}
-							}
-							
-							return false;
-						}(context.tokens);
+								
+								return false;
+							}(context.tokens);
 						
 						if (!precedesIsSatisfied) {
 							return false;
@@ -135,7 +139,7 @@
 						//make sure the previous tokens are "(" and then not a keyword
 						//this'll make sure that things like "if (foo) doSomething();" won't color "foo"
 						
-						var token, index = context.index;
+						index = context.index;
 						while (token = context.tokens[--index]) {
 							if (token.name === "punctuation" && token.value === "(") {
 								var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, index);
@@ -154,17 +158,22 @@
 				//generic definitions/params between "<" and ">"
 				function(context) {
 					//between < and > and preceded by an ident and not preceded by "class"
-					var index = context.index, token;
+					var index = context.index,
+						token,
+						prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index),
+						foundIdent = false,
+						bracketCountLeft,
+						bracketCountRight;
 					
 					//if the previous token is a keyword, then we don't care about it
-					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
 					if (!prevToken || prevToken.name === "keyword") {
 						return false;
 					}
 					
 					//look for "<" preceded by an ident but not "class"
 					//if we run into ">" before "," or "<" then it's a big fail
-					var foundIdent = false, bracketCountLeft = [0, 0], bracketCountRight = [0, 0];
+					bracketCountLeft = [0, 0];
+					bracketCountRight = [0, 0];
 					while ((token = context.tokens[--index]) !== undefined) {
 						if (token.name === "keyword" && token.value === "class") {
 							//this must be a generic class type definition, e.g. Foo<T>, and we don't want to color the "T"
@@ -213,7 +222,6 @@
 					}
 					
 					if (!foundIdent || bracketCountLeft[0] === 0) {
-						
 						//not inside a generic definition
 						return false;
 					}
@@ -246,7 +254,11 @@
 				function(context) {
 					//if it's preceded by an ident or a primitive/alias keyword then it's no good (i.e. a generic method definition like "public void Foo<T>")
 					//also a big fail if it is preceded by a ., i.e. a generic method invocation like container.Resolve()
-					var token = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
+					var token = sunlight.util.getPreviousNonWsToken(context.tokens, context.index),
+						index,
+						bracketCount,
+						token;
+					
 					if (token !== undefined) {
 						if (
 							token.name === "ident" 
@@ -263,7 +275,8 @@
 						return false;
 					}
 					
-					var index = context.index, bracketCount = [0, 0], token; //open (<), close (>)
+					index = context.index;
+					bracketCount = [0, 0]; //open (<), close (>)
 					while ((token = context.tokens[++index]) !== undefined) {
 						if (token.name === "operator") {
 							switch (token.value) {
@@ -327,14 +340,17 @@
 				
 				//after class keyword but inside <>
 				function(context) {
-					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
+					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index),
+						token,
+						index;
+					
 					if (!prevToken || prevToken.name !== "keyword" || prevToken.value !== "class") {
 						return false;
 					}
 					
 					//make sure we're not inside <>
 					//easiest way is to go forward and verify that we hit a "{" before a ">"
-					var token, index = context.index;
+					index = context.index;
 					while (token = context.tokens[++index]) {
 						if (token.name === "punctuation" && token.value === "{") {
 							return true;
