@@ -4,9 +4,10 @@
 		throw "Include sunlight.js before including language files";
 	}
 	
-	var isValidForRegexLiteral = function(context) {
-		var previousNonWsToken = context.token(context.count() - 1);
-		var previousToken = null;
+	function isValidForRegexLiteral(context) {
+		var previousNonWsToken = context.token(context.count() - 1),
+			previousToken = null;
+		
 		if (context.defaultData.text !== "") {
 			previousToken = context.createToken("default", context.defaultData.text); 
 		}
@@ -29,19 +30,28 @@
 		}
 		
 		return true;
-	};
+	}
 	
-	var readWhileWhitespace = function(context) {
-		var value = "", peek;
+	function readWhileWhitespace(context) {
+		var value = "", 
+			peek;
+		
 		while ((peek = context.reader.peek()) !== context.reader.EOF && /\s/.test(peek)) {
 			value += context.reader.read();
 		}
 		
 		return value;
-	};
+	}
 	
-	var readBetweenDelimiters = function(context, delimiter, appendCloser) {
-		var opener = closer = delimiter;
+	function readBetweenDelimiters(context, delimiter, appendCloser) {
+		var opener = delimiter,
+			closer = delimiter,
+			trackCloser = sunlight.util.contains(["[", "(", "{"], opener),
+			peek2,
+			value = opener,
+			next,
+			closerCount = 1
+		
 		switch (delimiter) {
 			case "[":
 				closer = "]";
@@ -53,9 +63,6 @@
 				closer = "}";
 				break;
 		}
-		
-		var trackCloser = sunlight.util.contains(["[", "(", "{"], opener);
-		var peek2, value = opener, next, closerCount = 1;
 		
 		while (context.reader.peek() !== context.reader.EOF) {
 			peek2 = context.reader.peek(2);
@@ -80,10 +87,10 @@
 		}
 		
 		return value;
-	};
+	}
 	
 	//perl allows whitespace before delimiters (wtf?)
-	var getDelimiterIfValid = function(context, peekCount) {
+	function getDelimiterIfValid(context, peekCount) {
 		var peek = context.reader.peek(peekCount);
 		while (peek.length === peekCount && /\s$/.test(peek)) {
 			peek = context.reader.peek(++peekCount);
@@ -142,13 +149,6 @@
 				boundary: "\\b"
 			},
 			
-			specialOperator: {
-				values: [
-					"qr//","qw//","qx//","tr///","y///","m//","s///","-X","q//","qq//"
-				],
-				boundary: ""
-			},
-			
 			//http://perldoc.perl.org/perlvar.html
 			//jesus, perl...
 			specialVariable: {
@@ -194,16 +194,22 @@
 			//qr/STRING/msixpo, m/PATTERN/msixpogc, /PATTERN/msixpogc, // (empty pattern), ?pattern?
 			//y///, tr///, s/PATTERN/REPLACEMENT/msixpogce 
 			function(context) {
+				var current,
+					peek,
+					delimiter,
+					hasReplace = false,
+					value = "",
+					delimiterInfo,
+					line = context.reader.getLine(),
+					column = context.reader.getColumn(),
+					fetchSecondDelimiter;
+				
 				if (!isValidForRegexLiteral(context)) {
 					return null;
 				}
 				
-				var current = context.reader.current();
-				var peek = context.reader.peek();
-				var delimiter;
-				var hasReplace = false;
-				var value = "";
-				var delimiterInfo;
+				current = context.reader.current();
+				peek = context.reader.peek();
 				
 				if (current === "/" || current === "?") {
 					delimiter = current;
@@ -228,16 +234,13 @@
 				}
 				
 				//read the regex literal
-				var line = context.reader.getLine();
-				var column = context.reader.getColumn();
-				
 				value += readBetweenDelimiters(context, delimiter, !hasReplace);
 				if (hasReplace) {
 					//apparently whitespace between search and replace is allowed, so read the whitespace, if it exists
 					value += readWhileWhitespace(context);
 					//new delimiter
 					
-					var fetchSecondDelimiter = sunlight.util.contains(["[", "(", "{"], delimiter);
+					fetchSecondDelimiter = sunlight.util.contains(["[", "(", "{"], delimiter);
 					if (fetchSecondDelimiter) {
 						delimiterInfo = getDelimiterIfValid(context, 1);
 						if (delimiterInfo) {
@@ -263,13 +266,18 @@
 			
 			//raw strings
 			function(context) {
+				var value = "q",
+					readCount = 1,
+					peek,
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn();
+					
 				//begin with q, qw, qx, or qq  with a non-alphanumeric delimiter (opening bracket/paren are closed by corresponding closing bracket/paren)
 				if (context.reader.current() !== "q") {
 					return null;
 				}
 				
-				var value = "q", readCount = 1;
-				var peek = context.reader.peek();
+				peek = context.reader.peek();
 				if (peek === "q" || peek === "w" || peek == "x") {
 					readCount++;
 				}
@@ -279,31 +287,37 @@
 					return null;
 				}
 				
-				var line = context.reader.getLine(), column = context.reader.getColumn();
 				value += context.reader.read(readCount - 1) + readBetweenDelimiters(context, context.reader.read(), true);
 				return context.createToken("rawString", value, line, column);
 			},
 			
 			//heredoc declaration (stolen from ruby)
 			function(context) {
+				var prevToken,
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn(),
+					value = "<<",
+					ident = "",
+					current,
+					delimiter = "",
+					peek,
+					peek2;
+					
 				if (context.reader.current() !== "<" || context.reader.peek() !== "<") {
 					return null;
 				}
 				
 				//cannot be preceded by an ident or a number or a string
-				var prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count() - 1);
+				prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count() - 1);
 				if (prevToken && (prevToken.name === "ident" || prevToken.name === "number" || prevToken.name === "string")) {
 					return null;
 				}
 				
 				//can be between quotes (double, single or back) or not, or preceded by a hyphen
 				
-				var line = context.reader.getLine(), column = context.reader.getColumn();
-				var value = "<<", ident = "";
 				context.reader.read(2);
 				
-				var current = context.reader.current();
-				var delimiter = "";
+				current = context.reader.current();
 				if (current === "-") {
 					context.reader.read();
 					value += current;
@@ -318,14 +332,13 @@
 				
 				value += current;
 				
-				var peek;
 				while ((peek = context.reader.peek()) !== context.reader.EOF) {
 					if (peek === "\n" || (delimiter === "" && /\W/.test(peek))) {
 						break;
 					}
 					
 					if (peek === "\\") {
-						var peek2 = context.reader.peek(2);
+						peek2 = context.reader.peek(2);
 						if (delimiter !== "" && sunlight.util.contains(["\\" + delimiter, "\\\\"], peek2)) {
 							value += peek2;
 							ident += context.reader.read(2);
@@ -344,12 +357,18 @@
 				
 				context.items.heredocQueue.push(ident);
 				
-				var token = context.createToken("heredocDeclaration", value, line, column);
-				return token;
+				return context.createToken("heredocDeclaration", value, line, column);
 			},
 			
 			//heredoc
 			function(context) {
+				var tokens = [],
+					declaration,
+					line,
+					column,
+					value,
+					peekIdent;
+				
 				if (context.items.heredocQueue.length === 0) {
 					return null;
 				}
@@ -361,14 +380,14 @@
 				
 				//we're confirmed to be in the heredoc body, so read until all of the heredoc declarations have been satisfied
 				
-				var tokens = [], declaration, line, column, value = context.reader.current();
+				value = context.reader.current();
 				while (context.items.heredocQueue.length > 0 && context.reader.peek() !== context.reader.EOF) {
 					declaration = context.items.heredocQueue.shift();
 					line = context.reader.getLine(), column = context.reader.getColumn();
 					
 					//read until "\n{declaration}\n"
 					while (context.reader.peek() !== context.reader.EOF) {
-						var peekIdent = context.reader.peek(declaration.length + 2);
+						peekIdent = context.reader.peek(declaration.length + 2);
 						if (peekIdent === "\n" + declaration || peekIdent === "\n" + declaration + "\n") {
 							value += context.reader.read(declaration.length + 2);
 							break;
@@ -387,6 +406,12 @@
 			//pod: http://perldoc.perl.org/perlpod.html
 			//stolen from ruby
 			function(context) {
+				var value = "=",
+					line = context.reader.getLine(),
+					column = context.reader.getColumn(),
+					foundEnd = false,
+					peek;
+				
 				//these begin on with a line that starts with "=begin" and end with a line that starts with "=end"
 				//apparently stuff on the same line as "=end" is also part of the comment
 				
@@ -394,12 +419,7 @@
 					return null;
 				}
 				
-				var value = "=";
-				var line = context.reader.getLine();
-				var column = context.reader.getColumn();
-				
 				//read until "\n=cut" and then everything until the end of that line
-				var foundEnd = false, peek;
 				while ((peek = context.reader.peek()) !== context.reader.EOF) {
 					if (!foundEnd && context.reader.peek(5) === "\n=cut") {
 						foundEnd = true;

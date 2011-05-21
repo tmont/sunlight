@@ -19,13 +19,16 @@
 				var words = sunlight.util.createHashMap(["server", "location", "upstream", "http", "mail", "types", "map", "split-clients", "geo", "limit_except"], "\\b", false);
 				
 				return function(context) {
-					var token = sunlight.util.matchWord(context, words, "context", true);
+					var token = sunlight.util.matchWord(context, words, "context", true),
+						peek,
+						count;
+					
 					if (!token) {
 						return null;
 					}
 					
 					//if we encounter a "{" before a ";", we're good to go
-					var peek, count = token.value.length;
+					count = token.value.length;
 					while ((peek = context.reader.peek(count++)) !== context.reader.EOF) {
 						if (/\{$/.test(peek)) {
 							context.reader.read(token.value.length - 1); //already read the first letter
@@ -48,12 +51,20 @@
 				//or after "location ~"
 				//or after "location ~*"
 				
-				var current = context.reader.current();
+				var current = context.reader.current(),
+					token,
+					index,
+					isRegexLiteral = false,
+					regexLiteral = current,
+					peek,
+					line = context.reader.getLine(), 
+					column = context.reader.getColumn();
+					
 				if (/[\s\n]/.test(current)) {
 					return null;
 				}
 				
-				var token, index = context.count() - 1, isRegexLiteral = false;
+				index = context.count() - 1;
 				while ((token = context.token(index--)) !== context.reader.EOF) {
 					if (token.name === "regexLiteral" || (token.name === "punctuation" && (token.value === "{" || token.value === "}" || token.value === ";"))) {
 						return null;
@@ -85,7 +96,6 @@
 				}
 				
 				//read to the end of the regex literal
-				var regexLiteral = current, peek, line = context.reader.getLine(), column = context.reader.getColumn();
 				while ((peek = context.reader.peek()) !== context.reader.EOF) {
 					if (/[\s;\n]/.test(peek)) {
 						break;
@@ -287,14 +297,16 @@
 				], "[\\s;]", false);
 				
 				return function(context) {
-					var token = sunlight.util.matchWord(context, directives, "keyword", true);
+					var token = sunlight.util.matchWord(context, directives, "keyword", true),
+						prevToken;
+					
 					if (!token) {
 						return null;
 					}
 					
 					//must be the first word in a statement
 					//which means first token in the string, or first non-ws token after "{" or ";"
-					var prevToken = sunlight.util.getPreviousWhile(context.getAllTokens(), context.count(), function(token) {
+					prevToken = sunlight.util.getPreviousWhile(context.getAllTokens(), context.count(), function(token) {
 						return token.name === "default" || token.name === "comment";
 					});
 					
