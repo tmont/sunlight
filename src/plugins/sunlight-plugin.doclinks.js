@@ -63,17 +63,22 @@
 		}
 		
 		context.analyzerContext.getAnalyzer = function() {
-			var language = supportedLanguages[this.language.name];
+			var language = supportedLanguages[this.language.name],
+				analyzer,
+				tokenName;
+			
 			if (!language) {
 				return;
 			}
 			
-			var analyzer = sunlight.util.clone(context.analyzerContext.language.analyzer);
+			analyzer = sunlight.util.clone(context.analyzerContext.language.analyzer);
 			
-			for (var tokenName in language) {
-				if (language.hasOwnProperty(tokenName)) {
-					analyzer["handle_" + tokenName] = createLink(language[tokenName]);
+			for (tokenName in language) {
+				if (!language.hasOwnProperty(tokenName)) {
+					continue;
 				}
+				
+				analyzer["handle_" + tokenName] = createLink(language[tokenName]);
 			}
 			
 			return analyzer;

@@ -35,6 +35,16 @@
 	}
 	
 	sunlight.bind("afterHighlightNode", function(context) {
+		var lineContainer,
+			lineCount,
+			lineHighligtOverlay,
+			currentLineOverlay,
+			lineHighlightingEnabled,
+			i,
+			eol,
+			link,
+			name;
+		
 		if (!this.options.lineNumbers) {
 			return;
 		}
@@ -44,10 +54,10 @@
 			return;
 		}
 		
-		var lineContainer = document.createElement("pre");
-		var lineCount = getLineCount(context.node);
+		lineContainer = document.createElement("pre");
+		lineCount = getLineCount(context.node);
 		
-		var lineHighlightOverlay, currentLineOverlay, lineHighlightingEnabled = this.options.lineHighlight.length > 0;
+		lineHighlightingEnabled = this.options.lineHighlight.length > 0;
 		if (lineHighlightingEnabled) {
 			lineHighlightOverlay = document.createElement("div");
 			lineHighlightOverlay.className = this.options.classPrefix + "line-highlight-overlay";
@@ -55,7 +65,8 @@
 		
 		lineContainer.className = this.options.classPrefix + "line-number-margin";
 
-		for (var i = this.options.lineNumberStart, eol = document.createTextNode(sunlight.util.eol), link, name; i <= this.options.lineNumberStart + lineCount; i++) {
+		eol = document.createTextNode(sunlight.util.eol)
+		for (i = this.options.lineNumberStart; i <= this.options.lineNumberStart + lineCount; i++) {
 			link = document.createElement("a");
 			name = (context.node.id ? context.node.id : this.options.classPrefix + context.count) + "-line-" + i;
 			

@@ -285,10 +285,6 @@
 		}
 
 		for (key in objectToMerge) {
-			if (!objectToMerge.hasOwnProperty(key)) {
-				continue;
-			}
-			
 			defaultObject[key] = objectToMerge[key];
 		}
 

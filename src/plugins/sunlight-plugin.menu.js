@@ -13,6 +13,10 @@
 		throw "Include sunlight.js before including plugin files";
 	}
 	
+	//http://dean.edwards.name/weblog/2007/03/sniff/#comment83695
+	//eval()'d so that it compresses correctly
+	var ieVersion = eval("0 /*@cc_on+ScriptEngineMajorVersion()@*/");
+	
 	function createLink(href, title, text) {
 		var link = document.createElement("a");
 		link.setAttribute("href", href);
@@ -24,46 +28,58 @@
 	}
 	
 	function getTextRecursive(node) {
+		var text = "",
+			i = 0;
+		
 		if (node.nodeType === 3) {
 			return node.nodeValue;
 		}
 		
-		var text = "";
-		for (var i = 0; i < node.childNodes.length; i++) {
+		text = "";
+		for (i = 0; i < node.childNodes.length; i++) {
 			text += getTextRecursive(node.childNodes[i]);
 		}
 		
 		return text;
 	}
 	
-	//http://dean.edwards.name/weblog/2007/03/sniff/#comment83695
-	//eval()'d so that it compresses correctly
-	var ieVersion = eval("0 /*@cc_on+ScriptEngineMajorVersion()@*/");
-	
 	sunlight.bind("afterHighlightNode", function(context) {
+		var menu,
+			sunlightIcon,
+			ul,
+			collapse,
+			mDash,
+			collapseLink,
+			viewRaw,
+			viewRawLink,
+			about,
+			aboutLink,
+			icon;
+		
 		if ((ieVersion && ieVersion < 7) || !this.options.showMenu || sunlight.util.getComputedStyle(context.node, "display") !== "block") {
 			return;
 		}
 		
-		var menu = document.createElement("div");
+		menu = document.createElement("div");
 		menu.className = this.options.classPrefix + "menu";
 		
-		var sunlightIcon = 
+		sunlightIcon = 
 			"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJ" +
 			"cEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41Ljg3O4BdAAAAl0lEQVQ4jWP4" +
 			"P9n9PyWYgTYGzAr+///Q9P//Ty/HjhfEETDg1oH/YPDgNKbm4wsIuGBO+H84WJJKhhd2dkA0v3tEZhjcPQox4MVN" +
 			"7P7fUEHAgM112DX++Qkx+PEFMqPxwSmIAQenkWHAvCicAUucAbCAfX2PQCCCEtDGKkz86RXEgL39BAwAKcAFbh/6" +
 			"/39GIL3yAj0NAAB+LQeDCZ9tvgAAAABJRU5ErkJggg==";
 		
-		var ul = document.createElement("ul");
+		ul = document.createElement("ul");
 		
-		var collapse = document.createElement("li");
-		var mDash = String.fromCharCode(0x2014);
-		var collapseLink = createLink("#", "collapse code block", mDash);
+		collapse = document.createElement("li");
+		mDash = String.fromCharCode(0x2014);
+		collapseLink = createLink("#", "collapse code block", mDash);
 		
 		collapseLink.onclick = function() {
-			var originalHeight = sunlight.util.getComputedStyle(context.codeContainer, "height");
-			var originalOverflow = sunlight.util.getComputedStyle(context.codeContainer, "overflowY");
+			var originalHeight = sunlight.util.getComputedStyle(context.codeContainer, "height"),
+				originalOverflow = sunlight.util.getComputedStyle(context.codeContainer, "overflowY");
+			
 			return function() {
 				var needsToExpand = sunlight.util.getComputedStyle(context.codeContainer, "height") !== originalHeight;
 				
@@ -78,11 +94,13 @@
 		
 		collapse.appendChild(collapseLink);
 		
-		var viewRaw = document.createElement("li");
-		var viewRawLink = createLink("#", "view raw code", "raw");
+		viewRaw = document.createElement("li");
+		viewRawLink = createLink("#", "view raw code", "raw");
 		viewRawLink.onclick = function() {
 			var textarea;
 			return function() {
+				var rawCode;
+				
 				if (textarea) {
 					textarea.parentNode.removeChild(textarea);
 					textarea = null;
@@ -91,7 +109,7 @@
 					this.setAttribute("title", "view raw code");
 				} else {
 					//hide the codeContainer, flatten all text nodes, create a <textarea>, append it
-					var rawCode = getTextRecursive(context.node);
+					rawCode = getTextRecursive(context.node);
 					textarea = document.createElement("textarea");
 					textarea.value = rawCode;
 					textarea.setAttribute("readonly", "readonly");
@@ -114,10 +132,10 @@
 		
 		viewRaw.appendChild(viewRawLink);
 		
-		var about = document.createElement("li");
-		var aboutLink = createLink("http://sunlightjs.com/", "Sunlight: JavaScript syntax highlighter by Tommy Montgomery");
+		about = document.createElement("li");
+		aboutLink = createLink("http://sunlightjs.com/", "Sunlight: JavaScript syntax highlighter by Tommy Montgomery");
 		
-		var icon = document.createElement("img");
+		icon = document.createElement("img");
 		icon.setAttribute("src", "data:image/png;base64," + sunlightIcon);
 		icon.setAttribute("alt", "about");
 		aboutLink.appendChild(icon);
