@@ -514,7 +514,7 @@
 	}
 	
 	function Highlighter(options) {
-		this.options = merge(merge({}, globalOptions), options);
+		this.options = merge(clone(globalOptions), options);
 	}
 
 	Highlighter.prototype = function() {
@@ -522,10 +522,10 @@
 			tokenize;
 		
 		function getScopeReaderFunction(scope, tokenName) {
-			escapeSequences = scope[2] || [],
-			closerLength = scope[1].length,
-			closer = typeof(scope[1]) === "string" ? new RegExp(regexEscape(scope[1])) : scope[1].regex,
-			zeroWidth = scope[3] || false;
+			var escapeSequences = scope[2] || [],
+				closerLength = scope[1].length,
+				closer = typeof(scope[1]) === "string" ? new RegExp(regexEscape(scope[1])) : scope[1].regex,
+				zeroWidth = scope[3] || false;
 
 			//processCurrent indicates that this is being called from a continuation
 			//which means that we need to process the current char, rather than peeking at the next
@@ -584,6 +584,7 @@
 		function switchToEmbeddedLanguageIfNecessary(context) {
 			var i,
 				embeddedLanguage;
+			
 			for (i = 0; i < context.language.embeddedLanguages.length; i++) {
 				if (!languages[context.language.embeddedLanguages[i].language]) {
 					//unregistered language
