@@ -1,9 +1,11 @@
-1.14 2011-05-xx
+1.14 2011-05-21
 ---------------
+- Bugfixes
+	- removed debugging stuff from php definition
 - Enhancements
-	- sunlight source code is now free of lint errors when run through YUI
+	- sunlight source code is now free of lint errors when run through YUI (except for eval,
+	  which is needed to safely detect the IE version)
 	
-
 1.13 2011-05-15
 ---------------
 - Bugfixes
@@ -19,13 +21,13 @@
 
 1.11 2011-05-14
 ---------------
+- Bugfixes
+	- the default theme no longer overrides all textarea styles
+	- C#: fixed char detection (reported by admin@hinata.in)
 - Enhancements
 	- Ruby: implemented indented heredocs (prefixed with "-"). see here http://ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/syntax.html#here_doc
 	  for more details
 	- Ruby: implemented symbol detection
-- Bugfixes
-	- the default theme no longer overrides all textarea styles
-	- C#: fixed char detection (reported by admin@hinata.in)
 
 1.10 2011-05-11
 ---------------

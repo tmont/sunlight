@@ -190,10 +190,6 @@
 					while (token = context.tokens[--index]) {
 						if (token.name !== "ident" && token.name !== "default" && (token.name !== "operator" || token.value !== "\\") && (token.name !== "punctuation" || token.value !== ",")) {
 							//should be the "use" keyword
-							console.group();
-							console.dir(token);
-							console.dir(context.tokens[context.index]);
-							console.groupEnd();
 							return token.name === "keyword" && token.value === "use";
 						}
 					}
