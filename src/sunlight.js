@@ -254,7 +254,7 @@
 	//gets the last character in a string or the last element in an array
 	function last(thing) {
 		return thing.charAt ? thing.charAt(thing.length - 1) : thing[thing.length - 1];
-	};
+	}
 
 	//array.contains()
 	function contains(arr, value, caseInsensitive) {
