@@ -16,6 +16,7 @@ BUGS
 
 FUNCTIONALITY
 - remove hideous code duplication (e.g. between c#, java and c++)
+- add option for max-height
 
 FUNCTIONALITY - 2.0
 - code folding
