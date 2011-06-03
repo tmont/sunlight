@@ -13,6 +13,7 @@ MISSING KEYWORDS
 TESTING
 
 BUGS
+- infinite loop (or something) in erlang
 
 FUNCTIONALITY
 - remove hideous code duplication (e.g. between c#, java and c++)
