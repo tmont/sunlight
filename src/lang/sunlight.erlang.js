@@ -31,7 +31,7 @@
 				}
 				
 				//read the ident (they can have letters, numbers, underscores and @-signs in them)
-				while (peek = context.reader.peek(++count)) {
+				while ((peek = context.reader.peek(++count)) && peek.length === count) {
 					if (!/[\w@]$/.test(peek)) {
 						break;
 					}
@@ -41,7 +41,7 @@
 				
 				//if the next non-whitespace character is "(", then it's a function
 				count--;
-				while (peek = context.reader.peek(++count)) {
+				while ((peek = context.reader.peek(++count)) && peek.length === count) {
 					if (!/\s$/.test(peek)) {
 						if (/\($/.test(peek)) {
 							isFunction = true;
@@ -61,12 +61,12 @@
 				
 				if (isFunction) {
 					//is it a function declaration? (preceded by -> operator)
-					while (peek = context.reader.peek(++count)) {
+					while ((peek = context.reader.peek(++count)) && peek.length === count) {
 						letter = peek.charAt(peek.length - 1);
 						
 						if (parenCount === 0) {
 							//the next thing is a bunch of whitespace followed by ->, or fail
-							while (peek = context.reader.peek(++count)) {
+							while ((peek = context.reader.peek(++count)) && peek.length === count) {
 								if (!/\s$/.test(peek)) {
 									if (/->$/.test(context.reader.peek(count + 1))) {
 										//function declaration
