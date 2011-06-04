@@ -1,21 +1,30 @@
 /* global styles */
 .sunlight-container {
-	clear: both;
-	position: relative;
+	clear: both !important;
+	position: relative !important;
+	margin: 10px 0 !important;
 }
 .sunlight-code-container {
-	clear: both;
-	position: relative;
+	clear: both !important;
+	position: relative !important;
 	border: none;
 	border-color: #969696 !important;
 	background-color: #FFFFFF !important;
 }
 .sunlight-highlighted, .sunlight-container, .sunlight-container textarea {
-	color: #000000 !important;
 	font-family: Consolas, Inconsolata, Monaco, "Courier New" !important;
 	font-size: 12px !important;
 	line-height: 15px !important;
+}
+.sunlight-highlighted, .sunlight-container textarea {
+	color: #000000 !important;
 	margin: 0 !important;
+}
+.sunlight-container textarea {
+	padding-left: 0 !important;
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+	padding-right: 0 !important;
 }
 .sunlight-code-container > .sunlight-highlighted {
 	white-space: pre;

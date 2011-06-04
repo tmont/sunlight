@@ -2,6 +2,9 @@
 ---------------
 - Bugfixes
 	- fixed possible infinite loop in erlang when parsing functions
+- Enhancements
+	- updated default and dark themes to be in alignment with each other
+	- added margins above and below .sunlight-container so it didn't look so retarded
 
 1.14 2011-05-21
 ---------------
