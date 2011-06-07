@@ -1,4 +1,4 @@
-1.15 2011-06-xx
+1.15 2011-06-07
 ---------------
 - Bugfixes
 	- fixed possible infinite loop in erlang when parsing functions
