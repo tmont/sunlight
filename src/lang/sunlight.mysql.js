@@ -87,11 +87,18 @@
 			"zerofill",
 			
 			//5.5 keywords
-			"general", "ignore_server_ids", "master_heartbeat_period",
-			"maxvalue", "resignal", "signal", "slow",
+			"general", "ignore_server_ids", "master_heartbeat_period", "slow",
 			
 			//permitted as unquoted identifiers, whatever
 			"action", "bit", "date", "enum", "no", "text", "time", "timestamp",
+			
+			//others not mentioned in the mysql reserved word docs for some reason
+			"prepare", "execute", "deallocate prepare", "begin", "end", "delimiter", "repeat",
+			"open", "close", "do", "handler", "load data infile",
+			
+			"start transaction", "commit", "rollback",
+			
+			"flush", "with read lock",
 			
 			//special operators
 			"sounds" //http://dev.mysql.com/doc/refman/5.5/en/string-functions.html#operator_sounds-like
