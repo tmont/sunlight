@@ -4,7 +4,7 @@
  *
  * http://sunlightjs.com/
  *
- * (c) 2011 Tommy Montgomery <http://tommymontgomery.com>
+ * written by Tommy Montgomery <http://tommymontgomery.com>
  *
  * Licensed under WTFPL <http://sam.zoy.org/wtfpl/>
  */
@@ -22,12 +22,12 @@
 		
 		//global sunlight variables
 		defaultAnalyzer,
-		createCodeReader,
 		getComputedStyle,
 		globalOptions = {
 			tabWidth: 4,
 			classPrefix: DEFAULT_CLASS_PREFIX,
-			showWhitespace: false
+			showWhitespace: false,
+			maxHeight: false
 		},
 		languages = {},
 		languageDefaults = {},
@@ -42,7 +42,7 @@
 			afterHighlightNode: []
 		};
 
-	defaultAnalyzer = function() {
+	defaultAnalyzer = (function() {
 		function defaultHandleToken(suffix) {
 			return function(context) {
 				var element = document.createElement("span");
@@ -50,9 +50,9 @@
 				element.appendChild(context.createTextNode(context.tokens[context.index]));
 				return context.addNode(element) || true;
 			};
-		};
+		}
 
-		return  {
+		return {
 			handleToken: function(context) { 
 				return defaultHandleToken(context.tokens[context.index].name)(context); 
 			},
@@ -87,9 +87,41 @@
 					|| defaultHandleToken("ident")(context);
 			}
 		};
-	}();
+	}());
 
-	createCodeReader = function(text) {
+	languageDefaults = {
+		analyzer: create(defaultAnalyzer),
+		customTokens: [],
+		namedIdentRules: {},
+		punctuation: /[^\w\s]/,
+		numberParser: defaultNumberParser,
+		caseInsensitive: false,
+		doNotParse: /\s/,
+		contextItems: {},
+		embeddedLanguages: {}
+	};
+	
+	//adapted from http://blargh.tommymontgomery.com/2010/04/get-computed-style-in-javascript/
+	getComputedStyle = (function() {
+		var func = null;
+		if (document.defaultView && document.defaultView.getComputedStyle) {
+			func = document.defaultView.getComputedStyle;
+		} else {
+			func = function(element, anything) {
+				return element["currentStyle"] || {};
+			};
+		}
+
+		return function(element, style) {
+			return func(element, null)[style];
+		}
+	}());
+	
+	//-----------
+	//FUNCTIONS
+	//-----------
+
+	function createCodeReader(text) {
 		var index = 0,
 			line = 1,
 			column = 1,
@@ -97,9 +129,9 @@
 			EOF = undefined,
 			currentChar,
 			nextReadBeginsLine;
-		
+
 		text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n"); //normalize line endings to unix
-		
+
 		length = text.length;
 		currentChar = length > 0 ? text.charAt(0) : EOF;
 
@@ -110,7 +142,7 @@
 			}
 
 			count = count || 1;
-			
+
 			value = text.substring(index + 1, index + count + 1);
 			return value === "" ? EOF : value;
 		}
@@ -123,11 +155,11 @@
 			peek: function(count) {
 				return getCharacters(count);
 			},
-			
+
 			substring: function() {
 				return text.substring(index);
 			},
-			
+
 			peekSubstring: function() {
 				return text.substring(index + 1);
 			},
@@ -136,7 +168,7 @@
 				var value = getCharacters(count),
 					newlineCount,
 					lastChar;
-				
+
 				if (value === "") {
 					//this is a result of reading/peeking/doing nothing
 					return value;
@@ -159,7 +191,7 @@
 						line += newlineCount;
 						column = 1;
 					}
-					
+
 					lastChar = last(value);
 					if (lastChar === "\n") {
 						nextReadBeginsLine = true;
@@ -175,7 +207,7 @@
 			},
 
 			text: function() { return text; },
-			
+
 			getLine: function() { return line; },
 			getColumn: function() { return column; },
 			isEof: function() { return index >= length; },
@@ -186,7 +218,7 @@
 				if (column === 1) {
 					return true;
 				}
-				
+
 				//look backward until we find a newline or a non-whitespace character
 				while ((c = text.charAt(--temp)) !== "") {
 					if (c === "\n") {
@@ -196,47 +228,15 @@
 						return false;
 					}
 				}
-				
+
 				return true;
 			},
 			isEol: function() { return nextReadBeginsLine; },
 			EOF: EOF,
 			current: function() { return currentChar; }
 		};
-	};
+	}
 
-	languageDefaults = {
-		analyzer: create(defaultAnalyzer),
-		customTokens: [],
-		namedIdentRules: {},
-		punctuation: /[^\w\s]/,
-		numberParser: defaultNumberParser,
-		caseInsensitive: false,
-		doNotParse: /\s/,
-		contextItems: {},
-		embeddedLanguages: {}
-	};
-	
-	//adapted from http://blargh.tommymontgomery.com/2010/04/get-computed-style-in-javascript/
-	getComputedStyle = function() {
-		var func = null;
-		if (document.defaultView && document.defaultView.getComputedStyle) {
-			func = document.defaultView.getComputedStyle;
-		} else {
-			func = function(element, anything) {
-				return element["currentStyle"] || {};
-			};
-		}
-
-		return function(element, style) {
-			return func(element, null)[style];
-		}
-	}();
-	
-	//-----------
-	//FUNCTIONS
-	//-----------
-	
 	//http://javascript.crockford.com/prototypal.html
 	function create(o) {
 		function F() {}
@@ -274,7 +274,7 @@
 		}
 
 		return false;
-	};
+	}
 
 	//non-recursively merges one object into the other
 	function merge(defaultObject, objectToMerge) {
@@ -384,7 +384,7 @@
 
 			return success;
 		};
-	};
+	}
 
 	function matchWord(context, wordMap, tokenName, doNotRead) {
 		var current = context.reader.current(),
@@ -419,7 +419,7 @@
 		}
 
 		return null;
-	};
+	}
 
 	//gets the next token in the specified direction while matcher matches the current token
 	function getNextWhile(tokens, index, direction, matcher) {
@@ -516,9 +516,8 @@
 		this.options = merge(clone(globalOptions), options);
 	}
 
-	Highlighter.prototype = function() {
-		var parseNextToken,
-			tokenize;
+	Highlighter.prototype = (function() {
+		var parseNextToken;
 		
 		function getScopeReaderFunction(scope, tokenName) {
 			var escapeSequences = scope[2] || [],
@@ -617,7 +616,7 @@
 			}
 		}
 		
-		parseNextToken = function() {
+		parseNextToken = (function() {
 			function isIdentMatch(context) {
 				return context.language.identFirstLetter && context.language.identFirstLetter.test(context.reader.current());
 			}
@@ -760,9 +759,9 @@
 					|| parsePunctuation(context)
 					|| parseDefault(context);
 			}
-		}();
+		}());
 
-		tokenize = function(unhighlightedCode, language, partialContext, options) {
+		function tokenize(unhighlightedCode, language, partialContext, options) {
 			var tokens = [],
 				context,
 				continuation,
@@ -834,7 +833,7 @@
 
 			fireEvent("afterTokenize", this, { code: unhighlightedCode, parserContext: context });
 			return context;
-		};
+		}
 
 		function createAnalyzerContext(parserContext, partialContext, options) {
 			var nodes = [],
@@ -1019,7 +1018,6 @@
 						partialContext = highlightText.call(this, node.childNodes[j].nodeValue, languageId, partialContext);
 						HIGHLIGHTED_NODE_COUNT++;
 						currentNodeCount = currentNodeCount || HIGHLIGHTED_NODE_COUNT;
-
 						nodes = partialContext.getNodes();
 
 						node.replaceChild(nodes[0], node.childNodes[j]);
@@ -1037,11 +1035,18 @@
 				
 				//if the node is block level, we put it in a container, otherwise we just leave it alone
 				if (getComputedStyle(node, "display") === "block") {
-					container = document.createElement("div")
+					container = document.createElement("div");
 					container.className = this.options.classPrefix + "container";
 					
 					codeContainer = document.createElement("div");
 					codeContainer.className = this.options.classPrefix + "code-container";
+
+					//apply max height if specified in options
+					if (this.options.maxHeight !== false) {
+						codeContainer.style.overflowY = "auto";
+						codeContainer.style.maxHeight = this.options.maxHeight + (/^\d+$/.test(this.options.maxHeight) ? "px" : "");
+					}
+					
 					container.appendChild(codeContainer);
 					
 					node.parentNode.insertBefore(codeContainer, node);
@@ -1061,7 +1066,7 @@
 				});
 			}
 		};
-	}();
+	}());
 
 	//public facing object
 	window.Sunlight = {

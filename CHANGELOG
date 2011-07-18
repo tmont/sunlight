@@ -1,3 +1,11 @@
+1.17 2011-07-17
+---------------
+- Bugfixes
+	- nginx: directives after a "}" were not being detected
+- Enhancements
+	- nginx: added support for 3rd party echo module
+	- added maxHeight option
+
 1.16 2011-06-26
 ---------------
 - Enhancements

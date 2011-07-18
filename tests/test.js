@@ -18,7 +18,10 @@ if (typeof(console) === "undefined" || typeof(console.log) === "undefined") {
 
 var prefix = "sunlight-";
 var start = new Date();
-Sunlight.highlightAll({ classPrefix: prefix, showMenu: true, enableDocLinks: true });
+if (typeof(maxHeight) === "undefined") {
+	maxHeight = false;
+}
+Sunlight.highlightAll({ classPrefix: prefix, showMenu: true, enableDocLinks: true, maxHeight: maxHeight });
 console.log("highlighting time: " + (new Date().getTime() - start.getTime()) + "ms");
 
 //tests
