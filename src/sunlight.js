@@ -4,8 +4,7 @@
  *
  * http://sunlightjs.com/
  *
- * written by Tommy Montgomery <http://tommymontgomery.com>
- *
+ * by Tommy Montgomery <http://tommymontgomery.com>
  * Licensed under WTFPL <http://sam.zoy.org/wtfpl/>
  */
 (function(window, document, undefined){
@@ -1070,7 +1069,7 @@
 
 	//public facing object
 	window.Sunlight = {
-		version: "1.16",
+		version: "1.17",
 		Highlighter: Highlighter,
 		createAnalyzer: function() { return create(defaultAnalyzer); },
 		globalOptions: globalOptions,
