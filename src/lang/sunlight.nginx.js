@@ -292,6 +292,12 @@
 					//ssl: http://wiki.nginx.org/MailSslModule
 					/*"ssl","ssl_certificate","ssl_certificate_key","ssl_ciphers","ssl_prefer_server_ciphers","ssl_protocols","ssl_session_cache","ssl_session_timeout",*/ //<- covered in http ssl module
 					"starttls",
+
+					//echo: http://wiki.nginx.org/HttpEchoModule
+					"echo_duplicate", "echo_flush", "echo_sleep", "echo_blocking_sleep", "echo_reset_timer",
+					"echo_read_request_body", "echo_location_async", "echo_location", "echo_subrequest_async",
+					"echo_subrequest", "echo_foreach_split", "echo_end", "echo_request_body", "echo_exec", 
+					"echo_before_body", "echo_after_body", "echo",
 					
 					//others
 					"default", "output_buffers"
@@ -306,12 +312,12 @@
 					}
 					
 					//must be the first word in a statement
-					//which means first token in the string, or first non-ws token after "{" or ";"
+					//which means first token in the string, or first non-ws token after "{", "}" or ";"
 					prevToken = sunlight.util.getPreviousWhile(context.getAllTokens(), context.count(), function(token) {
 						return token.name === "default" || token.name === "comment";
 					});
 					
-					if (!prevToken || (prevToken.name === "punctuation" && (prevToken.value === "{" || prevToken.value === ";"))) {
+					if (!prevToken || (prevToken.name === "punctuation" && (sunlight.util.contains(["{", "}", ";"], prevToken.value)))) {
 						context.reader.read(token.value.length - 1); //already read the first character
 						return token;
 					}

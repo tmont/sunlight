@@ -102,6 +102,10 @@ http {
 				image/gif    gif;
 				image/jpeg   jpg;
 			}
+
+			default_type text/html;
+			echo "foo";
+			echo_after_body "after the body";
 		}
 		
 		location ~ ^/download/(.*)$ {
@@ -156,6 +160,9 @@ mail {
 		assertExists("keyword", "allow", "allow keyword");
 		assertExists("keyword", "internal", "internal keyword");
 		assertExists("keyword", "imap_capabilities", "imap_capabilities keyword");
+		assertExists("keyword", "echo", "echo keyword");
+		assertExists("keyword", "echo_after_body", "echo_after_body keyword");
+		assertExists("keyword", "default_type", "default_type keyword");
 		
 		assertExists("ident", "default", "non-contextual keyword default");
 		assertExists("ident", "server_name", "non-contextual keyword server_name");
