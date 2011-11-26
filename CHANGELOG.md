@@ -1,5 +1,7 @@
 1.18 2011-xx-xx
 ---------------
+- Enhancements
+	- added `languages` property to the global `Sunlight` object
 
 1.17 2011-07-17
 ---------------

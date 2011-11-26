@@ -30,6 +30,23 @@
 		},
 		languages = {},
 		languageDefaults = {},
+		defaultNumberParser = (function() {
+			var numberRegex = '\\d[\\dA-Za-z]*',
+				regex = new RegExp('^(?:\\.' + numberRegex + '|' + numberRegex + '(?:\\.' + numberRegex + ')?)');
+
+			return function(context) {
+				var match,
+					substring = context.reader.current() + context.reader.peekSubstring();
+
+				if (match = regex.exec(substring)) {
+					var token = context.createToken("number", match[0], context.reader.getLine(), context.reader.getColumn());
+					context.reader.read(match[0].length - 1);
+					return token;
+				}
+
+				return null;
+			};
+		}()),
 		events = {
 			beforeHighlightNode: [],
 			beforeHighlight: [],
@@ -456,51 +473,7 @@
 		return newMap;
 	}
 
-	function defaultNumberParser(context) {
-		var current = context.reader.current(), 
-			number, 
-			line = context.reader.getLine(), 
-			column = context.reader.getColumn(),
-			allowDecimal = true,
-			peek;
 
-		if (!/\d/.test(current)) {
-			//is it a decimal followed by a number?
-			if (current !== "." || !/\d/.test(context.reader.peek())) {
-				return null;
-			}
-
-			//decimal without leading zero
-			number = current + context.reader.read();
-			allowDecimal = false;
-		} else {
-			number = current;
-			if (current === "0" && context.reader.peek() !== ".") {
-				//hex or octal
-				allowDecimal = false;
-			}
-		}
-
-		//easy way out: read until it's not a number or letter
-		//this will work for hex (0xef), octal (012), decimal and scientific notation (1e3)
-		//anything else and you're on your own
-
-		while ((peek = context.reader.peek()) !== context.reader.EOF) {
-			if (!/[A-Za-z0-9]/.test(peek)) {
-				if (peek === "." && allowDecimal && /\d$/.test(context.reader.peek(2))) {
-					number += context.reader.read();
-					allowDecimal = false;
-					continue;
-				}
-				
-				break;
-			}
-
-			number += context.reader.read();
-		}
-
-		return context.createToken("number", number, line, column);
-	}
 
 	function fireEvent(eventName, highlighter, eventContext) {
 		var delegates = events[eventName] || [],
@@ -1120,6 +1093,8 @@
 
 			languages[languageData.name] = languageData;
 		},
+
+		languages: languages,
 		
 		isRegistered: function(languageId) { return languages[languageId] !== undefined; },
 		
