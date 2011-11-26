@@ -18,7 +18,7 @@
 		HIGHLIGHTED_NODE_COUNT = 0,
 		DEFAULT_LANGUAGE = "plaintext",
 		DEFAULT_CLASS_PREFIX = "sunlight-",
-		
+
 		//global sunlight variables
 		defaultAnalyzer,
 		getComputedStyle,
@@ -1067,7 +1067,7 @@
 
 	//public facing object
 	window.Sunlight = {
-		version: "1.17",
+		version: "1.18.0",
 		Highlighter: Highlighter,
 		createAnalyzer: function() { return create(defaultAnalyzer); },
 		globalOptions: globalOptions,
