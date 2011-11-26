@@ -79,7 +79,7 @@
 
 			//this handles the named ident mayhem
 			handle_ident: function(context) {
-				var evaluate = function(rules, createRule) {
+				function evaluate(rules, createRule) {
 					var i;
 					rules = rules || [];
 					for (i = 0; i < rules.length; i++) {
@@ -93,12 +93,14 @@
 					}
 
 					return false;
-				};
+				}
+
+				var caseInsensitive = context.language.caseInsensitive;
 
 				return evaluate(context.language.namedIdentRules.custom)
-					|| evaluate(context.language.namedIdentRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData, context.language.caseInsensitive); })
-					|| evaluate(context.language.namedIdentRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData, context.language.caseInsensitive); })
-					|| evaluate(context.language.namedIdentRules.between, function(ruleData) { return createBetweenRule(context.index, ruleData.opener, ruleData.closer, context.language.caseInsensitive); })
+					|| evaluate(context.language.namedIdentRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData, caseInsensitive); })
+					|| evaluate(context.language.namedIdentRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData, caseInsensitive); })
+					|| evaluate(context.language.namedIdentRules.between, function(ruleData) { return createBetweenRule(context.index, ruleData.opener, ruleData.closer, caseInsensitive); })
 					|| defaultHandleToken("ident")(context);
 			}
 		};
