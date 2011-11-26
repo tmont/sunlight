@@ -1,18 +1,20 @@
 Sunlight <http://sunlightjs.com/>
-Version 1.18.0 (see CHANGELOG for details)
+=================================
+
+Version 1.18.0 (see CHANGELOG.md for details)
   by Tommy Montgomery <http://tommymontgomery.com/>
 
 Licensed under WTFPL: http://sam.zoy.org/wtfpl/
 
 Installation
 ------------
-- Reference sunlight-all-min.js OR sunlight-min.js and language files of your choice.
-- Reference a theme stylesheet (in themes/) or provide your own stylesheet.
-- Place code inside an element with the class "sunlight-highlight-{language}" where
-  language is the id of the language. e.g. "sunlight-highlight-csharp" for C#.
+1. Reference sunlight-all-min.js OR sunlight-min.js and language files of your choice.
+2. Reference a theme stylesheet (in themes/) or provide your own stylesheet.
+3. Place code inside an element with the class "sunlight-highlight-{language}" where
+   language is the id of the language. e.g. "sunlight-highlight-csharp" for C#.
 
 To use Sunlight as a jQuery plugin, reference the desired sunlight files, and then
-reference jquery.sunlight.js.
+reference `jquery.sunlight.js`.
 
 Refer to http://sunlightjs.com/docs.html for other options.
 
@@ -61,7 +63,7 @@ Included plugins
 
 Authors
 -------
-Tommy Montgomery <http://tommymontgomery.com/>
+Tommy Montgomery <http://tmont.com/>
 
 Contributors
 ------------

@@ -1,4 +1,5 @@
-PARSING
+Parsing
+-------
 - Python/Java/Lisp exponents: 1e3-10
 - perl heredocs don't allow spaces before identifiers
 - JavaScript improvements
@@ -6,27 +7,25 @@ PARSING
 	- JavaScript built-in objects can be reassigned
 	- keep track of JavaScript user-defined functions
 
-MISSING KEYWORDS
+Missing keywords
+----------------
 - CSS property values (none, solid, inset, etc.)
 - nginx 3rd party modules: http://wiki.nginx.org/3rdPartyModules#Known_modules
 - c#: "base" keyword 
 
-TESTING
-
-BUGS
-
-FUNCTIONALITY
+Functionality
+-------------
 - remove hideous code duplication (e.g. between c#, java and c++)
 
-FUNCTIONALITY - 2.0
+Functionality - 2.0
+-------------------
 - code folding
 - scope stacking
 - handle continuations in custom parse rules (preferrably in some uniform way)
 
-LANGUAGES
+Languages
+---------
 - PostgreSQL
 - Oracle
 - prolog
 - LaTeX
-
-WEB

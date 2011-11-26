@@ -4,15 +4,15 @@
 1.17 2011-07-17
 ---------------
 - Bugfixes
-	- nginx: directives after a "}" were not being detected
+	- nginx: directives after a `}` were not being detected
 - Enhancements
-	- nginx: added support for 3rd party echo module
-	- added maxHeight option
+	- nginx: added support for 3rd party `echo` module
+	- added `maxHeight` option
 
 1.16 2011-06-26
 ---------------
 - Enhancements
-	- added some more mysql keywords (begin, end, delimiter, do, and a few more)
+	- added some more mysql keywords (`begin`, `end`, `delimiter`, `do`, and a few more)
 
 1.15 2011-06-07
 ---------------
@@ -20,28 +20,28 @@
 	- fixed possible infinite loop in erlang when parsing functions
 - Enhancements
 	- updated default and dark themes to be in alignment with each other
-	- added margins above and below .sunlight-container so it didn't look so retarded
+	- added margins above and below `.sunlight-container` so it didn't look so retarded
 
 1.14 2011-05-21
 ---------------
 - Bugfixes
 	- removed debugging stuff from php definition
 - Enhancements
-	- sunlight source code is now free of lint errors when run through YUI (except for eval,
+	- sunlight source code is now free of lint errors when run through YUI (except for `eval`,
 	  which is needed to safely detect the IE version)
 	
 1.13 2011-05-15
 ---------------
 - Bugfixes
 	- fixed a few false positives in regex literal detection for JavaScript, Ruby, Perl and ActionScript
-	  (things like myFunc(/myregexliteral/) were not being detected, but things like (4 + 5) / 2 were being
+	  (things like `myFunc(/myregexliteral/)` were not being detected, but things like `(4 + 5) / 2` were being
 	  falsely detected)
 
 1.12 2011-05-14
 ---------------
 - Bugfixes
 	- Ruby: fixed heredoc detection. However, it would require static analysis to have a 100% success rate
-	  for detecting heredocs in Ruby. Things like "x <<1" will give false positives, but it can't be helped.
+	  for detecting heredocs in Ruby. Things like `x <<1` will give false positives, but it can't be helped.
 
 1.11 2011-05-14
 ---------------
@@ -49,43 +49,43 @@
 	- the default theme no longer overrides all textarea styles
 	- C#: fixed char detection (reported by admin@hinata.in)
 - Enhancements
-	- Ruby: implemented indented heredocs (prefixed with "-"). see here http://ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/syntax.html#here_doc
+	- Ruby: implemented indented heredocs (prefixed with `-`). see here http://ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/syntax.html#here_doc
 	  for more details
 	- Ruby: implemented symbol detection
 
 1.10 2011-05-11
 ---------------
 - Bugfixes
-	- C#: get/set keywords were not being detected correctly in automatic properties
+	- C#: `get`/`set` keywords were not being detected correctly in automatic properties
 	- C#: fixed bug in generic definition detection when invoking a generic method
 	- fixed margin-bottom issue on line number margin
 - Enhancements
-	- added doclinks plugin
+	- added `doclinks` plugin
 	- removed automatic hyperlinks to php.net for php functions and language constructs
 
 1.9 2011-05-05
 --------------
 - Bugfixes
 	- fixed bug in XML scopes where it was not acting in a case insensitive manner
-	  (apparently caseInsenstive !== caseInsensitive)
+	  (apparently `caseInsenstive !== caseInsensitive`)
 - Enhancements
 	- new languages: objective-c, lua
 	- implemented embedded C# in XML (ASP tags: <% %>)
-	- C#: highlighted the name of the class being used in a using alias statement
-	- PHP: highlighted the name of the class being used in a use statement
+	- C#: highlighted the name of the class being used in a using `alias` statement
+	- PHP: highlighted the name of the class being used in a `use` statement
 
 1.8 2011-05-02
 --------------
 - Bugfixes
 	- C++: fixed syntax error in IE (trailing comma)
 	- tabstops are now being correctly parsed
-	- enabling the line number plugin on code blocks that were empty threw undefined errors
+	- enabling the line number plugin on code blocks that were empty threw `undefined` errors
 - Enhancements
 	- new languages: actionscript, powershell
-	- Java: highlight type names after "instanceof" and "import"
-	- new option: showWhitespace
+	- Java: highlight type names after `instanceof` and `import`
+	- new option: `showWhitespace`
 - Breaking Changes
-	- the signature for analyzerContext.createTextNode changed from accepting a string
+	- the signature for `analyzerContext.createTextNode()` changed from accepting a string
 	  to accepting a token
 
 1.7 2011-04-29
@@ -98,11 +98,11 @@
 	- implemented embedded languages
 		- xml within scala
 		- php/css/javascript within xml
-	- added sunlight.util.last()
+	- added `sunlight.util.last()`
 	- more internal php functions
 	- more internal php constants
-	- CSS !important flags are now highlighted
-	- highlight type names after the "is" keyword in C#
+	- CSS `!important` flags are now highlighted
+	- highlight type names after the `is` keyword in C#
 - Breaking Changes
 	- html is gone (replaced by xml)
 	- xml tokens changed
@@ -118,9 +118,9 @@
 1.5 2011-04-22
 --------------
 - Bugfixes
-	- fixed bug where keywords were being spuriously detected in idents (e.g. "class" in "cclass")
+	- fixed bug where keywords were being spuriously detected in idents (e.g. `class` in `cclass`)
 	  due to the fact that the regular expression in the generated hashmap was not requiring the match
-	  to start at the beginning of the string (with "^")
+	  to start at the beginning of the string (with `^`)
 	- made default number parser better (don't allow multiple decimal places, and don't allow decimal point
 	  in octal/hex numbers)
 	- fixed bug in C# attribute detection where it would falsely identify the namespace portion of a fully
@@ -129,24 +129,24 @@
 	  incorrectly
 - Enhancements
 	- new languages: VB.NET, httpd, Lisp
-	- added doNotParse language property
-	- added contextItems language property
-	- the class prefix is now customizable via the classPrefix option
-	- the highlighter's options are now available to the analyzer context via the "options" property
-	- created plugin mechanism (Sunlight.bind) and externalized line number/line highlight options
+	- added `doNotParse` language property
+	- added `contextItems` language property
+	- the class prefix is now customizable via the `classPrefix` option
+	- the highlighter's options are now available to the analyzer context via the `options` property
+	- created plugin mechanism (`Sunlight.bind`) and externalized line number/line highlight options
 	- added ability to collapse the code block and view the raw text via the menu plugin
 
 1.4 2011-04-17
 --------------
 - Bugfixes
-	- fixed bug in number parsing where it would incorrectly parse 1. as the number "1." rather
-	  than the number "1" followed by a "."
-	- fixed bug where casts were being falsely detected in expressions like "if (something) doSomething();"
+	- fixed bug in number parsing where it would incorrectly parse `1.` as the number `1.` rather
+	  than the number `1` followed by a `.`
+	- fixed bug where casts were being falsely detected in expressions like `if (something) doSomething();`
 	  in Java and C#
 - Enhancements
 	- new languages: brainfuck (awwwwwwww yeeeeeeeeeah), nginx, c/c++, 6502 assembler, perl
-	- added getNextWhile/getPreviousWhile utility functions
-	- added isSol() and isEol() functions to reader
+	- added `getNextWhile()` and `getPreviousWhile()` utility functions
+	- added `isSol()` and `isEol()` functions to reader
 
 1.3 2011-04-13
 --------------
@@ -156,9 +156,9 @@
 	- fixed bug where code with trailing newlines had too many line numbers (more specifically, browsers
 	  don't render the last trailing newline, so neither will we), doesn't work in IE6, too bad
 - Enhancements
-	- PHP class names after instanceof are highlighted as named idents
+	- PHP class names after `instanceof` are highlighted as named idents
 	- new languages: bash, tsql, python, ruby, java
-	- added line highlighting via lineHighlight option
+	- added line highlighting via `lineHighlight` option
 
 1.2 2011-04-09
 --------------
@@ -177,7 +177,7 @@
 		- added vertical-align keyword
 		- added zoom keyword
 	- C#
-		- use type definition naming convention (^T([A-Z0-9]\w*)?$) to make sure generic type 
+		- use type definition naming convention (`^T([A-Z0-9]\w*)?$`) to make sure generic type
 		  definitions (e.g. T) are not named idents
 	
 - Bugfixes
@@ -185,8 +185,8 @@
 		- fixed false positive named ident detection for generics
 		- custom named ident rules in threw errors if the first token of the string was an ident
 		- attribute names weren't being recognized as named idents if it was the first  token
-		- don't highlight "Resolve" in "container.Resolve<Foo>()", i.e. a generic method invocation
-		- fixed named ident false positive for array access, e.g. foo.Bar[0].Name had "Bar" as a named ident
+		- don't highlight `Resolve` in `container.Resolve<Foo>()`, i.e. a generic method invocation
+		- fixed named ident false positive for array access, e.g. `foo.Bar[0].Name` had "Bar" as a named ident
 	- PHP/C#
 		- fixed named ident detection for fully qualified class names
 	- CSS
