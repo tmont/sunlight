@@ -1,17 +1,19 @@
-Sunlight <http://sunlightjs.com/>
+Sunlight
 =================================
+Client-side syntax highlighter - <http://sunlightjs.com/>
 
-Version 1.18.0 (see CHANGELOG.md for details)
-  by Tommy Montgomery <http://tommymontgomery.com/>
+> Version 1.18.0 (see CHANGELOG.md for details)
+>
+> by Tommy Montgomery <http://tommymontgomery.com/>
 
 Licensed under WTFPL: http://sam.zoy.org/wtfpl/
 
 Installation
 ------------
-1. Reference sunlight-all-min.js OR sunlight-min.js and language files of your choice.
-2. Reference a theme stylesheet (in themes/) or provide your own stylesheet.
-3. Place code inside an element with the class "sunlight-highlight-{language}" where
-   language is the id of the language. e.g. "sunlight-highlight-csharp" for C#.
+1. Reference `sunlight-all-min.j`s OR `sunlight-min.js` and language files of your choice.
+2. Reference a theme stylesheet (in `themes/`) or provide your own stylesheet.
+3. Place code inside an element with the class `sunlight-highlight-{language}` where
+   language is the id of the language. e.g. `sunlight-highlight-csharp` for C#.
 
 To use Sunlight as a jQuery plugin, reference the desired sunlight files, and then
 reference `jquery.sunlight.js`.
@@ -52,14 +54,14 @@ Included language files
 
 Included themes
 ---------------
-- sunlight.default.css
-- sunlight.dark.css
+- `sunlight.default.css`
+- `sunlight.dark.css`
 
 Included plugins
 ----------------
-- sunlight-plugin.linenumbers.js (bundled)
-- sunlight-plugin.menu.js
-- sunlight-plugin.doclinks.js
+- `sunlight-plugin.linenumbers.js` (bundled)
+- `sunlight-plugin.menu.js`
+- `sunlight-plugin.doclinks.js`
 
 Authors
 -------

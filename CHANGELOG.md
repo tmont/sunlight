@@ -70,7 +70,7 @@
 	  (apparently `caseInsenstive !== caseInsensitive`)
 - Enhancements
 	- new languages: objective-c, lua
-	- implemented embedded C# in XML (ASP tags: <% %>)
+	- implemented embedded C# in XML (ASP tags: `<% %>`)
 	- C#: highlighted the name of the class being used in a using `alias` statement
 	- PHP: highlighted the name of the class being used in a `use` statement
 
