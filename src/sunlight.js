@@ -8,8 +8,7 @@
  * Licensed under WTFPL <http://sam.zoy.org/wtfpl/>
  */
 (function(window, document, undefined){
-
-	var 
+	var
 		//http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
 		//we have to sniff this because IE requires \r
 		isIe = !+"\v1", 

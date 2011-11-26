@@ -2,6 +2,7 @@
 ---------------
 - Enhancements
 	- added `languages` property to the global `Sunlight` object
+	- now using semantic versioning (yawn)
 
 1.17 2011-07-17
 ---------------
