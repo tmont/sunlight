@@ -10,6 +10,7 @@
 		var token, 
 			index = context.count(), 
 			value = "",
+			letter,
 			appendToValue = true,
 			count = 1,
 			peek;

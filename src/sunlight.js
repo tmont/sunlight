@@ -106,7 +106,7 @@
 		if (document.defaultView && document.defaultView.getComputedStyle) {
 			func = document.defaultView.getComputedStyle;
 		} else {
-			func = function(element, anything) {
+			func = function(element) {
 				return element["currentStyle"] || {};
 			};
 		}
@@ -697,7 +697,7 @@
 
 					buffer += processCurrent ? current : context.reader.read();
 					return true;
-				};
+				}
 
 				if (!processCurrent || process(true)) {
 					while (context.reader.peek() !== context.reader.EOF && process(false)) { }
@@ -835,17 +835,17 @@
 		function createAnalyzerContext(parserContext, partialContext, options) {
 			var nodes = [],
 				prepareText = function() {
-					var nbsp, tab;
+					var nonBreakingSpace, tab;
 					if (options.showWhitespace) {
-						nbsp = String.fromCharCode(0xB7);
+						nonBreakingSpace = String.fromCharCode(0xB7);
 						tab = new Array(options.tabWidth).join(String.fromCharCode(0x2014)) + String.fromCharCode(0x2192);
 					} else {
-						nbsp = String.fromCharCode(0xA0);
-						tab = new Array(options.tabWidth + 1).join(nbsp);
+						nonBreakingSpace = String.fromCharCode(0xA0);
+						tab = new Array(options.tabWidth + 1).join(nonBreakingSpace);
 					}
 					
 					return function(token) {
-						var value = token.value.split(" ").join(nbsp),
+						var value = token.value.split(" ").join(nonBreakingSpace),
 							tabIndex,
 							lastNewlineColumn,
 							actualColumn,
@@ -925,7 +925,7 @@
 			fireEvent("beforeAnalyze", this, { analyzerContext: analyzerContext });
 			
 			if (analyzerContext.tokens.length > 0) {
-				analyzerContext.language = languages[analyzerContext.tokens[0].language] || languages[DEFAULT_LANGUAGE];;
+				analyzerContext.language = languages[analyzerContext.tokens[0].language] || languages[DEFAULT_LANGUAGE];
 				nodes = [];
 				lastIndex = 0;
 				container = createContainer(analyzerContext);

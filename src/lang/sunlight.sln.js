@@ -27,7 +27,7 @@
 		},
 		
 		identFirstLetter: /[A-Za-z_\.]/,
-		identAfterFirstLetter: /[\w-\.]/,
+		identAfterFirstLetter: /[\w\.-]/,
 		
 		namedIdentRules: {
 			follows: [

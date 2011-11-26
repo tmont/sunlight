@@ -12,7 +12,7 @@
 	background-color: #262626 !important;
 }
 .sunlight-highlighted, .sunlight-container, .sunlight-container textarea {
-	font-family: Consolas, Inconsolata, Monaco, "Courier New" !important;
+	font-family: Consolas, Inconsolata, Monaco, "Courier New", monospace !important;
 	font-size: 12px !important;
 	line-height: 15px !important;
 }
@@ -43,9 +43,7 @@
 	margin-right: 5px !important;
 	margin-top: 0 !important;
 	margin-bottom: 0 !important;
-	padding: 0 !important;
-	padding-right: 4px !important;
-	padding-left: 4px !important;
+	padding: 0 4px !important;
 	border-right: 1px solid #9A9A9A !important;
 	background-color: #3E3E3E !important;
 	color: #9A9A9A !important;

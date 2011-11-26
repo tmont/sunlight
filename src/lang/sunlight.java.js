@@ -12,7 +12,7 @@
 		return function(context) {
 			return !typeDefinitionRegex.test(context.tokens[context.index].value) && func(context);
 		};
-	};
+	}
 	
 	var primitives = ["boolean", "byte", "char", "double", "float", "int", "long", "short"],
 		acceptableKeywords = primitives.concat(["extends"]);

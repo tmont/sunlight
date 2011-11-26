@@ -44,13 +44,12 @@
 	}
 	
 	function readBetweenDelimiters(context, delimiter, appendCloser) {
-		var opener = delimiter,
-			closer = delimiter,
-			trackCloser = sunlight.util.contains(["[", "(", "{"], opener),
+		var closer = delimiter,
+			trackCloser = sunlight.util.contains(["[", "(", "{"], delimiter),
 			peek2,
-			value = opener,
+			value = delimiter,
 			next,
-			closerCount = 1
+			closerCount = 1;
 		
 		switch (delimiter) {
 			case "[":
@@ -74,7 +73,7 @@
 			
 			next = context.reader.read();
 			
-			if (next === opener && trackCloser) {
+			if (next === delimiter && trackCloser) {
 				closerCount++;
 			} else if (next === closer && --closerCount <= 0) {
 				if (trackCloser || appendCloser) {

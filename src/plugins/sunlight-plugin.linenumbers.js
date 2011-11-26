@@ -65,7 +65,7 @@
 		
 		lineContainer.className = this.options.classPrefix + "line-number-margin";
 
-		eol = document.createTextNode(sunlight.util.eol)
+		eol = document.createTextNode(sunlight.util.eol);
 		for (i = this.options.lineNumberStart; i <= this.options.lineNumberStart + lineCount; i++) {
 			link = document.createElement("a");
 			name = (context.node.id ? context.node.id : this.options.classPrefix + context.count) + "-line-" + i;

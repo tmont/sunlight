@@ -92,7 +92,7 @@
 			
 			//labels
 			function() {
-				var validLabelOps = ["BCC", "BCS", "BEQ", "BMI", "BNE", "BPL", "BVC", "BVS", "JMP", "JSR"]
+				var validLabelOps = ["BCC", "BCS", "BEQ", "BMI", "BNE", "BPL", "BVC", "BVS", "JMP", "JSR"];
 				
 				return function(context) {
 					var prevToken,
@@ -105,7 +105,7 @@
 						return null;
 					}
 					
-					prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count())
+					prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
 					if (!prevToken || prevToken.name !== "keyword" || !sunlight.util.contains(validLabelOps, prevToken.value, true)) {
 						if (context.count() > 0 && !/\n$/.test(context.defaultData.text)) {
 							//just a regular ident
