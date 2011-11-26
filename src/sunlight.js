@@ -95,12 +95,13 @@
 					return false;
 				}
 
-				var caseInsensitive = context.language.caseInsensitive;
+				var caseInsensitive = context.language.caseInsensitive,
+					identRules = context.language.namedIdentRules;
 
-				return evaluate(context.language.namedIdentRules.custom)
-					|| evaluate(context.language.namedIdentRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData, caseInsensitive); })
-					|| evaluate(context.language.namedIdentRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData, caseInsensitive); })
-					|| evaluate(context.language.namedIdentRules.between, function(ruleData) { return createBetweenRule(context.index, ruleData.opener, ruleData.closer, caseInsensitive); })
+				return evaluate(identRules.custom)
+					|| evaluate(identRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData, caseInsensitive); })
+					|| evaluate(identRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData, caseInsensitive); })
+					|| evaluate(identRules.between, function(ruleData) { return createBetweenRule(context.index, ruleData.opener, ruleData.closer, caseInsensitive); })
 					|| defaultHandleToken("ident")(context);
 			}
 		};
