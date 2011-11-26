@@ -69,5 +69,5 @@ Tommy Montgomery <http://tmont.com/>
 
 Contributors
 ------------
-Bob Montgomery
-admin@hinata.in
+- Bob Montgomery
+- admin@hinata.in
