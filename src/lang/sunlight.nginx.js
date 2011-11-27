@@ -77,7 +77,7 @@
 							return token.name === "default" || token.name === "comment";
 						});
 						
-						if (prevToken.name === "context" && prevToken.value === "location") {
+						if (prevToken.token.name === "context" && prevToken.token.value === "location") {
 							isRegexLiteral = true;
 							break;
 						}
@@ -317,7 +317,7 @@
 						return token.name === "default" || token.name === "comment";
 					});
 					
-					if (!prevToken || (prevToken.name === "punctuation" && (sunlight.util.contains(["{", "}", ";"], prevToken.value)))) {
+					if (!prevToken || (prevToken.token.name === "punctuation" && (sunlight.util.contains(["{", "}", ";"], prevToken.token.value)))) {
 						context.reader.read(token.value.length - 1); //already read the first character
 						return token;
 					}

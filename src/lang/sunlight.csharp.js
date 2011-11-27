@@ -405,7 +405,8 @@
 					
 					//if it's preceded by an ident or a primitive/alias keyword then it's no good (i.e. a generic method definition like "public void Foo<T>")
 					//also a big fail if it is preceded by a ., i.e. a generic method invocation like container.Resolve()
-					if (token !== undefined) {
+					if (token) {
+						token = token.token;
 						if (
 							token.name === "ident" 
 							|| (token.name === "keyword" && sunlight.util.contains(primitives.concat(["string", "object", "void"]), token.value))
@@ -417,7 +418,7 @@
 					
 					//needs to be immediately followed by <, then by idents, acceptable keywords and ",", and then closed by >, then immediately followed by an ident
 					token = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-					if (!token || token.name !== "operator" || token.value !== "<") {
+					if (!token || token.token.name !== "operator" || token.token.value !== "<") {
 						return false;
 					}
 					
@@ -490,16 +491,12 @@
 					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index),
 						nextToken;
 					
-					if (!prevToken || prevToken.name !== "keyword" || prevToken.value !== "using") {
+					if (!prevToken || prevToken.token.name !== "keyword" || prevToken.token.value !== "using") {
 						return false;
 					}
 					
 					nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-					if (!nextToken || nextToken.name !== "operator" || nextToken.value !== "=") {
-						return false;
-					}
-					
-					return true;
+					return nextToken && nextToken.token.name === "operator" && nextToken.token.value === "=";
 				},
 				
 				//attributes (friggin' attributes...)
@@ -511,7 +508,7 @@
 						indexOfLastBracket;
 					
 					//if the next token is an equals sign, this is a named parameter (or something else not inside of an attribute)
-					if (token && token.name === "operator" && (token.value === "=" || token.value === ".")) {
+					if (token && token.token.name === "operator" && (token.token.value === "=" || token.token.value === ".")) {
 						return false;
 					}
 					
@@ -580,11 +577,7 @@
 					
 					//next token after the last closing bracket should be either a keyword or an ident
 					token = sunlight.util.getNextNonWsToken(context.tokens, indexOfLastBracket);
-					if (token && (token.name === "keyword" || token.name === "ident")) {
-						return true;
-					}
-					
-					return false;
+					return token && (token.token.name === "keyword" || token.token.name === "ident");
 				}),
 				
 				//fully qualified type names
@@ -595,7 +588,7 @@
 						index,
 						previous;
 					
-					if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
+					if (nextToken && nextToken.token.name === "operator" && nextToken.token.value === ".") {
 						return false;
 					}
 					
@@ -668,11 +661,7 @@
 						while (token = context.tokens[--index]) {
 							if (token.name === "punctuation" && token.value === "(") {
 								prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, index);
-								if (prevToken && prevToken.name === "keyword") {
-									return false;
-								}
-								
-								return true;
+								return !prevToken || prevToken.token.name !== "keyword";
 							}
 						}
 						
@@ -685,7 +674,8 @@
 					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index),
 						token,
 						index;
-					if (!nextToken || nextToken.name !== "punctuation" || nextToken.value !== ";") {
+
+					if (!nextToken || nextToken.token.name !== "punctuation" || nextToken.token.value !== ";") {
 						return false;
 					}
 					

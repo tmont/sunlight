@@ -141,7 +141,7 @@
 					//if the previous non-ws token is the "." operator then it's an ident, not a keyword
 					//or if it's a subprocedure name
 					prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
-					if (prevToken && ((prevToken.name === "operator" && prevToken.value === ".") || (prevToken.name === "keyword" && prevToken.value === "Sub"))) {
+					if (prevToken && ((prevToken.token.name === "operator" && prevToken.token.value === ".") || (prevToken.token.name === "keyword" && prevToken.token.value === "Sub"))) {
 						token.name = "ident";
 					}
 					
@@ -164,7 +164,7 @@
 						bracketCount = [0, 0],
 						indexOfLastBracket = -1;
 						
-					if (nextToken && nextToken.name === "operator" && (nextToken.value === "=" || nextToken.value === ".")) {
+					if (nextToken && nextToken.token.name === "operator" && (nextToken.token.value === "=" || nextToken.token.value === ".")) {
 						return false;
 					}
 					
@@ -213,11 +213,7 @@
 					
 					//next token after the last closing bracket should be either a keyword or an ident
 					token = sunlight.util.getNextNonWsToken(context.tokens, indexOfLastBracket);
-					if (token && (token.name === "keyword" || token.name === "ident")) {
-						return true;
-					}
-					
-					return false;
+					return token && (token.token.name === "keyword" || token.token.name === "ident");
 				},
 				
 				//casts
@@ -261,7 +257,7 @@
 					
 					
 					//if previous non-ws token was a "." then it's an implemented method
-					if (prevToken && prevToken.name === "operator" && prevToken.value === ".") {
+					if (prevToken && prevToken.token.name === "operator" && prevToken.token.value === ".") {
 						return false;
 					}
 					
@@ -301,11 +297,7 @@
 										case "{":
 											//previous non-ws token should be keyword "As"
 											token = sunlight.util.getPreviousNonWsToken(context.tokens, index);
-											if (!token || token.name !== "keyword" || token.value !== "As") {
-												return false;
-											}
-											
-											return true;
+											return token && token.token.name === "keyword" && token.token.value === "As";
 									}
 								} else if (token.name === "keyword" && sunlight.util.contains(["Public", "Protected", "Friend", "Private", "End"], token.value)) {
 									return false;

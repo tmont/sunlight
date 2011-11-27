@@ -144,11 +144,7 @@
 						while (token = context.tokens[--index]) {
 							if (token.name === "punctuation" && token.value === "(") {
 								prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, index);
-								if (prevToken && prevToken.name === "keyword") {
-									return false;
-								}
-								
-								return true;
+								return !prevToken || prevToken.token.name === "keyword"; 
 							}
 						}
 						
@@ -166,7 +162,7 @@
 						bracketCountLeft;
 					
 					//if the previous token is a keyword, then we don't care about it
-					if (!prevToken || prevToken.name === "keyword") {
+					if (!prevToken || prevToken.token.name === "keyword") {
 						return false;
 					}
 					
@@ -257,9 +253,10 @@
 						index,
 						bracketCount;
 					
-					if (token !== undefined) {
+					if (token) {
+						token = token.token; //lol this line of code is hilarious
 						if (
-							token.name === "ident" 
+							token.name === "ident"
 							|| (token.name === "keyword" && sunlight.util.contains(primitives.concat(["string", "object", "void"]), token.value))
 							|| (token.name === "operator" && token.value === ".")
 						) {
@@ -269,7 +266,7 @@
 					
 					//needs to be immediately followed by <, then by idents, acceptable keywords and ",", and then closed by >, then immediately followed by an ident
 					token = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-					if (!token || token.name !== "operator" || token.value !== "<") {
+					if (!token || token.token.name !== "operator" || token.token.value !== "<") {
 						return false;
 					}
 					
@@ -342,7 +339,7 @@
 						token,
 						index;
 					
-					if (!prevToken || prevToken.name !== "keyword" || prevToken.value !== "class") {
+					if (!prevToken || prevToken.token.name !== "keyword" || prevToken.token.value !== "class") {
 						return false;
 					}
 					

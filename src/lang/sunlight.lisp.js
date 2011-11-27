@@ -15,7 +15,7 @@
 				return null;
 			}
 			
-			if (token.name !== "punctuation" || token.value !== "(" && (token.name !== "operator" || token.value !== "#'")) {
+			if (token.token.name !== "punctuation" || token.token.value !== "(" && (token.token.name !== "operator" || token.token.value !== "#'")) {
 				return null;
 			}
 			
@@ -160,7 +160,7 @@
 				}
 				
 				token = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
-				if (token && token.name === "punctuation" && token.value === "(") {
+				if (token && token.token.name === "punctuation" && token.token.value === "(") {
 					//function that starts with "*"
 					return null;
 				}
@@ -345,7 +345,7 @@
 						var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index),
 							identValue = context.tokens[context.index].value;
 						
-						if (prevToken && prevToken.name === "macro" && sunlight.util.contains(defMacros, prevToken.value)) {
+						if (prevToken && prevToken.token.name === "macro" && sunlight.util.contains(defMacros, prevToken.token.value)) {
 							context.items.userDefinedFunctions.push(identValue);
 						}
 						

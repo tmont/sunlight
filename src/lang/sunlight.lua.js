@@ -123,7 +123,7 @@
 						}
 						
 						nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-						return nextToken && (nextToken.name !== "operator" || nextToken.value !== ":");
+						return nextToken && (nextToken.token.name !== "operator" || nextToken.token.value !== ":");
 					};
 				}()
 			],

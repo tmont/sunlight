@@ -31,7 +31,7 @@
 						peek,
 						count;
 					
-					if (!token || token.name !== "operator" || (token.value !== "<" && token.value !== "</")) {
+					if (!token || token.token.name !== "operator" || (token.token.value !== "<" && token.token.value !== "</")) {
 						return false;
 					}
 					
@@ -80,10 +80,10 @@
 					return null;
 				}
 				
-				if (prevToken.name !== "keyword" || prevToken.value !== "RewriteRule") {
+				if (prevToken.token.name !== "keyword" || prevToken.token.value !== "RewriteRule") {
 					//it might be the second argument after RewriteCond
 					prevToken = sunlight.util.getPreviousNonWsToken(tokens, context.count() - 1);
-					if (!prevToken || prevToken.name !== "keyword" || prevToken.value !== "RewriteCond") {
+					if (!prevToken || prevToken.token.name !== "keyword" || prevToken.token.value !== "RewriteCond") {
 						return null;
 					}
 				}

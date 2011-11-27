@@ -308,7 +308,7 @@
 				
 				//cannot be preceded by an ident or a number or a string
 				prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count() - 1);
-				if (prevToken && (prevToken.name === "ident" || prevToken.name === "number" || prevToken.name === "string")) {
+				if (prevToken && (prevToken.token.name === "ident" || prevToken.token.name === "number" || prevToken.token.name === "string")) {
 					return null;
 				}
 				

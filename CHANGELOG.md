@@ -5,6 +5,9 @@
 	- now using semantic versioning (yawn)
 	- css: no longer whitelisting property names
 	- css: highlight values inside `url()`
+- Breaking changes
+	- `Sunlight.util.getNextNonWsToken()` and `Sunlight.util.getPrevNonWsToken()` now return an object
+	   with properties `token` and `index` instead of just return the token
 
 1.17 2011-07-17
 ---------------

@@ -124,7 +124,7 @@
 					return function(context) {
 						//next token is not "."
 						var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-						if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
+						if (nextToken && nextToken.token.name === "operator" && nextToken.token.value === ".") {
 							return false;
 						}
 					
@@ -145,7 +145,7 @@
 						index,
 						previous;
 					
-					if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
+					if (nextToken && nextToken.token.name === "operator" && nextToken.token.value === ".") {
 						return false;
 					}
 					

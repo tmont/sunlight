@@ -120,7 +120,7 @@
 					
 					//if it follows an equals sign, that's cool, too
 					prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
-					if (prevToken && ((prevToken.name === "operator" && prevToken.value === "=") || (prevToken.name === "punctuation" && prevToken.value === "{"))) {
+					if (prevToken && ((prevToken.token.name === "operator" && prevToken.token.value === "=") || (prevToken.token.name === "punctuation" && prevToken.token.value === "{"))) {
 						return true;
 					}
 					
@@ -132,16 +132,12 @@
 					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index),
 						isBetween;
 					
-					if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
+					if (nextToken && nextToken.token.name === "operator" && nextToken.token.value === ".") {
 						return false;
 					}
 					
 					isBetween = sunlight.util.createBetweenRule(context.index, { token: "punctuation", values: ["["] }, { token: "punctuation", values: ["]"] });
-					if (!isBetween(context.tokens)) {
-						return false;
-					}
-					
-					return true;
+					return isBetween(context.tokens);
 				}
 			]
 		},

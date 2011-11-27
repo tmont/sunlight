@@ -106,7 +106,7 @@
 					}
 					
 					prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
-					if (!prevToken || prevToken.name !== "keyword" || !sunlight.util.contains(validLabelOps, prevToken.value, true)) {
+					if (!prevToken || prevToken.token.name !== "keyword" || !sunlight.util.contains(validLabelOps, prevToken.token.value, true)) {
 						if (context.count() > 0 && !/\n$/.test(context.defaultData.text)) {
 							//just a regular ident
 							return null;

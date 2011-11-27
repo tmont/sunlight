@@ -162,17 +162,13 @@
 					var prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index),
 						nextToken;
 					
-					if (!prevToken || prevToken.name !== "keyword" || prevToken.value !== "new") {
+					if (!prevToken || prevToken.token.name !== "keyword" || prevToken.token.value !== "new") {
 						return false;
 					}
 					
 					//if the next token is "\" then don't color it (fully qualified type name)
 					nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-					if (nextToken && nextToken.name === "operator" && nextToken.value === "\\") {
-						return false;
-					}
-					
-					return true;
+					return !nextToken || nextToken.token.name !== "operator" || nextToken.token.value !== "\\";
 				},
 				
 				//use alias type names, e.g. "Foo" in "use My\Namespace\Foo;"
@@ -181,7 +177,7 @@
 						token,
 						index;
 					
-					if (!nextToken || nextToken.name !== "punctuation" || (nextToken.value !== ";" && nextToken.value !== ",")) {
+					if (!nextToken || nextToken.token.name !== "punctuation" || (nextToken.token.value !== ";" && nextToken.token.value !== ",")) {
 						return false;
 					}
 					
@@ -204,7 +200,7 @@
 						index,
 						previous;
 					
-					if (nextToken && nextToken.name === "operator" && nextToken.value === "\\") {
+					if (nextToken && nextToken.token.name === "operator" && nextToken.token.value === "\\") {
 						return false;
 					}
 					

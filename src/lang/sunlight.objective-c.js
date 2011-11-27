@@ -173,7 +173,7 @@
 							if (prevToken.value === "(") {
 								//previous token must be @property
 								prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), index);
-								if (!prevToken || prevToken.name !== "keyword" || prevToken.value !== "@property") {
+								if (!prevToken || prevToken.token.name !== "keyword" || prevToken.token.value !== "@property") {
 									return null;
 								}
 								
@@ -181,7 +181,7 @@
 								token.column = context.reader.getColumn();
 								context.reader.read(token.value.length - 1);
 								return token;
-							} else if (prevToken.value === ";") {
+							} else if (prevToken.token.value === ";") {
 								return null;
 							}
 						}
@@ -202,13 +202,13 @@
 				function(context) {
 					var regex = /^(NS|CG).+$/,
 						nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-					return regex.test(context.tokens[context.index].value) && (!nextToken || nextToken.name !== "punctuation" || nextToken.value !== "(");
+					return regex.test(context.tokens[context.index].value) && (!nextToken || nextToken.token.name !== "punctuation" || nextToken.token.value !== "(");
 				},
 				
 				//call to class or alloc
 				function(context) {
 					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-					return nextToken && nextToken.name === "messageDestination" && (nextToken.value === "class" || nextToken.value === "alloc");
+					return nextToken && nextToken.token.name === "messageDestination" && (nextToken.token.value === "class" || nextToken.token.value === "alloc");
 				},
 				
 				//ident followed by an ident, but not inside []
@@ -369,11 +369,11 @@
 							if (token.name === "punctuation" && token.value === "(") {
 								prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, index);
 								if (prevToken) {
-									if (prevToken.name === "ident") {
+									if (prevToken.token.name === "ident") {
 										return false;
 									}
 									
-									if (prevToken.name === "keyword" && sunlight.util.contains(["if", "while"], prevToken.value)) {
+									if (prevToken.token.name === "keyword" && sunlight.util.contains(["if", "while"], prevToken.token.value)) {
 										return false;
 									}
 								}
@@ -398,7 +398,7 @@
 					
 					//if the previous token is a keyword, then we don't care about it
 					prevToken = sunlight.util.getPreviousNonWsToken(context.tokens, context.index);
-					if (!prevToken || prevToken.name === "keyword") {
+					if (!prevToken || prevToken.token.name === "keyword") {
 						return false;
 					}
 					
@@ -485,10 +485,10 @@
 						index,
 						bracketCount;
 						
-					if (token !== undefined) {
+					if (token) {
 						if (
-							token.name === "ident" 
-							|| (token.name === "operator" && token.value === ".")
+							token.token.name === "ident"
+							|| (token.token.name === "operator" && token.token.value === ".")
 						) {
 							return false;
 						}
@@ -496,7 +496,7 @@
 					
 					//needs to be immediately followed by <, then by idents, acceptable keywords and ",", and then closed by >, then immediately followed by an ident
 					token = sunlight.util.getNextNonWsToken(context.tokens, context.index);
-					if (!token || token.name !== "operator" || token.value !== "<") {
+					if (!token || token.token.name !== "operator" || token.token.value !== "<") {
 						return false;
 					}
 					

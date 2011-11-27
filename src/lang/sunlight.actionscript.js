@@ -197,7 +197,7 @@
 						index,
 						previous;
 						
-					if (nextToken && nextToken.name === "operator" && nextToken.value === ".") {
+					if (nextToken && nextToken.token.name === "operator" && nextToken.token.value === ".") {
 						return false;
 					}
 					
