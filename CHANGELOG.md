@@ -3,6 +3,8 @@
 - Enhancements
 	- added `languages` property to the global `Sunlight` object
 	- now using semantic versioning (yawn)
+	- css: no longer whitelisting property names
+	- css: highlight values inside `url()`
 
 1.17 2011-07-17
 ---------------

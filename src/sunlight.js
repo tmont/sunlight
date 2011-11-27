@@ -334,15 +334,15 @@
 				expected = tokenRequirements[tokenRequirements.length - 1 - j];
 
 				if (actual === undefined) {
-					if (expected["optional"] !== undefined && expected.optional) {
+					if (expected.optional) {
 						tokenIndexStart -= direction;
 					} else {
 						return false;
 					}
-				} else if (actual.name === expected.token && (expected["values"] === undefined || contains(expected.values, actual.value, caseInsensitive))) {
+				} else if (actual.name === expected.token && (!expected.values || contains(expected.values, actual.value, caseInsensitive))) {
 					//derp
 					continue;
-				} else if (expected["optional"] !== undefined && expected.optional) {
+				} else if (expected.optional) {
 					tokenIndexStart -= direction; //we need to reevaluate against this token again
 				} else {
 					return false;
@@ -441,13 +441,16 @@
 
 	//gets the next token in the specified direction while matcher matches the current token
 	function getNextWhile(tokens, index, direction, matcher) {
-		var count = 1, 
+		var count = 0,
 			token;
 		
 		direction = direction || 1;
-		while (token = tokens[index + (direction * count++)]) {
+		while (token = tokens[index + (direction * ++count)]) {
 			if (!matcher(token)) {
-				return token;
+				return {
+					token: token,
+					index: index + (direction * count)
+				};
 			}
 		}
 		

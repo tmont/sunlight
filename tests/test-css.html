@@ -27,7 +27,7 @@ body > .warning {
 	border-image: url(warning.png);
 	border-radius: url(warning.png);
 	border-top: 1px dotted #FFFFFF;
-	border-top-color: magenta;
+	border-top-color: magenta; /* magenta is a cool color */
 	filter: progid:DXImageTransform.Microsoft.Alpha(opacity = 50);
 	filter: alpha(opacity=50);
 	opacity: 0.5;
@@ -81,7 +81,9 @@ pseudotest1:before, pseudotest2:after {
 		assertExists("element", "pseudotest1", "element selector before pseudoclass+");
 		assertExists("element", "pseudotest2", "element selector after pseudoclass+");
 		
-		assertExists("ident", "css", "css extension");
+		assertExists("unquoted-function-argument", "/my/style/sheet.css", "unquoted function argument after @import");
+		assertExists("unquoted-function-argument", "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD///+l2Z/dAAAAM0lEQVR4nGP4/5/h/1+G/58ZDrAz3D/McH8yw83NDDeNGe4Ug9C9zwz3gVLMDA/A6P9/AFGGFyjOXZtQAAAAAElFTkSuQmCC", "unquoted data uri");
+
 		assertExists("ident", "fake-pseudo-class", "non existent pseudo class");
 		assertExists("ident", "-moz-initial", "property value -moz-initial");
 		assertExists("ident", "fixed", "property value fixed");

@@ -54,6 +54,36 @@
 		caseInsensitive: true,
 
 		customParseRules: [
+			//unquoted values inside a function call
+			function(context) {
+				var line, column, value, prevToken;
+				if (context.reader.current() === ")") {
+					return null;
+				}
+
+				prevToken = sunlight.util.getPreviousWhile(context.getAllTokens(), context.count(), function(token) {
+					return token.name === "default" || token.name === "comment";
+				});
+
+				if (!prevToken || prevToken.token.name !== "punctuation" || prevToken.token.value !== "(") {
+					return null;
+				}
+
+				prevToken = sunlight.util.getPreviousWhile(context.getAllTokens(), prevToken.index, function(token) {
+					return token.name === "default" || token.name === "comment";
+				});
+
+				if (!prevToken || prevToken.token.name !== "function" || prevToken.token.value.toLowerCase() !== "url") {
+					return null;
+				}
+
+				line = context.reader.getLine();
+				column = context.reader.getColumn();
+				value = /^[^)]*/.exec(context.reader.substring())[0];
+				context.reader.read(value.length - 1);
+				return context.createToken("unquoted-function-argument", value, line, column);
+			},
+
 			//keywords
 			function(context) {
 				var line, column, value, prevToken;
@@ -67,9 +97,7 @@
 					return token.name === "default" || token.name === "comment";
 				});
 
-				console.dir(prevToken);
-
-				if (prevToken.name === "punctuation" && (prevToken.value === ";" || prevToken.value == "{")) {
+				if (prevToken && prevToken.token.name === "punctuation" && (prevToken.token.value === ";" || prevToken.token.value == "{")) {
 					line = context.reader.getLine();
 					column = context.reader.getColumn();
 					value = /^[A-Za-z-]+/.exec(context.reader.current() + context.reader.peekSubstring())[0];
@@ -134,7 +162,7 @@
 				
 				return function(context) {
 					var previousToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
-					if (!previousToken || previousToken.name !== "operator" || previousToken.value !== ":") {
+					if (!previousToken || previousToken.token.name !== "operator" || previousToken.token.value !== ":") {
 						return null;
 					}
 					
@@ -152,7 +180,7 @@
 				
 				return function(context) {
 					var previousToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
-					if (!previousToken || previousToken.name !== "operator" || previousToken.value !== "::") {
+					if (!previousToken || previousToken.token.name !== "operator" || previousToken.token.value !== "::") {
 						return null;
 					}
 					
@@ -185,7 +213,7 @@
 				];
 			},
 			
-			//element selctors (div, html, body, etc.)
+			//element selectors (div, html, body, etc.)
 			function(context) {
 				var current = context.reader.current(),
 					prevToken,
@@ -198,7 +226,7 @@
 				}
 				
 				prevToken = sunlight.util.getPreviousNonWsToken(context.getAllTokens(), context.count());
-				if (prevToken && prevToken.name === "operator" && (prevToken.value === ":" || prevToken.value === "::")) {
+				if (prevToken && prevToken.token.name === "operator" && (prevToken.token.value === ":" || prevToken.token.value === "::")) {
 					return null;
 				}
 				
@@ -326,7 +354,7 @@
 		identAfterFirstLetter: /[\w-]/,
 
 		operators: [
-			"::", ":", ">", "+", "~=", "^=", "$=", "|=", "=", ".", "*"
+			"::", ":", ">", "+", "~=", "^=", "$=", "|=", "*=", "=", ".", "*"
 		]
 
 	});
