@@ -35,7 +35,7 @@
 
 			return function(context) {
 				var match,
-					substring = context.reader.current() + context.reader.peekSubstring();
+					substring = context.reader.substring();
 
 				if (match = regex.exec(substring)) {
 					var token = context.createToken("number", match[0], context.reader.getLine(), context.reader.getColumn());
