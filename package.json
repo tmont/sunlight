@@ -1,0 +1,28 @@
+{
+	"name": "sunlight",
+	"version": "1.18.0",
+	"keywords": [ "syntax", "highlight", "highlighter", "pretty", "print" ],
+	"description": "Context-aware client-side syntax highlighter",
+	"author": {
+		"name": "Tommy Montgomery",
+		"email": "tmont@tmont.com",
+		"url": "http://tmont.com/"
+	},
+
+	"main": "",
+	"bin": "",
+	"devDependencies": {},
+
+	"directories": {
+		"lib": "./src"
+	},
+
+	"scripts": {
+		"test": ""
+	},
+
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/tmont/sunlight.git"
+	}
+}
