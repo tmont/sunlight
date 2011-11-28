@@ -111,6 +111,7 @@
 .sunlight-binaryLongString,
 .sunlight-verbatimString,
 .sunlight-diff .sunlight-removed,
+.sunlight-less .sunlight-unquoted-function-argument,
 .sunlight-css .sunlight-unquoted-function-argument {
 	color: #990000 !important;
 }
@@ -152,8 +153,8 @@
 }
 .sunlight-keyword,
 .sunlight-languageConstruct,
-.sunlight-css
-.sunlight-element,
+.sunlight-less .sunlight-element,
+.sunlight-css .sunlight-element,
 .sunlight-bash .sunlight-command,
 .sunlight-specialOperator,
 .sunlight-erlang .sunlight-moduleAttribute,
@@ -170,7 +171,7 @@
 .sunlight-aspOpenTag,
 .sunlight-aspCloseTag,
 .sunlight-label,
-.sunlight-css .sunlight-importantFlag {
+.sunlight-importantFlag {
 	background-color: #FFFF99 !important;
 	color: #000000 !important;
 }
@@ -254,21 +255,28 @@
 }
 
 /* css */
+.sunlight-less .sunlight-microsoftFilterPrefix,
 .sunlight-css .sunlight-microsoftFilterPrefix {
 	color: #FF00FF !important;
 }
+.sunlight-less .sunlight-rule,
 .sunlight-css .sunlight-rule {
 	color: #0099FF !important;
 }
+.sunlight-less .sunlight-keyword,
 .sunlight-css .sunlight-keyword {
 	color: #4E65B8 !important;
 }
+.sunlight-less .sunlight-class,
 .sunlight-css .sunlight-class {
 	color: #FF0000 !important;
 }
+.sunlight-less .sunlight-id,
 .sunlight-css .sunlight-id {
 	color: #8A8E13 !important;
 }
+.sunlight-less .sunlight-pseudoClass,
+.sunlight-less .sunlight-pseudoElement,
 .sunlight-css .sunlight-pseudoClass,
 .sunlight-css .sunlight-pseudoElement {
 	color: #368B87 !important;

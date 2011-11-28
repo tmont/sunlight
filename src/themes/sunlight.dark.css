@@ -110,6 +110,7 @@
 .sunlight-rawLongString,
 .sunlight-binaryLongString,
 .sunlight-diff .sunlight-added,
+.sunlight-less .sunlight-unquoted-function-argument,
 .sunlight-css .sunlight-unquoted-function-argument {
 	color: #55EB54 !important;
 }
@@ -171,6 +172,7 @@
 .sunlight-aspOpenTag,
 .sunlight-aspCloseTag,
 .sunlight-label,
+.sunlight-less .sunlight-importantFlag,
 .sunlight-css .sunlight-importantFlag {
 	background-color: #7373C1 !important;
 }
@@ -233,9 +235,6 @@
 	color: #F8CA16 !important;
 }
 
-
-
-
 /* html/xml */
 .sunlight-xml .sunlight-tagName,
 .sunlight-xml .sunlight-operator,
@@ -257,19 +256,25 @@
 }
 
 /* css */
+.sunlight-less .sunlight-element,
 .sunlight-css .sunlight-element {
 	color: #E9EE97 !important;
 }
-.sunlight-css .sunlight-microsoftFilterPrefix {
+.sunlight-microsoftFilterPrefix {
 	color: #C9FF9F !important;
 }
+.sunlight-less .sunlight-rule,
 .sunlight-css .sunlight-rule {
 	color: #0099FF !important;
 }
+.sunlight-less .sunlight-class,
 .sunlight-css .sunlight-class {
 	color: #E78282 !important;
 }
-.sunlight-css .sunlight-pseudoClass, .sunlight-css .sunlight-pseudoElement {
+.sunlight-less .sunlight-pseudoClass,
+.sunlight-less .sunlight-pseudoElement,
+.sunlight-css .sunlight-pseudoClass,
+.sunlight-css .sunlight-pseudoElement {
 	color: #73D693 !important;
 }
 
