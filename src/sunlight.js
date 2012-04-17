@@ -1067,7 +1067,7 @@
 
 	//public facing object
 	window.Sunlight = {
-		version: "1.17",
+		version: "1.18",
 		Highlighter: Highlighter,
 		createAnalyzer: function() { return create(defaultAnalyzer); },
 		globalOptions: globalOptions,
