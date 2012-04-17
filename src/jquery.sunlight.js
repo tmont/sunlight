@@ -1,7 +1,7 @@
 /**
  * jQuery plugin for Sunlight http://sunlightjs.com/
  *
- * by Tommy Montgomery http://tommymontgomery.com/
+ * by Tommy Montgomery http://tmont.com/
  * licensed under WTFPL http://sam.zoy.org/wtfpl/
  */
 (function($, window){

@@ -4,7 +4,7 @@
  *
  * http://sunlightjs.com/
  *
- * by Tommy Montgomery <http://tommymontgomery.com>
+ * by Tommy Montgomery <http://tmont.com>
  * Licensed under WTFPL <http://sam.zoy.org/wtfpl/>
  */
 (function(window, document, undefined){
