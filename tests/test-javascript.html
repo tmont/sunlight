@@ -101,7 +101,13 @@
 	if (!/foo/.test("foo") || /foo/.test("foo") && /foo/.test("foo")) {} //all should be a regex
 	4 + /regexafteroperator/ //should be a regex
 	/regexatstartofline/ //should be a regex
-	
+	/[/]/.test('/'); //should be a regex
+	/[\/]/.test('/'); //should be a regex
+	/[\]]/.test('/'); //should be a regex
+	/[\[]/.test('/'); //should be a regex
+	/\[/.test('/'); //should be a regex
+	/\]/.test('/'); //should be a regex
+
 	/foo/gim.test("foo") //should be a regex with modifiers
 	/foo/asdfasdf //should be a regex with non-existent modifiers
 	
@@ -153,7 +159,13 @@
 		assertExists("regexLiteral", "/regexafterbrace/", "regex literal after curly brace");
 		assertExists("regexLiteral", "/regexafterbracket/", "regex literal after bracket");
 		assertExists("regexLiteral", "/regexafterparen/", "regex literal after paren");
-		
+		assertExists("regexLiteral", "/[/]/", "regex literal with forward slash in character class");
+		assertExists("regexLiteral", "/[\\/]/", "regex literal with escaped forward slash in character class");
+		assertExists("regexLiteral", "/[\\]]/", "regex literal with escaped closing bracket in character class");
+		assertExists("regexLiteral", "/[\\[]/", "regex literal with escaped opening bracket in character class");
+		assertExists("regexLiteral", "/\\[/", "regex literal with escaped opening bracket");
+		assertExists("regexLiteral", "/\\]/", "regex literal with escaped closing bracket");
+
 		assertExists("ident", "identafterdivision1", "not a regex literal after division operator");
 		assertExists("ident", "identafterdivision2", "not a regex literal after division operator");
 		assertExists("ident", "identafterdivision3", "not a regex literal after division operator");

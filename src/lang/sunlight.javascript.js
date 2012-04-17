@@ -60,6 +60,7 @@
 					regexLiteral = "/",
 					line = context.reader.getLine(),
 					column = context.reader.getColumn(),
+					charClass = false,
 					peek2,
 					next;
 					
@@ -111,9 +112,17 @@
 						regexLiteral += context.reader.read(2);
 						continue;
 					}
+					if (peek2 === "\\[" || peek2 === "\\]") {
+						regexLiteral += context.reader.read(2);
+						continue;
+					} else if (next === "[") {
+						charClass = true;
+					} else if (next === "]") {
+						charClass = false;
+					}
 					
 					regexLiteral += (next = context.reader.read());
-					if (next === "/") {
+					if (next === "/" && !charClass) {
 						break;
 					}
 				}

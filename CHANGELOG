@@ -1,3 +1,9 @@
+1.18 2012-04-17
+---------------
+- Bugfixes
+    - javascript: fixed bug where unescaped forward slashes in a character class
+      were not being parsed correctly (e.g. "/[/]/") (reported by glitchmr@myopera.com)
+
 1.17 2011-07-17
 ---------------
 - Bugfixes
