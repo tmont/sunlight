@@ -11,7 +11,7 @@
 	border-color: #969696 !important;
 	background-color: #FFFFFF !important;
 }
-.sunlight-highlighted, .sunlight-container, .sunlight-container textarea {
+.sunlight-highlighted, .sunlight-container, .sunlight-container textarea, .sunlight-container pre {
 	font-family: Consolas, Inconsolata, Monaco, "Courier New" !important;
 	font-size: 12px !important;
 	line-height: 15px !important;
