@@ -1,3 +1,8 @@
+1.19.0 2013-08-29
+-----------------
+- Bugfixes
+	- fixed compatibility with Bootstrap's line-height <pre> overrides
+
 1.18 2012-04-17
 ---------------
 - Bugfixes
