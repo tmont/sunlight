@@ -4,8 +4,8 @@
 	
 	<property name="product.name" value="Sunlight"/>
 	<property name="product.shortname" value="sunlight"/>
-	<property name="product.version" value="1.18"/>
-	
+	<property name="product.version" value="1.19.0"/>
+
 	<property name="build.dir" value="${basedir}/build"/>
 	<property name="build.dist" value="${build.dir}/dist"/>
 	<property name="deploy.dir" value="${build.dir}/${product.version}"/>
@@ -25,7 +25,7 @@
 		<classpath refid="task.classpath"/>
 	</taskdef>
 	
-	<target name="release" depends="clean, compress, set-product-revision" description="Creates deployment packages">
+	<target name="release" depends="clean, compress" description="Creates deployment packages">
 		<mkdir dir="${build.dist}"/>
 		
 		<copy file="${src.dir}/jquery.sunlight.js" todir="${deploy.dir}" />
@@ -35,8 +35,8 @@
 			<fileset dir="${src.dir}/themes" />
 		</copy>
 		
-		<property name="package.source" value="${product.shortname}-src-${product.version}.${product.revision}"/>
-		<property name="package.release" value="${product.shortname}-${product.version}.${product.revision}"/>
+		<property name="package.source" value="${product.shortname}-src-${product.version}"/>
+		<property name="package.release" value="${product.shortname}-${product.version}"/>
 
 		<!-- non compressed files and test HTML files -->
 		<tar destfile="${build.dist}/${package.source}.tar.gz" compression="gzip">
@@ -193,10 +193,5 @@
 		<condition property="exe.suffix" value=".bat" else="">
 			<os family="winnt"/>
 		</condition>
-	</target>
-	
-	<target name="set-product-revision">
-		<exec executable="svnversion" outputproperty="product.revision" failonerror="true"/>
-		<echo level="info">Product revision set to ${product.revision}</echo>
 	</target>
 </project>
