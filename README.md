@@ -53,3 +53,17 @@ for other options.
 - sunlight-plugin.linenumbers.js (bundled)
 - sunlight-plugin.menu.js
 - sunlight-plugin.doclinks.js
+
+## TODO
+PARSING
+- Python/Java/Lisp exponents: 1e3-10
+- perl heredocs don't allow spaces before identifiers
+- JavaScript improvements
+	- JavaScript idents after new
+	- JavaScript built-in objects can be reassigned
+	- keep track of JavaScript user-defined functions
+
+MISSING KEYWORDS
+- CSS property values (none, solid, inset, etc.)
+- nginx 3rd party modules: http://wiki.nginx.org/3rdPartyModules#Known_modules
+- c#: "base" keyword
