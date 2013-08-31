@@ -1,7 +1,7 @@
 # Sunlight
 [Sunlight](http://sunlightjs.com/) is a context-aware, client-side syntax
 highlighter. It does as a good of a job as can be done highlighting code
-without performing static analysis.
+without performing static analysis. Check out the [sexy demo!](http://sunlightjs.com/demo.html).
 
 ![Highlighted C# code](./docs/example.png "Sunlight in action on some C# code")
 
