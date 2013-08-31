@@ -1,23 +1,24 @@
-Sunlight <http://sunlightjs.com/>
-Version 1.19.0 (see CHANGELOG for details)
-  by Tommy Montgomery <http://tmont.com/>
+# Sunlight
+[Sunlight](http://sunlightjs.com/) is a context-aware, client-side syntax
+highlighter. It does as a good of a job as can be done highlighting code
+without performing static analysis.
+
+![Highlighted C# code](./docs/example.png "Sunlight in action on some C# code")
 
 Licensed under WTFPL: http://sam.zoy.org/wtfpl/
 
-Installation
-------------
+## Installation
+Download a pre-minified package from [here](http://sunlightjs.com/#download).
+
 - Reference sunlight-all-min.js OR sunlight-min.js and language files of your choice.
 - Reference a theme stylesheet (in themes/) or provide your own stylesheet.
 - Place code inside an element with the class "sunlight-highlight-{language}" where
   language is the id of the language. e.g. "sunlight-highlight-csharp" for C#.
 
-To use Sunlight as a jQuery plugin, reference the desired sunlight files, and then
-reference jquery.sunlight.js.
+Refer to [the excruciatingly detailed documentation](http://sunlightjs.com/docs.html)
+for other options.
 
-Refer to http://sunlightjs.com/docs.html for other options.
-
-Included language files
------------------------
+## Supported languages
 - C#
 - PHP
 - JavaScript
@@ -48,23 +49,7 @@ Included language files
 - Objective-C
 - Lua
 
-Included themes
----------------
-- sunlight.default.css
-- sunlight.dark.css
-
-Included plugins
-----------------
+## Plugins
 - sunlight-plugin.linenumbers.js (bundled)
 - sunlight-plugin.menu.js
 - sunlight-plugin.doclinks.js
-
-Authors
--------
-Tommy Montgomery
-
-Contributors
-------------
-Bob Montgomery
-admin@hinata.in
-Austin Happel
