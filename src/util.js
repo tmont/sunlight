@@ -212,5 +212,11 @@ module.exports = {
 	//http://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript/3561711#3561711
 	regexEscape: function(s) {
 		return s.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
+	},
+
+	bubble: function(event, source, target) {
+		source.on(event, function(data) {
+			target.emit(event, data);
+		});
 	}
 };

@@ -15,7 +15,7 @@ Tokenizer.prototype = {
 			continuation,
 			token;
 
-		this.emit('beforeTokenize', this, { code: unhighlightedCode, language: language });
+		this.emit('beforeTokenize', { code: unhighlightedCode, language: language });
 		var context = {
 			reader: new CodeReader(unhighlightedCode),
 			languageMap: this.languageMap,
@@ -86,7 +86,7 @@ Tokenizer.prototype = {
 			tokens.push(context.createToken('default', context.defaultData.text, context.defaultData.line, context.defaultData.column));
 		}
 
-		this.emit('afterTokenize', this, { code: unhighlightedCode, parserContext: context });
+		this.emit('afterTokenize', { code: unhighlightedCode, parserContext: context });
 		return context;
 	}
 };

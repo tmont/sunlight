@@ -9,6 +9,8 @@ function Highlighter(options) {
 		this.register('plaintext', { punctuation: /(?!x)x/, numberParser: null });
 	}
 	this.tokenizer = new Tokenizer(this.options.languageMap);
+	utils.bubble('beforeTokenize', this.tokenizer, this);
+	utils.bubble('afterTokenize', this.tokenizer, this);
 }
 
 util.inherits(Highlighter, EventEmitter);
