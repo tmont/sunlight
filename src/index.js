@@ -15,7 +15,7 @@ module.exports = {
 		}
 
 		var highlighter = new HtmlHighlighter(window.document, options),
-			tags = document.getElementsByTagName('*');
+			tags = window.document.getElementsByTagName('*');
 
 		for (var i = 0; i < tags.length; i++) {
 			highlighter.highlightNode(tags[i]);
