@@ -34,7 +34,7 @@ Tokenizer.prototype = {
 			embeddedLanguageStack: [],
 
 			defaultData: {
-				text: "",
+				text: '',
 				line: 1,
 				column: 1
 			},
