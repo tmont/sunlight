@@ -9,7 +9,7 @@ function Tokenizer(languageMap) {
 
 util.inherits(Tokenizer, EventEmitter);
 
-Tokenizer.prototype = {
+util._extend(Tokenizer.prototype, {
 	tokenize: function(unhighlightedCode, language, partialContext, options) {
 		var tokens = [],
 			continuation,
@@ -42,7 +42,7 @@ Tokenizer.prototype = {
 				return {
 					name: name,
 					line: line,
-					value: isIe ? value.replace(/\n/g, '\r') : value,
+					value: value,
 					column: column,
 					language: this.language.name
 				};
@@ -89,7 +89,7 @@ Tokenizer.prototype = {
 		this.emit('afterTokenize', { code: unhighlightedCode, parserContext: context });
 		return context;
 	}
-};
+});
 
 //called before processing the current
 function switchToEmbeddedLanguageIfNecessary(context) {

@@ -1,3 +1,5 @@
+var utils = require('./util');
+
 function CodeReader(text) {
 	this.text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n'); //normalize line endings to unix;
 	this.length = text.length;

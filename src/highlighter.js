@@ -1,14 +1,20 @@
 var utils = require('./util'),
 	Tokenizer = require('./tokenizer'),
+	Analyzer = require('./analyzer'),
 	EventEmitter = require('events').EventEmitter,
 	util = require('util');
 
 function Highlighter(options) {
 	this.options = util._extend(util._extend({}, Highlighter.defaultOptions), options);
+	if (!this.options.languageMap) {
+		this.options.languageMap = {};
+	}
+
 	if (!this.options.languageMap.plaintext) {
 		this.register('plaintext', { punctuation: /(?!x)x/, numberParser: null });
 	}
 	this.tokenizer = new Tokenizer(this.options.languageMap);
+	//console.log(require('util').inspect(this, false, null, true));
 	utils.bubble('beforeTokenize', this.tokenizer, this);
 	utils.bubble('afterTokenize', this.tokenizer, this);
 }
@@ -160,7 +166,7 @@ function analyze(context, startIndex) {
 			tokenName = context.tokens[i].name;
 			func = 'handle_' + tokenName;
 
-			analyzer = context.getAnalyzer.call(context) || context.language.analyzer;
+			analyzer = context.getAnalyzer.call(context) || new Analyzer(this.options.languageMap);
 			analyzer[func] ? analyzer[func](context) : analyzer.handleToken(context);
 		}
 
@@ -236,7 +242,7 @@ util._extend(Highlighter.prototype, {
 		analyzerContext = createAnalyzerContext(
 			this.tokenizer.tokenize(text, language, partialContext, this.options),
 			partialContext,
-			this
+			this.options
 		);
 
 		analyze.call(this, analyzerContext, partialContext.index ? partialContext.index + 1 : 0);

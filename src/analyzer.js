@@ -1,9 +1,9 @@
 var utils = require('./util');
 
 function defaultHandleToken(type, context) {
-	var tokenString = '<span class="' + context.options.classPrefix + type + '">' +
+	context.result += '<span class="' + context.options.classPrefix + type + '">' +
 		context.prepareToken(context.tokens[context.index]) + '</span>';
-	return context.append(tokenString) || true;
+	return true;
 }
 
 function Analyzer(languageMap) {
@@ -17,7 +17,7 @@ Analyzer.prototype = {
 
 	//just append default content as regular text
 	handle_default: function(context) {
-		return context.append(context.prepareToken(context.tokens[context.index]));
+		context.result += context.prepareToken(context.tokens[context.index]);
 	},
 
 	//this handles the named ident mayhem
