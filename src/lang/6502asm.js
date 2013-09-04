@@ -63,7 +63,7 @@ module.exports = {
 				bracketCount = 0,
 				line = context.reader.getLine(),
 				column = context.reader.getColumn();
-            while (parenCount > 0 || bracketCount > 0 || !/\s/.test(peek)) {
+            while (peek !== context.reader.EOF && (parenCount > 0 || bracketCount > 0 || !/\s/.test(peek))) {
                 if (peek === ')' && parenCount > 0) {
 					parenCount--;
 				}
