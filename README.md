@@ -64,6 +64,8 @@ PARSING
 	- JavaScript idents after new
 	- JavaScript built-in objects can be reassigned
 	- keep track of JavaScript user-defined functions
+- support for ActionScript's native XML support (similar to Scala)
+- support for ActionScript's varargs
 
 MISSING KEYWORDS
 - CSS property values (none, solid, inset, etc.)

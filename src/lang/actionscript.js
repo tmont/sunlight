@@ -1,5 +1,6 @@
 var utils = require('../util'),
-	regexLiteralRule = require('./rules/regex-literal');
+	regexLiteralRule = require('./rules/regex-literal'),
+	scopes = require('./rules/scopes');
 
 module.exports = {
 	keywords: [
@@ -44,9 +45,8 @@ module.exports = {
 	},
 
 	scopes: {
-		string: [ ['\'', '\'', utils.escapeSequences.concat(['\\\''])], ['\'', '\'', utils.escapeSequences.concat(['\\\'', '\\\\'])] ],
-		comment: [ ['//', '\n', null, true], ['/*', '*/'] ],
-		xmlAttribute: [ ['@', '\\b'] ]
+		string: [ scopes.singleQuotedString, scopes.doubleQuotedString ],
+		comment: [ scopes.doubleSlashComment, scopes.slashStarMultiLineComment ]
 	},
 
 	customParseRules: [

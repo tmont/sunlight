@@ -6,11 +6,6 @@ describe('Actionscript', function() {
 	highlighter.register('actionscript', require('../../src/lang/actionscript'));
 	var nbsp = String.fromCharCode(0xA0);
 
-	it('single line comments', function() {
-		var highlighted = highlighter.highlight('//lolz', 'actionscript').result;
-		highlighted.should.equal('<span class="actionscript"><span class="comment">//lolz</span></span>');
-	});
-
 	it('keywords', function() {
 		var highlighted = highlighter.highlight('package', 'actionscript').result;
 		highlighted.should.equal('<span class="actionscript"><span class="keyword">package</span></span>');
@@ -94,4 +89,110 @@ describe('Actionscript', function() {
 			'</span>';
 		highlighted.should.equal(expected);
 	});
+
+	it('global functions', function() {
+		var highlighted = highlighter.highlight('decodeURI()', 'actionscript').result;
+		var expected = '<span class="actionscript">' +
+			'<span class="globalFunction">decodeURI</span>' +
+			'<span class="punctuation">(</span>' +
+			'<span class="punctuation">)</span>' +
+			'</span>';
+		highlighted.should.equal(expected);
+	});
+
+	it('global function preceded by "new" is not a function', function() {
+		var highlighted = highlighter.highlight('new decodeURI()', 'actionscript').result;
+		var expected = '<span class="actionscript">' +
+			'<span class="keyword">new</span>' + nbsp +
+			'<span class="named-ident">decodeURI</span>' +
+			'<span class="punctuation">(</span>' +
+			'<span class="punctuation">)</span>' +
+			'</span>';
+		highlighted.should.equal(expected);
+	});
+
+	it('global function preceded by a colon is not a function', function() {
+		var highlighted = highlighter.highlight(':decodeURI()', 'actionscript').result;
+		var expected = '<span class="actionscript">' +
+			'<span class="operator">:</span>' +
+			'<span class="named-ident">decodeURI</span>' +
+			'<span class="punctuation">(</span>' +
+			'<span class="punctuation">)</span>' +
+			'</span>';
+		highlighted.should.equal(expected);
+	});
+
+	it('global function must be followed by an open paren', function() {
+		var highlighted = highlighter.highlight('decodeURI', 'actionscript').result;
+		var expected = '<span class="actionscript">' +
+			'<span class="ident">decodeURI</span>' +
+			'</span>';
+		highlighted.should.equal(expected);
+	});
+
+	it('regex literal', function() {
+		var highlighted = highlighter.highlight('/foo/', 'actionscript').result;
+		var expected = '<span class="actionscript">' +
+			'<span class="regexLiteral">/foo/</span>' +
+			'</span>';
+		highlighted.should.equal(expected);
+	});
+
+	it('idents can start with an underscore', function() {
+		var highlighted = highlighter.highlight('_foo', 'actionscript').result;
+		var expected = '<span class="actionscript">' +
+			'<span class="ident">_foo</span>' +
+			'</span>';
+		highlighted.should.equal(expected);
+	});
+
+	it('single quoted strings', function() {
+		var highlighted = highlighter.highlight('\'foo\'', 'actionscript').result;
+		var expected = '<span class="actionscript">' +
+			'<span class="string">\'foo\'</span>' +
+			'</span>';
+		highlighted.should.equal(expected);
+	});
+
+	it('double quoted strings', function() {
+		var highlighted = highlighter.highlight('"foo"', 'actionscript').result;
+		var expected = '<span class="actionscript">' +
+			'<span class="string">"foo"</span>' +
+			'</span>';
+		highlighted.should.equal(expected);
+	});
+
+	it('single-line comments', function() {
+		var highlighted = highlighter.highlight('//lolz', 'actionscript').result;
+		var expected = '<span class="actionscript">' +
+			'<span class="comment">//lolz</span>' +
+			'</span>';
+		highlighted.should.equal(expected);
+	});
+
+	it('block comments', function() {
+		var highlighted = highlighter.highlight('/*\nfoo\n*/', 'actionscript').result;
+		var expected = '<span class="actionscript">' +
+			'<span class="comment">/*\nfoo\n*/</span>' +
+			'</span>';
+		highlighted.should.equal(expected);
+	});
+
+	it.skip('varargs', function() {
+		var highlighted = highlighter.highlight('function foo(...args:*) {}', 'actionscript').result;
+		var expected = '<span class="actionscript">' +
+			'<span class="keyword">function</span>' + nbsp +
+			'<span class="named-ident">foo</span>' +
+			'<span class="punctuation">(</span>' +
+			'<span class="varargs">...</span>' +
+			'<span class="ident">args</span>' +
+			'<span class="operator">:</span>' +
+			'<span class="operator">*</span>' + nbsp +
+			'<span class="punctuation">{</span>' +
+			'<span class="punctuation">}</span>' +
+			'</span>';
+		highlighted.should.equal(expected);
+	});
+
+	it.skip('native xml', function() {});
 });
