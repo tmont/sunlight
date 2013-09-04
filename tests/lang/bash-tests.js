@@ -110,4 +110,12 @@ describe('Bash', function() {
 				'</span>';
 		highlighted.should.equal(expected);
 	});
+
+	it.skip('variables with braces', function() {
+		var highlighted = highlighter.highlight('${foo}', 'bash').result,
+			expected = '<span class="bash">' +
+				'<span class="variable">${foo}</span>' +
+				'</span>';
+		highlighted.should.equal(expected);
+	});
 });

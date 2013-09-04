@@ -66,6 +66,7 @@ PARSING
 	- keep track of JavaScript user-defined functions
 - support for ActionScript's native XML support (similar to Scala)
 - support for ActionScript's varargs
+- support for ${foo} style variables in bash
 
 MISSING KEYWORDS
 - CSS property values (none, solid, inset, etc.)
