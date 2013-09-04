@@ -1,8 +1,10 @@
-var utils = require('../../util');
+var utils = require('../../util'),
+	esc = utils.escapeSequences;
 
 module.exports = {
-	doubleQuotedString: [ '"', '"', utils.escapeSequences.concat(['\\"']) ],
-	singleQuotedString: [ '\'', '\'', utils.escapeSequences.concat(['\\\'', '\\\\']) ],
-	doubleSlashComment: ['//', '\n', null, true],
-	slashStarMultiLineComment: ['/*', '*/']
+	doubleQuotedString:        [ '"',   '"', esc.concat([ '\\"' ]),  false ],
+	singleQuotedString:        [ '\'', '\'', esc.concat([ '\\\'' ]), false ],
+	doubleSlashComment:        [ '//', '\n', null,                   true  ],
+	hashComment:               [ '#',  '\n', null,                   true  ],
+	slashStarMultiLineComment: [ '/*', '*/', null,                   false ]
 };
