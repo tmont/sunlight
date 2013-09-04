@@ -17,6 +17,17 @@ describe('6502 ASM', function() {
 		highlighted.should.equal(expected);
 	});
 
+	it('label after instruction', function() {
+		var highlighted = highlighter.highlight('Foo\n sta foo\nBar', '6502asm').result,
+			expected = '<span class="sunlight-6502asm">' +
+				'<span class="sunlight-label">Foo</span>\n' +
+				nbsp + '<span class="sunlight-keyword">sta</span>' +
+				nbsp + '<span class="sunlight-ident">foo</span>\n' +
+				'<span class="sunlight-label">Bar</span>' +
+				'</span>';
+		highlighted.should.equal(expected);
+	});
+
 	it('keywords', function() {
 		var highlighted = highlighter.highlight('FooBar\n sta', '6502asm').result,
 			expected = '<span class="sunlight-6502asm"><span class="sunlight-label">FooBar</span>\n' + nbsp + '<span class="sunlight-keyword">sta</span></span>';
