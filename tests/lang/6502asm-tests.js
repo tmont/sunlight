@@ -58,8 +58,33 @@ describe('6502 ASM', function() {
 	});
 
 	it('number', function() {
+		var highlighted = highlighter.highlight('42', '6502asm').result,
+			expected = '<span class="sunlight-6502asm"><span class="sunlight-number">42</span></span>';
+		highlighted.should.equal(expected);
+	});
+
+	it('number that starts with $', function() {
 		var highlighted = highlighter.highlight('$2C', '6502asm').result,
 			expected = '<span class="sunlight-6502asm"><span class="sunlight-number">$2C</span></span>';
+		highlighted.should.equal(expected);
+	});
+
+	it('ident', function() {
+		var highlighted = highlighter.highlight('Foo\n SLEEP', '6502asm').result,
+			expected = '<span class="sunlight-6502asm">' +
+				'<span class="sunlight-label">Foo</span>\n' +
+				nbsp + '<span class="sunlight-ident">SLEEP</span>' +
+				'</span>';
+		highlighted.should.equal(expected);
+	});
+
+	it('illegal opcode', function() {
+		var highlighted = highlighter.highlight('Foo\n dcp MaidLineCounter2', '6502asm').result,
+			expected = '<span class="sunlight-6502asm">' +
+				'<span class="sunlight-label">Foo</span>\n' +
+				nbsp + '<span class="sunlight-illegalOpcode">dcp</span>' +
+				nbsp + '<span class="sunlight-ident">MaidLineCounter2</span>' +
+				'</span>';
 		highlighted.should.equal(expected);
 	});
 });
