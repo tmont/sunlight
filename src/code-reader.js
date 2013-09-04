@@ -13,6 +13,8 @@ function CodeReader(text) {
 CodeReader.EOF = undefined;
 
 CodeReader.prototype = {
+	//purely for convenience
+	EOF: CodeReader.EOF,
 	getCharacters: function getCharacters(count) {
 		var value;
 		if (count === 0) {
