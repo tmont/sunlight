@@ -23,7 +23,7 @@ util.inherits(Highlighter, EventEmitter);
 
 Highlighter.defaultOptions = {
 	tabWidth: 4,
-	classPrefix: 'sunlight-',
+	classPrefix: '',
 	showWhitespace: false,
 	eol: '\n',
 	maxHeight: false
