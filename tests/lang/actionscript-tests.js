@@ -178,6 +178,14 @@ describe('Actionscript', function() {
 		highlighted.should.equal(expected);
 	});
 
+	it('number', function() {
+		var highlighted = highlighter.highlight('42', 'actionscript').result;
+		var expected = '<span class="actionscript">' +
+			'<span class="number">42</span>' +
+			'</span>';
+		highlighted.should.equal(expected);
+	});
+
 	it.skip('varargs', function() {
 		var highlighted = highlighter.highlight('function foo(...args:*) {}', 'actionscript').result;
 		var expected = '<span class="actionscript">' +
