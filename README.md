@@ -1,4 +1,6 @@
 # Sunlight
+[![Build Status](https://travis-ci.org/tmont/sunlight.png)](https://travis-ci.org/tmont/sunlight)
+
 [Sunlight](http://sunlightjs.com/) is a context-aware, client-side syntax
 highlighter. It does as a good of a job as can be done highlighting code
 without performing static analysis. Check out the [sexy demo!](http://sunlightjs.com/demo.html).
