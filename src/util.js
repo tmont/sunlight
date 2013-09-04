@@ -107,6 +107,7 @@ module.exports = {
 
 	createProceduralRule: function(startIndex, direction, tokenRequirements, caseInsensitive) {
 		tokenRequirements = tokenRequirements.slice(0);
+		var contains = this.contains;
 		return function(tokens) {
 			var tokenIndexStart = startIndex;
 
@@ -124,7 +125,7 @@ module.exports = {
 					}
 
 					tokenIndexStart -= direction;
-				} else if (actual.name === expected.token && (!expected.values || utils.contains(expected.values, actual.value, caseInsensitive))) {
+				} else if (actual.name === expected.token && (!expected.values || contains(expected.values, actual.value, caseInsensitive))) {
 					//derp
 					continue;
 				} else if (expected.optional) {
@@ -139,6 +140,7 @@ module.exports = {
 	},
 
 	createBetweenRule: function(startIndex, opener, closer, caseInsensitive) {
+		var contains = this.contains;
 		return function(tokens) {
 			var index = startIndex,
 				token,
@@ -146,8 +148,8 @@ module.exports = {
 
 			//check to the left: if we run into a closer or never run into an opener, fail
 			while ((token = tokens[--index]) !== undefined) {
-				if (token.name === closer.token && utils.contains(closer.values, token.value)) {
-					if (token.name === opener.token && utils.contains(opener.values, token.value, caseInsensitive)) {
+				if (token.name === closer.token && contains(closer.values, token.value)) {
+					if (token.name === opener.token && contains(opener.values, token.value, caseInsensitive)) {
 						//if the closer is the same as the opener that's okay
 						success = true;
 						break;
@@ -156,7 +158,7 @@ module.exports = {
 					return false;
 				}
 
-				if (token.name === opener.token && utils.contains(opener.values, token.value, caseInsensitive)) {
+				if (token.name === opener.token && contains(opener.values, token.value, caseInsensitive)) {
 					success = true;
 					break;
 				}
@@ -169,8 +171,8 @@ module.exports = {
 			//check to the right for the closer
 			index = startIndex;
 			while ((token = tokens[++index]) !== undefined) {
-				if (token.name === opener.token && utils.contains(opener.values, token.value, caseInsensitive)) {
-					if (token.name === closer.token && utils.contains(closer.values, token.value, caseInsensitive)) {
+				if (token.name === opener.token && contains(opener.values, token.value, caseInsensitive)) {
+					if (token.name === closer.token && contains(closer.values, token.value, caseInsensitive)) {
 						//if the closer is the same as the opener that's okay
 						success = true;
 						break;
@@ -179,7 +181,7 @@ module.exports = {
 					return false;
 				}
 
-				if (token.name === closer.token && utils.contains(closer.values, token.value, caseInsensitive)) {
+				if (token.name === closer.token && contains(closer.values, token.value, caseInsensitive)) {
 					success = true;
 					break;
 				}
