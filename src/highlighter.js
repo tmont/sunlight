@@ -42,7 +42,11 @@ function createAnalyzerContext(parserContext, partialContext, options) {
 			}
 
 			return function(token) {
-				var value = token.value.split(' ').join(nbsp),
+				var value = token.value
+						.split(' ').join(nbsp)
+						.replace(/&/g, '&amp;')
+						.replace(/</g, '&lt;')
+						.replace(/>/g, '&gt;'),
 					tabIndex,
 					lastNewlineColumn,
 					actualColumn,

@@ -64,7 +64,7 @@ describe('6502 ASM', function() {
 
 	it('constant with nested brackets and parens', function() {
 		var highlighted = highlighter.highlight('#<[3.[14] * (1(0))0]', '6502asm').result,
-			expected = '<span class="6502asm"><span class="constant">#<[3.[14]' + nbsp + '*' + nbsp + '(1(0))0]</span></span>';
+			expected = '<span class="6502asm"><span class="constant">#&lt;[3.[14]' + nbsp + '*' + nbsp + '(1(0))0]</span></span>';
 		highlighted.should.equal(expected);
 	});
 
