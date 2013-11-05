@@ -501,6 +501,44 @@
 					
 					return true;
 				},
+
+				//static class names in static method calls, e.g. "Foo" in Foo.Bar()
+				function(context) {
+					var ident = context.tokens[context.index].value;
+					if (!/^[A-Z]/.test(ident)) {
+						//must start with a capital letter
+						return false;
+					}
+
+					//handles "Foo" in Foo.Bar()
+					var nonGeneric = [
+						sunlight.util.whitespace,
+						{ token: "operator", values: ["."] },
+						sunlight.util.whitespace,
+						{ token: "ident" },
+						sunlight.util.whitespace,
+						{ token: "punctuation", values: ["("] }
+					];
+
+					//handles "Foo" in Foo<Baz>.Bar()
+					var generic = [
+						sunlight.util.whitespace,
+						{ token: "operator", values: ["<"] },
+						sunlight.util.whitespace,
+						{ token: "ident" },
+						sunlight.util.whitespace,
+						{ token: "operator", values: [">"] },
+						sunlight.util.whitespace,
+						{ token: "operator", values: ["."] },
+						sunlight.util.whitespace,
+						{ token: "ident" },
+						sunlight.util.whitespace,
+						{ token: "punctuation", values: ["("] }
+					];
+
+					return sunlight.util.createProceduralRule(context.index + 1, 1, nonGeneric)(context.tokens) ||
+						sunlight.util.createProceduralRule(context.index + 1, 1, generic)(context.tokens);
+				},
 				
 				//attributes (friggin' attributes...)
 				createNamedIdentFunction(function(context) {
