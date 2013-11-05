@@ -46,7 +46,7 @@
 		<!-- compressed files -->
 		<tar destfile="${build.dist}/${package.release}.tar.gz" compression="gzip">
 			<tarfileset dir="${deploy.dir}" includes="*/**" prefix="${package.release}"/>
-			<tarfileset dir="${basedir}" includes="CHANGELOG,COPYING,README" prefix="${package.release}"/>
+			<tarfileset dir="${basedir}" includes="CHANGELOG,COPYING,README.md" prefix="${package.release}"/>
 		</tar>
 		
 		<!-- stuff for website -->
