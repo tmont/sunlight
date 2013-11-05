@@ -75,6 +75,24 @@
 		identAfterFirstLetter: /\w/,
 		
 		customParseRules: [
+			//symbol literals
+			function(context) {
+				var line = context.reader.getLine(),
+					column = context.reader.getColumn();
+
+				if (context.reader.current() !== "'") {
+					return false;
+				}
+
+				var match = /^(\w+)(?!')/i.exec(context.reader.peekSubstring());
+				if (!match) {
+					return false;
+				}
+
+				context.reader.read(match[1].length);
+				return context.createToken("symbolLiteral", "'" + match[1], line, column);
+			},
+
 			//case classes: can't distinguish between a case class and a function call so we need to keep track of them
 			function(context) {
 				var prevToken,

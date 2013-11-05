@@ -111,7 +111,8 @@
 .sunlight-verbatimString,
 .sunlight-rawLongString,
 .sunlight-binaryLongString,
-.sunlight-diff .sunlight-added {
+.sunlight-diff .sunlight-added,
+.sunlight-scala .sunlight-symbolLiteral {
 	color: #55EB54 !important;
 }
 .sunlight-operator,

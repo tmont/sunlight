@@ -112,7 +112,8 @@
 .sunlight-rawLongString,
 .sunlight-binaryLongString,
 .sunlight-verbatimString,
-.sunlight-diff .sunlight-removed {
+.sunlight-diff .sunlight-removed,
+.sunlight-scala .sunlight-symbolLiteral {
 	color: #990000 !important;
 }
 
