@@ -241,7 +241,6 @@ class Brainfuck[T](func:Func[T]) {
 
 //symbol literals and chars
 val aSymbol = 'aSymbol
-//val notASymbol = 'aSymbol '
 val notASymbol = ' '
 val aChar = 'a'
 val aChar = '\u0041'
@@ -287,7 +286,6 @@ val aChar = '\u0041'
 		assertExists("symbolLiteral", "'aSymbol", "symbol literal");
 		assertExists("char", "'['", "single character char");
 		assertExists("char", "']'", "single character char");
-		//assertExists("char", "'aSymbol '", "character with space at the end");
 		assertExists("char", "' '", "space character");
 		assertExists("char", "'a'", "single character char");
 		assertExists("char", "'\\u0041'", "char code point");
