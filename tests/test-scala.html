@@ -238,6 +238,12 @@ class Brainfuck[T](func:Func[T]) {
                   +&gt;-]&lt;.+++.------.--------.[-]&gt;++++++++[&lt;++++&gt;
                   -]&lt;+.[-]++++++++++.""")
 */
+
+//symbol literals and chars
+val aSymbol = 'aSymbol
+val notASymbol = ' '
+val aChar = 'a'
+val aChar = '\u0041'
 </pre>
 	</body>
 
@@ -277,8 +283,13 @@ class Brainfuck[T](func:Func[T]) {
 		
 		assertExists("comment", "/** An AddressBook takes a variable number of arguments\n   *  which are accessed as a Sequence\n   */", "multi line comment");
 		
-		
-		
+		assertExists("symbolLiteral", "'aSymbol", "symbol literal");
+		assertExists("char", "'['", "single character char");
+		assertExists("char", "']'", "single character char");
+		assertExists("char", "' '", "space character");
+		assertExists("char", "'a'", "single character char");
+		assertExists("char", "'\\u0041'", "char code point");
+
 		assertExists("string", "\"My Address Book\"", "string in embedded xml");
 		assertExists("string", "\"\"\"table { border-right: 1px solid #cccccc; }\n        th { background-color: #cccccc; }\n        td { border-left: 1px solid #acacac; }\n        td { border-bottom: 1px solid #acacac;\"\"\"", "raw string in embedded xml");
 	//]]></script>
