@@ -211,11 +211,11 @@ describe('C++', function() {
 	});
 
 	it('generic type arguments in template declarations are not named idents', function() {
-		var highlighted = highlighter.highlight('class Foo<T> {}', 'cpp').result,
+		var highlighted = highlighter.highlight('template <class T> {}', 'cpp').result,
 			expected = '<span class="cpp">' +
-				'<span class="keyword">class</span>' + nbsp +
-				'<span class="named-ident">Foo</span>' +
+				'<span class="keyword">template</span>' + nbsp +
 				'<span class="operator">&lt;</span>' +
+				'<span class="keyword">class</span>' + nbsp +
 				'<span class="ident">T</span>' +
 				'<span class="operator">&gt;</span>' + nbsp +
 				'<span class="punctuation">{</span>' +
