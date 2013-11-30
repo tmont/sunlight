@@ -85,6 +85,27 @@ CodeReader.prototype = {
 		return value;
 	},
 
+	readRegex: function(regex, group) {
+		var value = this.peekRegex(regex, group);
+		if (!value) {
+			return null;
+		}
+
+		return {
+			line: this.getLine(),
+			column: this.getColumn(),
+			value: this.currentChar + this.read(value.length - 1)
+		}
+	},
+
+	peekRegex: function(regex, group) {
+		group = group || 0;
+		var string = this.substring(),
+			match = regex.exec(string);
+
+		return match && match[group];
+	},
+
 	getText: function() {
 		return this.text;
 	},

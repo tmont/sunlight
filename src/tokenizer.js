@@ -44,6 +44,7 @@ util._extend(Tokenizer.prototype, {
 					line: line,
 					value: value,
 					column: column,
+					index: tokens.length,
 					language: this.language.name
 				};
 			}
@@ -64,7 +65,13 @@ util._extend(Tokenizer.prototype, {
 			//flush default data if needed (in pretty much all languages this is just whitespace)
 			if (token !== null) {
 				if (context.defaultData.text !== '') {
-					tokens.push(context.createToken('default', context.defaultData.text, context.defaultData.line, context.defaultData.column));
+					tokens.push(context.createToken(
+						'default',
+						context.defaultData.text,
+						context.defaultData.line,
+						context.defaultData.column
+					));
+
 					context.defaultData.text = '';
 				}
 
