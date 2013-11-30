@@ -1,9 +1,9 @@
 var should = require('should'),
-	sunlight = require('../../src');
+	sunlight = require('../');
 
 describe('C++', function() {
 	var highlighter = new sunlight.Highlighter();
-	highlighter.register('cpp', require('../../src/lang/c++'));
+	highlighter.register('cpp', require('../src/lang/c++'));
 	var nbsp = String.fromCharCode(0xA0);
 
 	it('keywords', function() {

@@ -1,9 +1,9 @@
 var should = require('should'),
-	sunlight = require('../../src');
+	sunlight = require('../');
 
 describe('6502 ASM', function() {
 	var highlighter = new sunlight.Highlighter();
-	highlighter.register('6502asm', require('../../src/lang/6502asm'));
+	highlighter.register('6502asm', require('../src/lang/6502asm'));
 	var nbsp = String.fromCharCode(0xA0);
 
 	it('label', function() {

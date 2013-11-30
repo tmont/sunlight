@@ -1,9 +1,9 @@
 var should = require('should'),
-	sunlight = require('../../src');
+	sunlight = require('../');
 
 describe('DOS Batch', function() {
 	var highlighter = new sunlight.Highlighter();
-	highlighter.register('batch', require('../../src/lang/batch'));
+	highlighter.register('batch', require('../src/lang/batch'));
 	var nbsp = String.fromCharCode(0xA0);
 
 	it('keywords', function() {

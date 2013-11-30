@@ -17,6 +17,6 @@
 	},
 
 	"scripts": {
-		"test": "node_modules/.bin/mocha -R dot tests/lang"
+		"test": "node_modules/.bin/mocha -R dot tests"
 	}
 }

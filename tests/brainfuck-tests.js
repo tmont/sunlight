@@ -1,9 +1,9 @@
 var should = require('should'),
-	sunlight = require('../../src');
+	sunlight = require('../');
 
 describe('Brainfuck', function() {
 	var highlighter = new sunlight.Highlighter();
-	highlighter.register('brainfuck', require('../../src/lang/brainfuck'));
+	highlighter.register('brainfuck', require('../src/lang/brainfuck'));
 	var nbsp = String.fromCharCode(0xA0);
 
 	it('increment', function() {

@@ -1,9 +1,9 @@
 var should = require('should'),
-	sunlight = require('../../src');
+	sunlight = require('../');
 
 describe('Bash', function() {
 	var highlighter = new sunlight.Highlighter();
-	highlighter.register('bash', require('../../src/lang/bash'));
+	highlighter.register('bash', require('../src/lang/bash'));
 	var nbsp = String.fromCharCode(0xA0);
 
 	it('keywords', function() {

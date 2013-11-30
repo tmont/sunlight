@@ -1,9 +1,9 @@
 var should = require('should'),
-	sunlight = require('../../src');
+	sunlight = require('../');
 
 describe('Actionscript', function() {
 	var highlighter = new sunlight.Highlighter();
-	highlighter.register('actionscript', require('../../src/lang/actionscript'));
+	highlighter.register('actionscript', require('../src/lang/actionscript'));
 	var nbsp = String.fromCharCode(0xA0);
 
 	it('keywords', function() {

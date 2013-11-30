@@ -1,9 +1,9 @@
 var should = require('should'),
-	sunlight = require('../../src');
+	sunlight = require('../');
 
 describe('C#', function() {
 	var highlighter = new sunlight.Highlighter();
-	highlighter.register('csharp', require('../../src/lang/csharp'));
+	highlighter.register('csharp', require('../src/lang/csharp'));
 	var nbsp = String.fromCharCode(0xA0);
 
 	it('using statement', function() {
