@@ -62,7 +62,9 @@
 				
 				//read the tag name
 				while (peek = context.reader.peek()) {
-					if (!/[\w-]/.test(peek)) {
+					//allow periods in tag names so that ASP.NET web.config files
+					//work correctly
+					if (!/[.\w-]/.test(peek)) {
 						break;
 					}
 					

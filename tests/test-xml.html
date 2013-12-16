@@ -19,7 +19,9 @@
 	&lt;section name="foo"&gt;Content of the section&lt;/section&gt;
 	&lt;section name="bar"&gt;Content of the section&amp;beforeopentag;&lt;/section&gt;
 	&lt;section foo:id="12" name="foo"&gt;Content of the "section" &amp; stuff&lt;/section&gt;
-	
+
+	&lt;System.Net /&gt;
+
 	&lt;!-- cdata --&gt;
 &lt;![CDATA[I can put whatever I want here HAHAHA!
 &lt;tags&gt; that shouldn't be tags&lt;/tags&gt;
@@ -113,7 +115,8 @@
 		assertExists("tagName", "section", "section tag");
 		assertExists("tagName", "_self-closing", "_self-closing tag");
 		assertExists("tagName", "nested", "nested tag");
-		
+		assertExists("tagName", "System.Net", "tag name with period");
+
 		assertExists("attribute", "id", "id attribute");
 		assertExists("attribute", "xmlns", "xmlns attribute");
 		assertExists("attribute", "name", "name attribute");
