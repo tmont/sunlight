@@ -211,13 +211,26 @@
 					return nextToken && nextToken.name === "messageDestination" && (nextToken.value === "class" || nextToken.value === "alloc");
 				},
 				
-				//ident followed by an ident, but not inside []
+				//ident followed by an ident, but not inside [] and not followed by ":"
 				function(context) {
 					var token,
 						index,
 						parenCount;
-						
-					if (!sunlight.util.createProceduralRule(context.index + 1, 1, [{ token: "default" }, { token: "ident" }])(context.tokens)) {
+
+					if (!sunlight.util.createProceduralRule(context.index + 1, 1, [
+						{ token: "default" },
+						{ token: "ident" }
+					])(context.tokens)) {
+						return false;
+					}
+
+					if (sunlight.util.createProceduralRule(context.index + 1, 1, [
+						{ token: "default" },
+						{ token: "ident" },
+						sunlight.util.whitespace,
+						{ token: "operator", value: ":" }
+					])(context.tokens)) {
+						//should not be followed by a colon, as that indicates this is an argument definition
 						return false;
 					}
 					
@@ -236,7 +249,7 @@
 									if (parenCount === 0) {
 										return true;
 									}
-									
+
 									parenCount++;
 									break;
 								case ")":
