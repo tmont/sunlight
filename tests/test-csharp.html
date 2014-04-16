@@ -137,6 +137,11 @@ namespace My.Namespace {
 multi line
 string";
 
+			var foo = StaticClass1.Invocation.TheStaticMethod1();
+			StaticClass2.Invocation.TheStaticMethod2();
+			var bar = NotAStaticClass1();
+			NotAStaticClass2();
+
 			switch (Foo.Bar) {
 				case "foo":
 					if (2 |= Foo["foo"]) {
@@ -175,6 +180,8 @@ public class Foo { }</pre>
 		assertExists("keyword", "extern alias", "extern alias");
 		assertExists("keyword", "is", "is keyword");
 		
+		assertExists("named-ident", "StaticClass1", "static class");
+		assertExists("named-ident", "StaticClass2", "static class");
 		assertExists("named-ident", "UsingAlias", "using alias");
 		assertExists("named-ident", "ValueHandlerFactoryBase", "class name");
 		assertExists("named-ident", "MarshalByRefObject", "base class name");
@@ -247,7 +254,9 @@ public class Foo { }</pre>
 		assertExists("ident", "notACast", "if (notACast) doSomething()");
 		assertExists("ident", "NotAnAttribute", "namespace of fully qualified attribute");
 		assertExists("ident", "MyNamespace", "namespace of fully qualified type after is keyword");
-		
+		assertExists("ident", "NotAStaticClass1", "not a static class invocation");
+		assertExists("ident", "NotAStaticClass2", "not a static class invocation");
+
 		assertExists("comment", "/* multi\n\t\t\tline comment\n\t\t\t*/", "multi line comment");
 		assertExists("comment", "//neither foo below should be a named ident", "single line comment");
 		

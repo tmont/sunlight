@@ -501,7 +501,7 @@
 					
 					return true;
 				},
-				
+
 				//attributes (friggin' attributes...)
 				createNamedIdentFunction(function(context) {
 					var token = sunlight.util.getNextNonWsToken(context.tokens, context.index),
@@ -586,7 +586,64 @@
 					
 					return false;
 				}),
-				
+
+				// static class invocations
+				createNamedIdentFunction(function(context) {
+					var nextToken = sunlight.util.getNextNonWsToken(context.tokens, context.index),
+						token,
+						index;
+
+					if (!nextToken || nextToken.name !== "operator" || nextToken.value !== ".") {
+						return false;
+					}
+
+					//go backward and make sure that there are only equal signs before a terminator ("{", "}" or ";")
+					index = context.index;
+					while ((token = context.tokens[--index]) !== undefined) {
+						if (token.name === "default") {
+							continue;
+						}
+
+						if (token.name === "punctuation") {
+							if (token.value === "{" || token.value === "}" || token.value === ";") {
+								break;
+							}
+						}
+
+						if (token.name === "operator" && token.value === "=") {
+							break;
+						}
+
+						return false;
+					}
+
+					//go forward and make sure it's not the lhs of an assignment
+					index = context.index;
+					while ((token = context.tokens[++index]) !== undefined) {
+						if (token.name === "default") {
+							continue;
+						}
+
+						if (token.name === "ident" ||
+							(token.name === "operator" && token.value === ".")) {
+							continue;
+						}
+
+						if (token.name === "punctuation") {
+							switch (token.value) {
+								case '(':
+								case ')':
+								case ';':
+									return true;
+							}
+						}
+
+						break;
+					}
+
+					return false;
+				}),
+
 				//fully qualified type names
 				createNamedIdentFunction(function(context) {
 					//next token is not "."
