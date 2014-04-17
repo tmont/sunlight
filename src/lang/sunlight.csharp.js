@@ -593,6 +593,11 @@
 						token,
 						index;
 
+					//must start with a capital letter
+					if (!/[A-Z]/.test(context.tokens[context.index].value)) {
+						return false;
+					}
+
 					if (!nextToken || nextToken.name !== "operator" || nextToken.value !== ".") {
 						return false;
 					}
@@ -625,6 +630,8 @@
 						}
 
 						if (token.name === "ident" ||
+							(token.name === "operator" && token.value === "<") ||
+							(token.name === "operator" && token.value === ">") ||
 							(token.name === "operator" && token.value === ".")) {
 							continue;
 						}

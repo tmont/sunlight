@@ -141,6 +141,10 @@ string";
 			StaticClass2.Invocation.TheStaticMethod2();
 			var bar = NotAStaticClass1();
 			NotAStaticClass2();
+			var baz = StaticClass3.Invocation.TheStaticMethod3&lt;StaticGeneric1&gt;();
+			StaticClass4.Invocation.TheStaticMethod4&lt;StaticGeneric2&gt;();
+			var qux = NotAStaticClass3&lt;GenericArgument1&gt;();
+			NotAStaticClass4&lt;GenericArgument2&gt;();
 
 			switch (Foo.Bar) {
 				case "foo":
@@ -182,6 +186,12 @@ public class Foo { }</pre>
 		
 		assertExists("named-ident", "StaticClass1", "static class");
 		assertExists("named-ident", "StaticClass2", "static class");
+		assertExists("named-ident", "StaticClass3", "static class before generic");
+		assertExists("named-ident", "StaticClass4", "static class before generic");
+		assertExists("named-ident", "StaticGeneric1", "generic class after static class");
+		assertExists("named-ident", "StaticGeneric2", "generic class after static class");
+		assertExists("named-ident", "GenericArgument1", "generic class after non static class");
+		assertExists("named-ident", "GenericArgument2", "generic class after non static class");
 		assertExists("named-ident", "UsingAlias", "using alias");
 		assertExists("named-ident", "ValueHandlerFactoryBase", "class name");
 		assertExists("named-ident", "MarshalByRefObject", "base class name");
@@ -256,6 +266,12 @@ public class Foo { }</pre>
 		assertExists("ident", "MyNamespace", "namespace of fully qualified type after is keyword");
 		assertExists("ident", "NotAStaticClass1", "not a static class invocation");
 		assertExists("ident", "NotAStaticClass2", "not a static class invocation");
+		assertExists("ident", "NotAStaticClass3", "not a static class invocation");
+		assertExists("ident", "NotAStaticClass4", "not a static class invocation");
+		assertExists("ident", "TheStaticMethod1", "static method");
+		assertExists("ident", "TheStaticMethod2", "static method");
+		assertExists("ident", "TheStaticMethod3", "static generic method");
+		assertExists("ident", "TheStaticMethod4", "static generic method");
 
 		assertExists("comment", "/* multi\n\t\t\tline comment\n\t\t\t*/", "multi line comment");
 		assertExists("comment", "//neither foo below should be a named ident", "single line comment");
