@@ -594,7 +594,7 @@
 						index;
 
 					//must start with a capital letter
-					if (!/[A-Z]/.test(context.tokens[context.index].value)) {
+					if (!/[A-Z]/.test(context.tokens[context.index].value.charAt(0))) {
 						return false;
 					}
 
