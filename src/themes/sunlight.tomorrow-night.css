@@ -12,7 +12,7 @@
 	background-color: #1d1f21 !important;
 }
 .sunlight-highlighted, .sunlight-container, .sunlight-container textarea, .sunlight-container pre {
-  font-family: "Liberation Mono", "DejaVu Sans Mono", Monaco, monospace;
+	font-family: "Liberation Mono", "DejaVu Sans Mono", Monaco, monospace;
 	font-size: 12px !important;
 	line-height: 15px !important;
 }
@@ -110,16 +110,16 @@
 .sunlight-binaryLongString,
 .sunlight-diff .sunlight-added,
 .sunlight-scala .sunlight-symbolLiteral {
-  color: #b5bd68 !important;
+	color: #b5bd68 !important;
 }
 .sunlight-operator,
 .sunlight-punctuation,
 .sunlight-delimiter {
-  color: #8abeb7 !important;
+	color: #8abeb7 !important;
 }
 .sunlight-ident,
 .sunlight-diff .sunlight-unchanged {
-  color: #c5c8c6 !important;
+	color: #c5c8c6 !important;
 }
 .sunlight-comment,
 .sunlight-xmlDocCommentContent,
@@ -127,7 +127,7 @@
 .sunlight-sln .sunlight-formatDeclaration,
 .sunlight-diff .sunlight-mergeHeader,
 .sunlight-diff .sunlight-noNewLine {
-  color: #969896 !important;
+	color: #969896 !important;
 }
 .sunlight-number,
 .sunlight-char,
@@ -135,11 +135,10 @@
 .sunlight-cdata,
 .sunlight-guid,
 .sunlight-diff .sunlight-modified {
-  color: #de935f !important;
+	color: #de935f !important;
 }
-.sunlight-constant
-{
-  color: #f0c674 !important;
+.sunlight-constant {
+	color: #f0c674 !important;
 }
 .sunlight-named-ident,
 .sunlight-xml .sunlight-attribute,
@@ -152,7 +151,7 @@
 .sunlight-lisp .sunlight-declarationSpecifier,
 .sunlight-erlang .sunlight-userDefinedFunction,
 .sunlight-diff .sunlight-removed {
-  color: #81a2be !important;
+	color: #81a2be !important;
 }
 .sunlight-keyword,
 .sunlight-languageConstruct,
@@ -161,7 +160,7 @@
 .sunlight-xml .sunlight-operator,
 .sunlight-bash .sunlight-command,
 .sunlight-erlang .sunlight-moduleAttribute {
-  color: #b294bb !important;
+	color: #b294bb !important;
 }
 .sunlight-shortOpenTag,
 .sunlight-openTag,
@@ -172,11 +171,11 @@
 .sunlight-aspCloseTag,
 .sunlight-label,
 .sunlight-css .sunlight-importantFlag {
-  background-color: #7373C1 !important;
+	background-color: #7373C1 !important;
 }
 .sunlight-content {
-  color: #FFFFFF !important;
-  font-weight: bold !important;
+	color: #FFFFFF !important;
+	font-weight: bold !important;
 }
 .sunlight-function,
 .sunlight-globalFunction,
@@ -190,7 +189,7 @@
 .sunlight-lisp .sunlight-type,
 .sunlight-sln .sunlight-sectionName,
 .sunlight-diff .sunlight-header {
-  color: #f0c674 !important;
+	color: #f0c674 !important;
 }
 .sunlight-variable,
 .sunlight-environmentVariable,
@@ -199,37 +198,37 @@
 .sunlight-lisp .sunlight-globalVariable,
 .sunlight-ruby .sunlight-globalVariable,
 .sunlight-ruby .sunlight-instanceVariable {
-  color: #cc6666 !important;
+	color: #cc6666 !important;
 }
 .sunlight-regexLiteral,
 .sunlight-lisp .sunlight-operator,
 .sunlight-6502asm .sunlight-pseudoOp,
 .sunlight-erlang .sunlight-macro,
 .sunlight-diff .sunlight-rangeInfo {
-  color: #8abeb7 !important;
+	color: #8abeb7 !important;
 }
 .sunlight-specialVariable {
-  font-style: italic !important;
-  font-weight: bold !important;
+	font-style: italic !important;
+	font-weight: bold !important;
 }
 .sunlight-csharp .sunlight-pragma,
 .sunlight-preprocessorDirective,
 .sunlight-vb .sunlight-compilerDirective {
-  color: #666363 !important;
-  font-style: italic !important;
+	color: #666363 !important;
+	font-style: italic !important;
 }
 .sunlight-xmlDocCommentMeta,
 .sunlight-java .sunlight-annotation,
 .sunlight-scala .sunlight-annotation,
 .sunlight-docComment {
-  color: #666363 !important;
+	color: #666363 !important;
 }
 .sunlight-quotedIdent,
 .sunlight-ruby .sunlight-subshellCommand,
 .sunlight-lisp .sunlight-keywordArgument,
 .sunlight-haskell .sunlight-infixOperator,
 .sunlight-erlang .sunlight-quotedAtom {
-  color: #F8CA16 !important;
+	color: #F8CA16 !important;
 }
 
 
