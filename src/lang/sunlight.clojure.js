@@ -116,8 +116,8 @@
       ]
     },
 
-    identFirstLetter: /[a-zA-Z\*\+\-\!\?_]/,
-    identAfterFirstLetter: /[^\s\,#%&()\[\]{}]/,
+    identFirstLetter: /[a-zA-Z\*\+\-!\?_]/,
+    identAfterFirstLetter: /[^\s,#%&()\[\]{}]/,
 
     customTokens: {
       'named-ident': {
