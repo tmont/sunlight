@@ -258,6 +258,15 @@
                       ))
 
 (def doc-search nil)
+
+; snippet from https://github.com/LightTable/LightTable/blob/master/src/lt/plugins/auto_paren.cljs
+(def pairs {\( \)
+            \{ \}
+            \[ \]
+            \" \"
+            \&lt; \&gt;})
+
+(def word-char #"[^\s\)\}\]\(\{\[]")
 </pre>
 	</body>
 
@@ -283,6 +292,10 @@
 		assertExists("keyword", "if", "keyword if");
 		assertExists("keyword", "do", "keyword do");
 
+		assertExists("char", "\\(", "char");
+		assertExists("char", "\\\"", "char");
+		assertExists("char", "\\>", "char");
+
 		assertExists("boolean", "true", "boolean true");
 
 		assertExists("number", "0.1", "number 0.1");
@@ -306,6 +319,8 @@
 		assertExists("ident", "lt.macros", "ident with period");
 		assertExists("ident", "dom/$", "ident with dollar sign");
 		assertExists("ident", "object/->content", "ident with less than sign");
+
+		assertExists("regex", "#\"[^\\s\\)\\}\\]\\(\\{\\[]\"", "regex");
 
 
 	//]]></script>
