@@ -130,11 +130,11 @@
       },
       variable: {
         values: exceptionForms,
-        boundary: "[\\s\\(\\),{}\\[\\]]",
+        boundary: "[\\s\\(\\),{}\\[\\]]"
       },
       boolean: {
         values: ["true", "false"],
-        boundary: "[\\s\\(\\),{}\\[\\]]",
+        boundary: "[\\s\\(\\),{}\\[\\]]"
       }
     },
     customParseRules: [
@@ -165,8 +165,7 @@
         var tok =  context.createToken("symbol", value, context.reader.getLine(), context.reader.getColumn());
         context.reader.read(value.length - 1);
         return tok;
-      },
-
+      }
     ],
 
   caseInsensitive: false,
