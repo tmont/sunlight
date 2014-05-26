@@ -267,6 +267,7 @@
             \&lt; \&gt;})
 
 (def word-char #"[^\s\)\}\]\(\{\[]")
+(defn- meh)
 </pre>
 	</body>
 
@@ -287,6 +288,7 @@
 		assertExists("named-ident", "->", "named-ident ->");
 
 		assertExists("keyword", "defn", "keyword defn");
+		assertExists("keyword", "defn-", "keyword defn-");
 		assertExists("keyword", "let", "keyword let");
 		assertExists("keyword", "fn", "keyword fn");
 		assertExists("keyword", "if", "keyword if");

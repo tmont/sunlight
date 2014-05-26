@@ -1095,7 +1095,7 @@
 			languageData.name = languageId;
 
 			//transform keywords, operators and custom tokens into a hash map
-			languageData.keywords = createHashMap(languageData.keywords || [], "\\b", languageData.caseInsensitive);
+			languageData.keywords = createHashMap(languageData.keywords || [], "[\\b\\s]", languageData.caseInsensitive);
 			languageData.operators = createHashMap(languageData.operators || [], "", languageData.caseInsensitive);
 			for (tokenName in languageData.customTokens) {
 				languageData.customTokens[tokenName] = createHashMap(
