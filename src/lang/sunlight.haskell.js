@@ -20,7 +20,7 @@
 					line = context.reader.getLine(), 
 					column = context.reader.getColumn();
 					
-				if (context.reader.current() !== "'" && peek !== "'") {
+				if (context.reader.current() !== "'") {
 					return null;
 				}
 				
