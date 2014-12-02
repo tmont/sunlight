@@ -1000,6 +1000,19 @@ spaces n | n &lt;= 0    = &quot;&quot;
    (TextDetails_Chr 'a') 1 Doc_Empty))))))))))) (Doc_NilAbove (Doc_Nest
 -}
 
+-- Extra code to test identifiers with single quotes in them.
+-- Only 'c' should be highlighted as a character literal,
+-- the rest are legal identifiers.
+
+c :: Char
+c = c'
+  where c' = c''
+        c'' = c'''
+        c''' = c'c'
+        c'c' = c'c''
+        c'c'' = c''c''
+        c''c'' = 'c'
+
 </pre>
 	</body>
 
