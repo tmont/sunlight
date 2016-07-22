@@ -7,6 +7,14 @@
  * by Tommy Montgomery <http://tmont.com>
  * Licensed under WTFPL <http://sam.zoy.org/wtfpl/>
  */
+
+if (!document) {
+  // In node.js we do not have document and window.
+  var jsdom = require("jsdom").jsdom;
+  var document = jsdom("", {});
+  var window = document.defaultView;
+}
+ 
 (function(window, document, undefined){
 
 	var 
@@ -1099,7 +1107,7 @@
 			languageData.operators = createHashMap(languageData.operators || [], "", languageData.caseInsensitive);
 			for (tokenName in languageData.customTokens) {
 				languageData.customTokens[tokenName] = createHashMap(
-					languageData.customTokens[tokenName].values,
+					languageData.customTokens[tokenName].values ? languageData.customTokens[tokenName].values : [],
 					languageData.customTokens[tokenName].boundary,
 					languageData.caseInsensitive
 				);
