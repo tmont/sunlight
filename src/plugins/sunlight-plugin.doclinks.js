@@ -31,7 +31,14 @@
 					+ word.replace(/!/g, "_bang").replace(/\?/g, "_p");
 			}
 		},
-		
+
+		pony: {
+			"function": function(word) {
+				return "http://www.ponylang.org/ponyc/search.html?q=" + word;
+			}
+		},
+
+
 		python: {
 			"function": function(word) {
 				return "http://docs.python.org/py3k/library/functions.html#" + word;

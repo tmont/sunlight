@@ -80,6 +80,7 @@
 			<fileset dir="${temp.dir}" includes="sunlight.css.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.bash.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.tsql.js"/>
+            <fileset dir="${temp.dir}" includes="sunlight.pony.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.python.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.ruby.js"/>
 			<fileset dir="${temp.dir}" includes="sunlight.java.js"/>
