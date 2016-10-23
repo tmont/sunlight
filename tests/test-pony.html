@@ -1,0 +1,55 @@
+<html>
+
+	<head>
+		<script type="text/javascript" src="../src/sunlight.js"></script>
+		<script type="text/javascript" src="../src/lang/sunlight.pony.js"></script>
+		<link rel="stylesheet" type="text/css" href="../src/themes/sunlight.default.css" />
+	</head>
+
+	<body>
+<pre id="code" class="sunlight-highlight-pony">use "collections"
+
+class Circle
+  """Represents a circle."""
+
+  // The radius is a 32-bit floating point number.
+  var _radius: F32
+
+  new create(radius: F32) =>
+    _radius = radius
+
+  fun area(): F32 =>
+    """Return circle area."""
+    F32.pi() * _radius.pow(2)
+
+  fun circumference(): F32 =>
+    """Return circumference."""
+    2 * _radius * F32.pi()
+
+  fun valid(): Bool =>
+    """Return true if radius is > 0."""
+    _radius > 0.0
+
+use @memcmp[I32](dst: Pointer[U8] box, src: Pointer[U8] box, len: USize)
+
+actor Main
+  new create(env: Env) =>
+
+    for i in Range[F32](1.0, 101.0) do
+      let c = Circle(i)
+
+      var str =
+        "Circumference: " + c.circumference().string() + "\n" +
+        "Area: " + c.area().string() + "\n"
+
+      /* This prints out the output to stdout */
+      env.out.print(str)
+    end</pre>
+
+	</body>
+
+	<script type="text/javascript"  src="test.js"></script>
+	<script type="text/javascript">//<![CDATA[
+		assertExists("comment", "// The radius is a 32-bit floating point number.", "comment");
+	//]]></script>
+</html>

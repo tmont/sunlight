@@ -48,6 +48,7 @@ for other options.
 - PowerShell
 - Objective-C
 - Lua
+- Pony
 
 ## Plugins
 - sunlight-plugin.linenumbers.js (bundled)
